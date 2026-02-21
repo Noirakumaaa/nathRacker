@@ -1,0 +1,1 @@
+export const AuthorizedUser = ["ENCODER", "ADMIN"];
