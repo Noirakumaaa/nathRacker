@@ -1,23 +1,9 @@
 // redux/slice/pcn/pcnSlice.ts
 import { createSlice } from "@reduxjs/toolkit"
-
-export type Pcn = {
-  id?: number
-  hhId: string
-  name: string
-  pcn: string
-  tr: string
-  encoded: "YES" | "NO" | "UPDATED" | "PENDING"
-  issue?: string
-  date: string
-  userId: number
-  username: string
-  createdAt?: string
-  updatedAt?: string
-}
+import type { PcnFormFields } from "./../../../app/types/pcnTypes"
 
 type PcnState = {
-  currentPcn: Pcn | null
+  currentPcn: PcnFormFields | null
   newData: boolean
 }
 
@@ -30,8 +16,9 @@ const pcnSlice = createSlice({
   name: "pcn",
   initialState,
   reducers: {
-    setCurrentPcn: (state, action: { payload: Pcn }) => {
+    setCurrentPcnForm: (state, action: { payload: PcnFormFields }) => {
       state.currentPcn = action.payload
+      console.log("Current PCN set in slice:", state.currentPcn);
     },
     clearCurrentPcn: (state) => {
       state.currentPcn = null
@@ -42,5 +29,5 @@ const pcnSlice = createSlice({
   },
 })
 
-export const { setCurrentPcn, clearCurrentPcn, setNewData } = pcnSlice.actions
+export const { setCurrentPcnForm, clearCurrentPcn, setNewData } = pcnSlice.actions
 export default pcnSlice.reducer

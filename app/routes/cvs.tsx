@@ -1,29 +1,27 @@
-import SettingsPage from "../settings/settings";
-import LayoutWrapper from "layout/navLayout";
-import { useEffect } from "react";
-import type { AppDispatch } from "redux/store";
-import { fetchUser } from "redux/thunks/userThunks";
-import { useNavigate } from "react-router";
-import UnauthorizedPage from "~/notAuthorized/notAuthorized";
-import { useDispatch, useSelector } from "react-redux";
-import type { RootState } from "redux/store";
-import { AuthorizedUser } from "~/types/authorizedUser";
+import { useEffect } from "react"
+import CvsPage from "./../cvs/cvsPage"
+import { useNavigate } from "react-router"
+import { useDispatch, useSelector } from "react-redux"
+import type { AppDispatch, RootState } from "redux/store"
+import { fetchUser } from "redux/thunks/userThunks"
+import LayoutWrapper from "layout/navLayout"
+import UnauthorizedPage from "~/notAuthorized/notAuthorized"
+import { AuthorizedUser } from "~/types/authorizedUser"
 
 
-export function Meta() {
+
+export function meta() {
   return [
-    { title: "Settings" },
-    { name: "description", content: "User settings page" },
-  ];
+    { title: "CVS" },
+    { name: "description", content: "View your dashboard" },
+  ]
 }
 
 
-
-export default function SettingsRoute() {
+export default function CVSRoute() {
   const user = useSelector((state: RootState) => state.user)
-  const navigate = useNavigate();
-  const dispatch = useDispatch<AppDispatch>();
-
+  const navigate = useNavigate()
+  const dispatch = useDispatch<AppDispatch>()
   useEffect(() => {
      //console.log("User : ", user)
     const tryFetch = async () => {
@@ -59,10 +57,10 @@ export default function SettingsRoute() {
       </LayoutWrapper>
     )
   }
+
   return (
     <LayoutWrapper>
-      <SettingsPage />;
+      <CvsPage />
     </LayoutWrapper>
   )
-
 }

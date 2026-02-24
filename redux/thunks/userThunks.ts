@@ -2,10 +2,12 @@ import { createAsyncThunk } from '@reduxjs/toolkit'
 
 type UserState = {
   id: string
-  username: string
+  govUsername: string
   email: string
   role: string
   loading: boolean
+  firstName: string
+  lastName: string
 } 
 
 

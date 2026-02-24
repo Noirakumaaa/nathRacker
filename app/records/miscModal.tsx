@@ -1,8 +1,8 @@
-import type { BusFormFields } from "./../types/busTypes";
-import { getEncodedBadgeClass } from "./../types/busTypes";
+import type { MiscFormFields } from "./../types/miscTypes";
+import { getEncodedBadgeClass } from "./../types/miscTypes";
 
-type BusViewModalProps = {
-  item: BusFormFields | null;
+type MiscViewModalProps = {
+  item: MiscFormFields | null;
   onClose: () => void;
 };
 
@@ -32,7 +32,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function BusViewModal({ item, onClose }: BusViewModalProps) {
+export function MiscViewModal({ item, onClose }: MiscViewModalProps) {
   if (!item) return null;
 
   const formattedDate = item.date
@@ -68,13 +68,13 @@ export function BusViewModal({ item, onClose }: BusViewModalProps) {
       <div className="relative bg-white rounded-2xl w-full max-w-2xl z-10 flex flex-col max-h-[90vh] overflow-hidden border border-[#e8e8e0] shadow-[0_24px_60px_rgba(0,0,0,0.15)]">
 
         {/* Top accent line */}
-        <div className="h-px w-full bg-gradient-to-r from-indigo-400 via-blue-400 to-transparent" />
+        <div className="h-px w-full bg-gradient-to-r from-rose-400 via-orange-400 to-transparent" />
 
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#e8e8e0]">
           <div className="flex items-center gap-3">
-            <span className="font-mono text-[10px] font-medium px-2 py-1 rounded-md bg-indigo-50 text-indigo-600 tracking-wider">
-              BUS
+            <span className="font-mono text-[10px] font-medium px-2 py-1 rounded-md bg-rose-50 text-rose-600 tracking-wider">
+              MISC
             </span>
             <div>
               <h2 className="text-[15px] font-semibold tracking-tight text-[#1a1a18]">Record Details</h2>
@@ -112,8 +112,14 @@ export function BusViewModal({ item, onClose }: BusViewModalProps) {
             <div className="bg-[#fafaf8] rounded-xl px-4 py-1">
               <DetailRow label="Name" value={item.granteeName} />
               <DetailRow label="Subject of Change" value={item.subjectOfChange} />
-              <DetailRow label="Type of Update" value={item.typeOfUpdate} />
-              <DetailRow label="Update Info" value={item.updateInfo} />
+            </div>
+          </section>
+
+          {/* Document */}
+          <section>
+            <SectionLabel>Document</SectionLabel>
+            <div className="bg-[#fafaf8] rounded-xl px-4 py-1">
+              <DetailRow label="Document Type" value={item.documentType} />
             </div>
           </section>
 

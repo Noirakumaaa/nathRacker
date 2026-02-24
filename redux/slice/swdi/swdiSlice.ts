@@ -1,30 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit'
 // import { fetchSwdi, fetchSwdiCount } from '../../thunks/swdiThunks'
-
-type Swdi = { 
-    id : number;
-    hhId : string;
-    grantee : string;
-    swdiScore : string;
-    encoded: string;
-    issue : string;
-    date: string;
-    userId: number;
-    username: string
-    createdAt?: string
-    updatedAt?: string
-}
+import type { SwdiFormFields, SwdiData } from '~/types/swdiTypes'
 
 
-type SWDIFormFields = { 
-    hhId : string;
-    grantee : string;
-    swdiScore : string;
-    encoded: string;
-    issue? : string;
-    date: string;
 
-}
+
 
 type SwdiCount = { 
   date: string
@@ -34,22 +14,29 @@ type SwdiCount = {
 }
 
 type swdiState = {
-  AllSwdi: Swdi[]
-  currentSwdi : SWDIFormFields
+  AllSwdi: SwdiData[]
+  currentSwdi : SwdiFormFields
   SwdiCount : SwdiCount[]
   loading: boolean
   newData : boolean
 }
 
+
 const initialState: swdiState = { 
   AllSwdi: [],
   currentSwdi: {
-
     hhId: '',
     grantee: '',
-    swdiScore: '',
-    encoded: '',
+    lgu: '',
+    barangay: '',
+    swdiScore: 1,
+    swdiLevel: '',
+    encodedBy: '',
+    remarks: '',
     issue: '',
+    cl: '',
+    drn: '',
+    note: '',
     date: '',
   },
   SwdiCount: [],
@@ -60,30 +47,17 @@ const slice = createSlice({
   name: 'swdi',
   initialState,
   reducers: {
-    setCurrentSwdi : (state, action : {payload : SWDIFormFields})=>{
+    setCurrentSwdiForm : (state, action : {payload : SwdiFormFields})=>{
       state.currentSwdi = action.payload
     },
     setNewData : (state, action : {payload : boolean})=>{
       state.newData = action.payload
     },
   },
-  // extraReducers: builder => {
-  //   builder
-  //     .addCase(fetchSwdi.pending, (state) => {
-  //       state.loading = true
-  //     })
-  //     .addCase(fetchSwdi.fulfilled, (state, action) => {
-  //       state.AllSwdi = action.payload
-  //       state.loading = false
-  //     })
-  //     .addCase(fetchSwdi.rejected, (state) => {
-  //       state.loading = false
-  //     })
-      
-  // },
+
   
 })
 
 
-export const { setNewData, setCurrentSwdi } = slice.actions
+export const { setNewData, setCurrentSwdiForm } = slice.actions
 export default slice.reducer

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import EncodingDashboard from "../dashboard/dashboard";
+import Dashboard from "~/dashboard/dashboard";
 import { useNavigate } from "react-router";
 import type { AppDispatch, RootState } from "redux/store";
 import { fetchUser } from "redux/thunks/userThunks";
@@ -7,6 +7,7 @@ import LayoutWrapper from "layout/navLayout";
 import UnauthorizedPage from "~/notAuthorized/notAuthorized";
 import { useDispatch, useSelector } from "react-redux";
 import { AuthorizedUser } from "~/types/authorizedUser";
+
 export function meta() {
   return [
     { title: "Dashboard" },
@@ -57,7 +58,7 @@ export default function DashboardRoute() {
 
   return (
     <LayoutWrapper>
-      <EncodingDashboard />
+      <Dashboard />
     </LayoutWrapper>
   );
 }

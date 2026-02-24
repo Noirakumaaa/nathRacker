@@ -1,12 +1,12 @@
 import { useEffect } from "react";
-import RecordsComponent from "~/records/records";
+import { RecordsTable } from "./../records/records";
 import { useNavigate } from "react-router";
 import type { AppDispatch, RootState } from "redux/store";
 import { fetchUser } from "redux/thunks/userThunks";
 import LayoutWrapper from "layout/navLayout";
 import UnauthorizedPage from "~/notAuthorized/notAuthorized";
 import { useDispatch, useSelector } from "react-redux";
-
+import { AuthorizedUser } from "~/types/authorizedUser";
 
 
 export function meta() {
@@ -16,7 +16,6 @@ export function meta() {
   ];
 }
 
-const authorizedUser = ["ENCODER", "ADMIN"]
 
 export default function RecordsRoute() {
   const user = useSelector((state: RootState) => state.user)
@@ -51,7 +50,7 @@ export default function RecordsRoute() {
     return null // still loading user, render nothing
   }
 
-  if (!authorizedUser.includes(user.role)) {
+  if (!AuthorizedUser.includes(user.role)) {
     return (
       <LayoutWrapper>
         <UnauthorizedPage />
@@ -60,7 +59,7 @@ export default function RecordsRoute() {
   }
   return (
     <LayoutWrapper>
-      <RecordsComponent />
+      <RecordsTable />
     </LayoutWrapper>
   );
 }

@@ -1,4 +1,28 @@
-export type SWDIFormFields = {
+export type SwdiFormFields = {
+  hhId: string;
+  lgu: string;
+  barangay: string;
+  grantee: string;
+  swdiScore: number;
+  swdiLevel: string;
+  encodedBy: string;
+  remarks: string;
+  issue?: string;
+  cl?: string;
+  drn?: string;
+  date: string ;
+  note?: string;
+};
+
+export function getEncodedBadgeClass(remarks: string): string {
+  if (remarks === "YES") return "bg-emerald-50 text-emerald-700";
+  if (remarks === "NO") return "bg-red-50 text-red-700";
+  return "bg-slate-50 text-slate-600";
+}
+
+
+export type SwdiData = { 
+    id : number;
     hhId: string
     lgu: string
     barangay: string
@@ -8,23 +32,11 @@ export type SWDIFormFields = {
     encodedBy: string
     remarks: string
     issue: string 
-    cl: string 
-    drn: string 
+    cl?: string 
+    drn?: string 
     note: string 
     date : string
-}
-
-
-export type SwdiData = { 
-    id : number;
-    hhId : string;
-    grantee : string;
-    swdiScore : string;
-    encoded: string;
-    issue? : string;
-    date: string;
-    userId: number;
-    username: string
+    userId: number
     createdAt?: string
     updatedAt?: string
 }

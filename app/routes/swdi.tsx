@@ -6,7 +6,7 @@ import type { AppDispatch, RootState } from "redux/store";
 import { fetchUser } from "redux/thunks/userThunks";
 import LayoutWrapper from "layout/navLayout";
 import UnauthorizedPage from "~/notAuthorized/notAuthorized";
-
+import { AuthorizedUser } from "~/types/authorizedUser";
 
 
 
@@ -17,7 +17,7 @@ export function meta() {
   ];
 }
 
-const authorizedUser = ["ENCODER", "ADMIN"]
+
 
 export default function DashboardRoute() {
   const user = useSelector((state: RootState) => state.user)
@@ -50,8 +50,8 @@ export default function DashboardRoute() {
   if (!user.role) {
     return null // still loading user, render nothing
   }
-
-  if (!authorizedUser.includes(user.role)) {
+  console.log("User role in SWDI route: ", user.role);
+  if (!AuthorizedUser.includes(user.role)) {
     return (
       <LayoutWrapper>
         <UnauthorizedPage />

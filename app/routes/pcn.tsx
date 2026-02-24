@@ -7,7 +7,7 @@ import LayoutWrapper from "layout/navLayout";
 import UnauthorizedPage from "~/notAuthorized/notAuthorized";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "redux/store";
-
+import {AuthorizedUser} from "~/types/authorizedUser";
 
 export function meta() {
   return [
@@ -16,7 +16,7 @@ export function meta() {
   ];
 }
 
-const authorizedUser = ["ENCODER", "ADMIN"]
+
 
 export default function PCNRoute() {
   const user = useSelector((state: RootState) => state.user)
@@ -51,7 +51,7 @@ export default function PCNRoute() {
     return null // still loading user, render nothing
   }
 
-  if (!authorizedUser.includes(user.role)) {
+  if (!AuthorizedUser.includes(user.role)) {
     return (
       <LayoutWrapper>
         <UnauthorizedPage />

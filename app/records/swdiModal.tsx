@@ -1,8 +1,8 @@
-import type { BusFormFields } from "./../types/busTypes";
-import { getEncodedBadgeClass } from "./../types/busTypes";
+import type { SwdiFormFields } from "./../types/swdiTypes";
+import { getEncodedBadgeClass } from "./../types/swdiTypes";
 
-type BusViewModalProps = {
-  item: BusFormFields | null;
+type SwdiViewModalProps = {
+  item: SwdiFormFields | null;
   onClose: () => void;
 };
 
@@ -32,7 +32,23 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function BusViewModal({ item, onClose }: BusViewModalProps) {
+function SwdiScoreBadge({ score, level }: { score: number; level: string }) {
+  const colorMap: Record<string, string> = {
+    LOW: "bg-emerald-50 text-emerald-700",
+    MEDIUM: "bg-yellow-50 text-yellow-700",
+    HIGH: "bg-red-50 text-red-700",
+  };
+  const colorClass = colorMap[level?.toUpperCase()] ?? "bg-slate-50 text-slate-700";
+
+  return (
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium ${colorClass}`}>
+      <span className="w-1.5 h-1.5 rounded-full bg-current opacity-70" />
+      {score} — {level}
+    </span>
+  );
+}
+
+export function SwdiViewModal({ item, onClose }: SwdiViewModalProps) {
   if (!item) return null;
 
   const formattedDate = item.date
@@ -68,13 +84,13 @@ export function BusViewModal({ item, onClose }: BusViewModalProps) {
       <div className="relative bg-white rounded-2xl w-full max-w-2xl z-10 flex flex-col max-h-[90vh] overflow-hidden border border-[#e8e8e0] shadow-[0_24px_60px_rgba(0,0,0,0.15)]">
 
         {/* Top accent line */}
-        <div className="h-px w-full bg-gradient-to-r from-indigo-400 via-blue-400 to-transparent" />
+        <div className="h-px w-full bg-gradient-to-r from-emerald-400 via-teal-400 to-transparent" />
 
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#e8e8e0]">
           <div className="flex items-center gap-3">
-            <span className="font-mono text-[10px] font-medium px-2 py-1 rounded-md bg-indigo-50 text-indigo-600 tracking-wider">
-              BUS
+            <span className="font-mono text-[10px] font-medium px-2 py-1 rounded-md bg-emerald-50 text-emerald-600 tracking-wider">
+              SWDI
             </span>
             <div>
               <h2 className="text-[15px] font-semibold tracking-tight text-[#1a1a18]">Record Details</h2>
@@ -110,10 +126,22 @@ export function BusViewModal({ item, onClose }: BusViewModalProps) {
           <section>
             <SectionLabel>Grantee Information</SectionLabel>
             <div className="bg-[#fafaf8] rounded-xl px-4 py-1">
-              <DetailRow label="Name" value={item.granteeName} />
-              <DetailRow label="Subject of Change" value={item.subjectOfChange} />
-              <DetailRow label="Type of Update" value={item.typeOfUpdate} />
-              <DetailRow label="Update Info" value={item.updateInfo} />
+              <DetailRow label="Grantee" value={item.grantee} />
+            </div>
+          </section>
+
+          {/* SWDI Score */}
+          <section>
+            <SectionLabel>SWDI Assessment</SectionLabel>
+            <div className="bg-[#fafaf8] rounded-xl px-4 py-1">
+              <DetailRow
+                label="Score & Level"
+                value={
+                  item.swdiScore != null && item.swdiLevel ? (
+                    <SwdiScoreBadge score={item.swdiScore} level={item.swdiLevel} />
+                  ) : undefined
+                }
+              />
             </div>
           </section>
 
