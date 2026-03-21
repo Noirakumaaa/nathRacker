@@ -2,13 +2,13 @@ import { useState, useEffect } from "react";
 import type { PcnFormFields } from "~/types/pcnTypes";
 import { get, post } from "component/fetchComponent";
 import type { ToastStatus } from "~/types/pcnTypes";
-import { labelCls, inputCls } from "./pcn";
-import { toastAccent, toastIcon } from "./pcn";
+import { labelCls, inputCls } from "./Lcn";
+import { toastAccent, toastIcon } from "./Lcn";
 import { useSelector } from "react-redux";
 
 
 // ── PCN Form ──────────────────────────────────────────────────────────────────
-export function PcnForm({
+export function LcnForm({
   currentForm,
   onSuccess,
 }: {
@@ -25,7 +25,7 @@ export function PcnForm({
   const emptyForm: PcnFormFields = {
     lgu: "", barangay: "", hhId: "", granteeName: "",
     remarks: "", issue: "", encodedBy: "",
-    subjectOfChange: "", pcn: "", tr: "",
+    subjectOfChange: "", pcn: "", lrn: "",
     drn: "", cl: "", date: today, note: "",
   };
 
@@ -65,7 +65,7 @@ export function PcnForm({
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!formData.pcn.trim() && !formData.tr.trim()) {
+    if (!formData.pcn.trim() && !formData.lrn.trim()) {
       setToast({ show: true, status: "error", message: "At least one of PCN or TR is required." });
       setTimeout(() => setToast((t) => ({ ...t, show: false })), 3000);
       return;
@@ -150,8 +150,8 @@ export function PcnForm({
                   <input type="text" name="pcn" value={formData.pcn} onChange={handleChange} className={inputCls} placeholder="Enter PCN" />
                 </div>
                 <div>
-                  <label className={labelCls}>TR</label>
-                  <input type="text" name="tr" value={formData.tr} onChange={handleChange} className={inputCls} placeholder="Enter TR" />
+                  <label className={labelCls}>LRN</label>
+                  <input type="text" name="lrn" value={formData.lrn} onChange={handleChange} className={inputCls} placeholder="Enter TR" />
                 </div>
                 <div>
                   <label className={labelCls}>Encoded Y/N <span className="text-red-400">*</span></label>

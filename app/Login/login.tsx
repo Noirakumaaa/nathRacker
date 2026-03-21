@@ -60,7 +60,7 @@ export function Login() {
 
             {/* Module tags */}
             <div className="flex gap-2 mt-6 flex-wrap">
-              {['BUS', 'PCN', 'SWDI', 'MISC'].map((tag) => (
+              {['BUS', 'PCN', 'SWDI', 'MISC', 'CVS'].map((tag) => (
                 <span
                   key={tag}
                   className="font-mono text-[10px] font-medium px-2.5 py-1 rounded-md bg-white/10 text-white/60 tracking-wider"

@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import MiscMain from "~/miscellaneous/miscellaneousMain"
+import MiscMain from "~/miscellaneous/miscMain"
 import { useNavigate } from "react-router"
 import { useDispatch, useSelector } from "react-redux"
 import type { AppDispatch, RootState } from "redux/store"

@@ -7,11 +7,11 @@ export default [
   route("dashboard", "routes/dashboard.tsx"),
   route("bus", "routes/bus.tsx"),
   route("swdi", "routes/swdi.tsx"),
-  route("pcn", "routes/pcn.tsx"),
+  route("lcn", "routes/lcn.tsx"),
   route("records", "routes/records.tsx"),
   route("summary", "routes/summary.tsx"),
   route("settings", "routes/settings.tsx"),
-   route("cvs", "routes/cvs.tsx"),
+  route("cvs", "routes/cvs.tsx"),
   route("miscellaneous", "routes/miscellaneous.tsx"),
   route("404", "routes/notAuthorized.tsx"),
 

@@ -4,7 +4,7 @@ export type ToastStatus = "success" | "error" | "info";
 
 export interface CvsFormFields {
   id?: number;
-  idNumber: string | number;
+  idNumber: string;
   lgu: string;
   barangay: string;
   facilityName: string;

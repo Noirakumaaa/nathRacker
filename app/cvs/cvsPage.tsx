@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { CvsForm } from "./cvsForm";
-import { CvsRecentTable } from "./cvsRecentTable";
+import CvsRecentTable from "./cvsRecentTable";
 import type { CvsFormFields } from "~/types/cvsTypes";
 
 export default function CvsPage() {

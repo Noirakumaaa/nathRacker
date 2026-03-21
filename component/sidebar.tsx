@@ -38,7 +38,9 @@ const menuItems = [
     icon: FileInput,
     tag: "bg-emerald-50 text-emerald-600",
   },
-  { id: "PCN", label: "PCN", icon: IdCard, tag: "bg-rose-50 text-rose-500" },
+  { id: "LCN", label: "LCN", 
+    icon: IdCard, 
+    tag: "bg-rose-50 text-rose-500" },
   {
     id: "cvs",
     label: "CVS",
@@ -197,14 +199,15 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
             ))}
           </nav>
 
-          <SectionLabel label="VERIFICATION MODULES" />
+          <SectionLabel label="VERIFICATION MODULES - UNDERDEVELOPMENT" /> 
           <nav className="space-y-0.5">
             {verificationMenuItems.map((item) => (
               <NavItem
                 key={item.id}
                 item={item}
                 isActive={activeItem === item.id}
-                onClick={() => updateSidebar(item.id)}
+                onClick={() => console.log("UNDERDEVELOPMENT")}
+                // onClick={() => updateSidebar(item.id)}
               />
             ))}
           </nav>

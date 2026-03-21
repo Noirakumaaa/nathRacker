@@ -28,8 +28,8 @@ type StatCard = {
 
 type RecentEntry = {
   id: number;
-  hhId: string;
-  granteeName?: string;
+  idNumber: string;
+  name?: string;
   grantee?: string;
   date: string;
   remarks?: string;
@@ -141,7 +141,7 @@ export default function Dashboard() {
         `${import.meta.env.VITE_BACKEND_API_URL}/alldocuments/UserRecent`,
       );
       return (
-        (d as any[])?.slice(0, 5).map((r: any) => ({ ...r, module: "BUS" })) ??
+        (d as any[])?.slice(0, 8).map((r: any) => ({ ...r, module: "BUS" })) ??
         []
       );
     },
@@ -169,7 +169,7 @@ export default function Dashboard() {
     {
       label: "PCN Records",
       value: pcnCount,
-      sub: "Pending change notifs.",
+      sub: "PhilSys Card Number.",
       tag: "PCN",
       tagClass: moduleStyle.PCN,
       icon: IdCard,
@@ -394,11 +394,11 @@ export default function Dashboard() {
                         <td className="px-4 py-2.5">
                           <div className="flex items-center gap-1.5 group">
                             <span className="font-mono text-[11px] text-[#1a1a18]">
-                              {entry.hhId}
+                              {entry.idNumber}
                             </span>
                             <button
                               onClick={() =>
-                                navigator.clipboard.writeText(entry.hhId)
+                                navigator.clipboard.writeText(entry.idNumber)
                               }
                               className="opacity-0 group-hover:opacity-100 transition-opacity text-[#c4c4b8] hover:text-[#8a8a80] cursor-pointer bg-transparent border-none"
                             >
@@ -407,7 +407,7 @@ export default function Dashboard() {
                           </div>
                         </td>
                         <td className="px-4 py-2.5 text-[12px] text-[#1a1a18] max-w-[140px] truncate">
-                          {entry.granteeName ?? entry.grantee ?? (
+                          {entry.name ?? entry.name ?? (
                             <span className="text-[#d4d4cc]">—</span>
                           )}
                         </td>

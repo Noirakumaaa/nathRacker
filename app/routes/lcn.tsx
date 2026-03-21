@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import PCNForm from '../pcn/pcn'
+import LCNForm from '../lcn/Lcn'
 import { useNavigate } from "react-router";
 import type { AppDispatch } from "redux/store";
 import { fetchUser } from "redux/thunks/userThunks";
@@ -11,14 +11,14 @@ import {AuthorizedUser} from "~/types/authorizedUser";
 
 export function meta() {
   return [
-    { title: "PCN" },
+    { title: "LCN" },
     { name: "description", content: "View your dashboard" },
   ];
 }
 
 
 
-export default function PCNRoute() {
+export default function LCNRoute() {
   const user = useSelector((state: RootState) => state.user)
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
@@ -62,7 +62,7 @@ export default function PCNRoute() {
 
   return (
     <LayoutWrapper>
-      <PCNForm />
+      <LCNForm />
     </LayoutWrapper>
   );
 }

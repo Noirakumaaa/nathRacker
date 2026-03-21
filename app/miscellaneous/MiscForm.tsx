@@ -1,15 +1,13 @@
-import { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { post } from "component/fetchComponent";
-import { labelCls, inputCls, toastAccent, toastIcon } from "./cvs";
-import type { ToastStatus } from "~/types/cvsTypes";
-import type { CvsFormFields } from "~/types/cvsTypes";
+import type { MiscFormFields, ToastStatus } from "./../types/miscTypes";
+import { inputCls, labelCls, toastIcon, toastAccent } from "./../types/miscTypes";
 
-// ── CVS Form ──────────────────────────────────────────────────────────────────
-export function CvsForm({
+export default function MiscForm({
   currentForm,
   onSuccess,
 }: {
-  currentForm: CvsFormFields | null;
+  currentForm: MiscFormFields | null;
   onSuccess: () => void;
 }) {
   const today = new Date().toISOString().slice(0, 10);
@@ -18,17 +16,13 @@ export function CvsForm({
     show: false, status: "success", message: "",
   });
 
-  const emptyForm: CvsFormFields = {
-    idNumber: "",
-    lgu: "",
-    barangay: "",
-    facilityName: "",
-    formType: "",
-    remarks: "",
-    date: today,
+  const emptyForm: MiscFormFields = {
+    lgu: "", barangay: "", hhId: "", granteeName: "",
+    documentType: "", remarks: "", issue: "", encodedBy: "",
+    subjectOfChange: "", drn: "", cl: "", date: today, note: "",
   };
 
-  const [formData, setFormData] = useState<CvsFormFields>(emptyForm);
+  const [formData, setFormData] = useState<MiscFormFields>(emptyForm);
 
   useEffect(() => {
     if (!currentForm) return;
@@ -36,11 +30,11 @@ export function CvsForm({
       ...emptyForm,
       ...currentForm,
       date: today,
-      lgu: currentForm.lgu ?? "",
-      barangay: currentForm.barangay ?? "",
-      facilityName: currentForm.facilityName ?? "",
-      formType: currentForm.formType ?? "",
-      remarks: currentForm.remarks ?? "",
+      issue: currentForm.issue ?? "",
+      subjectOfChange: currentForm.subjectOfChange ?? "",
+      drn: currentForm.drn ?? "",
+      cl: currentForm.cl ?? "",
+      note: currentForm.note ?? "",
     });
   }, [currentForm]);
 
@@ -54,24 +48,18 @@ export function CvsForm({
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setButtonLoading(true);
-
-    const { id, ...rest } = formData as any;
-    const payload = {
-      ...rest,
-      date: new Date(formData.date).toISOString(),
-    };
-    console.log("CVS PAYLOAD : ", payload )
+    const { id, ...rest } = formData;
+    const payload = { ...rest, date: new Date(formData.date).toISOString() };
 
     try {
       const res = (await post(
-        `${import.meta.env.VITE_BACKEND_API_URL}/cvs/upload`,
+        `${import.meta.env.VITE_BACKEND_API_URL}/miscellaneous/upload`,
         payload
       )) as { upload: boolean; message: string };
 
       const status: ToastStatus = res.upload ? "success" : "error";
       setToast({ show: true, status, message: res.message });
       setTimeout(() => setToast((t) => ({ ...t, show: false })), res.upload ? 5000 : 2000);
-
       if (res.upload) {
         handleReset();
         onSuccess();
@@ -80,6 +68,7 @@ export function CvsForm({
       setToast({ show: true, status: "error", message: "Submission failed." });
       setTimeout(() => setToast((t) => ({ ...t, show: false })), 2000);
     }
+
     setButtonLoading(false);
   };
 
@@ -96,85 +85,84 @@ export function CvsForm({
         <div className="p-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-            {/* Column 1 — Basic Information */}
             <div className="space-y-4">
               <div className="pb-2 border-b border-[#e8e8e0]">
                 <h3 className="text-[11px] font-semibold text-[#1a1a18] uppercase tracking-wider">Basic Information</h3>
               </div>
               <div className="space-y-3.5">
                 <div>
-                  <label className={labelCls}>ID Number <span className="text-red-400">*</span></label>
-                  <input
-                    type="text"
-                    name="idNumber"
-                    value={formData.idNumber}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, idNumber: e.target.value }))}
-                    className={inputCls}
-                    placeholder="Enter ID Number"
-                    required
-                  />
+                  <label className={labelCls}>LGU</label>
+                  <input type="text" name="lgu" value={formData.lgu} onChange={handleChange} className={inputCls} placeholder="Enter LGU" />
                 </div>
                 <div>
-                  <label className={labelCls}>LGU <span className="text-red-400">*</span></label>
-                  <input type="text" name="lgu" value={formData.lgu} onChange={handleChange} className={inputCls} placeholder="Enter LGU" required />
+                  <label className={labelCls}>Barangay</label>
+                  <input type="text" name="barangay" value={formData.barangay} onChange={handleChange} className={inputCls} placeholder="Enter Barangay" />
                 </div>
                 <div>
-                  <label className={labelCls}>Barangay <span className="text-red-400">*</span></label>
-                  <input type="text" name="barangay" value={formData.barangay} onChange={handleChange} className={inputCls} placeholder="Enter Barangay" required />
+                  <label className={labelCls}>HH ID Number <span className="text-red-400">*</span></label>
+                  <input type="text" name="hhId" value={formData.hhId} onChange={handleChange} className={inputCls} placeholder="Enter HH ID" required />
+                </div>
+                <div>
+                  <label className={labelCls}>Grantee Name <span className="text-red-400">*</span></label>
+                  <input type="text" name="granteeName" value={formData.granteeName} onChange={handleChange} className={inputCls} placeholder="Enter Name" required />
+                </div>
+                <div>
+                  <label className={labelCls}>Subject of Change</label>
+                  <input type="text" name="subjectOfChange" value={formData.subjectOfChange} onChange={handleChange} className={inputCls} placeholder="Enter Subject" />
                 </div>
               </div>
             </div>
 
-            {/* Column 2 — Facility Details */}
             <div className="space-y-4">
               <div className="pb-2 border-b border-[#e8e8e0]">
-                <h3 className="text-[11px] font-semibold text-[#1a1a18] uppercase tracking-wider">Facility Details</h3>
+                <h3 className="text-[11px] font-semibold text-[#1a1a18] uppercase tracking-wider">Document Details</h3>
               </div>
               <div className="space-y-3.5">
                 <div>
-                  <label className={labelCls}>Facility Name <span className="text-red-400">*</span></label>
-                  <input type="text" name="facilityName" value={formData.facilityName} onChange={handleChange} className={inputCls} placeholder="Enter Facility Name" required />
+                  <label className={labelCls}>Document Type <span className="text-red-400">*</span></label>
+                  <input type="text" name="documentType" value={formData.documentType} onChange={handleChange} className={inputCls} placeholder="Enter Document Type" required />
                 </div>
                 <div>
-                  <label className={labelCls}> FORM TYPE <span className="text-red-400">*</span></label>
-                  <select name="formType" value={formData.formType } onChange={handleChange} required className={inputCls}>
+                  <label className={labelCls}>REMARKS <span className="text-red-400">*</span></label>
+                  <select name="remarks" value={formData.remarks} onChange={handleChange} required className={inputCls}>
                     <option value="">Select</option>
-                    <option value="F2">FORM 2 - Education</option>
-                    <option value="F3">FORM 3 - HEALTH</option>
-                    <option value="F4">FORM 4 - FDS</option>
-                    <option value="F5">FORM 5 - F1KD</option>
-                   </select>
+                    <option value="ENCODED">ENCODED</option>
+                    <option value="SCANNED">SCANNED</option>
+                    <option value="TRACKED">TRACKED</option>
+                    <option value="UPDATED">UPDATED</option>
+                    <option value="VERIFIED">VERIFIED</option>
+                    <option value="ISSUE">ISSUE</option>
+                  </select>
+                </div>
+                <div>
+                  <label className={labelCls}>Assigned City Link or SWA</label>
+                  <input type="text" name="cl" value={formData.cl} onChange={handleChange} className={inputCls} placeholder="Enter City Link or SWA" />
+                </div>
+                <div>
+                  <label className={labelCls}>DRN</label>
+                  <input type="text" name="drn" value={formData.drn} onChange={handleChange} className={inputCls} placeholder="Enter DRN" />
                 </div>
                 <div>
                   <label className={labelCls}>Date Accomplished</label>
-                  <input
-                    type="date"
-                    name="date"
-                    value={formData.date}
-                    readOnly
-                    required
-                    className={inputCls + " cursor-default"}
-                  />
+                  <input type="date" name="date" value={formData.date} readOnly className={inputCls + " cursor-default"} required />
                 </div>
               </div>
             </div>
 
-            {/* Column 3 — Remarks & Submit */}
             <div className="space-y-4">
               <div className="pb-2 border-b border-[#e8e8e0]">
-                <h3 className="text-[11px] font-semibold text-[#1a1a18] uppercase tracking-wider">Remarks</h3>
+                <h3 className="text-[11px] font-semibold text-[#1a1a18] uppercase tracking-wider">Additional Info</h3>
               </div>
               <div className="space-y-3.5">
                 <div>
-                  <label className={labelCls}>Remarks <span className="text-red-400">*</span></label>
-                  <select name="remarks" value={formData.remarks} onChange={handleChange} required className={inputCls}>
-                    <option value="">Select</option>
-                    <option value="YES">YES</option>
-                    <option value="NO">NO</option>
-                  </select>
+                  <label className={labelCls}>Issues</label>
+                  <textarea name="issue" value={formData.issue} onChange={handleChange} rows={2} className={inputCls + " resize-none"} placeholder="Enter issues..." />
                 </div>
-
-                <div className="flex gap-2.5 pt-1">
+                <div>
+                  <label className={labelCls}>Note</label>
+                  <textarea name="note" value={formData.note} onChange={handleChange} rows={2} className={inputCls + " resize-none"} placeholder="Enter note..." />
+                </div>
+                <div className="flex gap-2.5 pt-2">
                   <button
                     type="submit"
                     disabled={buttonLoading}
@@ -198,7 +186,6 @@ export function CvsForm({
         </div>
       </form>
 
-      {/* Toast */}
       {toast.show && (
         <div style={{
           position: "fixed", bottom: "28px", left: "28px",

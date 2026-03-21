@@ -9,7 +9,7 @@ export type PcnFormFields = {
   encodedBy: string
   subjectOfChange: string
   pcn: string
-  tr: string
+  lrn: string
   drn: string
   cl: string
   date: string
@@ -28,7 +28,7 @@ export type PcnFields = {
     hhId: string;
     grantee: string;
     pcn: string;
-    tr: string;
+    lrn: string;
     issue: string;
     date: string;
     encoded: string;

@@ -1,13 +1,14 @@
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { get, del } from "component/fetchComponent";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "redux/store";
 import { setCurrentBusForm } from "redux/slice/bus/busSlice";
 import { setCurrentSwdiForm } from "redux/slice/swdi/swdiSlice";
 import { setCurrentPcnForm } from "redux/slice/pcn/pcnSlice";
-// import { setCurrentMiscForm } from "redux/slice/misc/miscSlice";
+import { setCurrentCVSForm } from "redux/slice/cvs/cvsSlice";
+import { setCurrentMISCForm } from "redux/slice/misc/miscSlice";
 import {
   Loader2,
   InboxIcon,
@@ -23,20 +24,22 @@ import { BusViewModal } from "./busModal";
 import { PcnViewModal } from "./pcnModal";
 import { SwdiViewModal } from "./swdiModal";
 import { MiscViewModal } from "./miscModal";
+import { CvsViewModal } from "./cvsModal";
 import type { BusFormFields } from "./../types/busTypes";
 import type { SwdiFormFields } from "~/types/swdiTypes";
 import type { PcnFormFields } from "~/types/pcnTypes";
 import type { MiscFormFields } from "~/types/miscTypes";
+import type { CvsFormFields } from "~/types/cvsTypes";
 
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 type AllDocuments = {
   id: number;
-  hhId: string;
+  idNumber: string;
   name: string;
   documentType: string;
   documentId: number;
-  encoded: string;
+  remarks: string;
   userId: number;
   govUsername: string;
   subjectOfChange?: string;
@@ -97,6 +100,7 @@ export function RecordsTable() {
   const [ selectedPcnItem, setSelectedPcnItem ] = useState<PcnFormFields | null>(null);
   const [ selectedSwdiItem, setSelectedSwdiItem ] = useState<SwdiFormFields | null>(null);
   const [ selectedMiscItem, setSelectedMiscItem ] = useState<MiscFormFields | null>(null);
+   const [ selectedCVSItem, setSelectedCVSItem ] = useState<CvsFormFields | null>(null);
   const itemsPerPage = 10;
 
   const {
@@ -117,15 +121,15 @@ export function RecordsTable() {
         const s = filters.search.toLowerCase();
         const matchesSearch = s
           ? [
-              item.hhId,
+              item.idNumber,
               item.name,
               item.documentType,
-              item.encoded,
+              item.remarks,
               item.govUsername,
             ].some((v) => v?.toLowerCase().includes(s))
           : true;
         const matchesEncoded = filters.encoded
-          ? item.encoded === filters.encoded
+          ? item.remarks === filters.encoded
           : true;
         const matchesDocType = filters.docType
           ? item.documentType
@@ -181,7 +185,11 @@ export function RecordsTable() {
   };
 
   const activeFilterCount = Object.values(filters).filter(Boolean).length;
+
+
   const handleView = async (item: AllDocuments) => {
+
+    console.log(" ITEM : ", item)
     if (item.documentType === "BUS") {
       const full: BusFormFields = await get(
         `${import.meta.env.VITE_BACKEND_API_URL}/bus/records/${item.documentId}`,
@@ -203,10 +211,18 @@ export function RecordsTable() {
       );
       setSelectedPcnItem(full);
     }
+      if (item.documentType === "CVS") {
+      
+      const full: CvsFormFields = await get(
+        `${import.meta.env.VITE_BACKEND_API_URL}/cvs/records/${item.documentId}`,
+      );
+      setSelectedCVSItem(full);
+
+    }
 
     if (item.documentType === "MISC") {
       const full: MiscFormFields = await get(
-        `${import.meta.env.VITE_BACKEND_API_URL}/misc/records/${item.documentId}`,
+        `${import.meta.env.VITE_BACKEND_API_URL}/miscellaneous/records/${item.documentId}`,
       );
       setSelectedMiscItem(full);
     }
@@ -236,10 +252,19 @@ export function RecordsTable() {
       dispatch(setCurrentPcnForm(full));
       navigate("/pcn");
     }
+        if (item.documentType === "CVS") {
+      const full: CvsFormFields = await get(
+        `${import.meta.env.VITE_BACKEND_API_URL}/cvs/records/${item.documentId}`,
+      );
+      console.log("Full CVS record:", full);
+      dispatch(setCurrentCVSForm(full));
+      navigate("/cvs");
+    }
     if (item.documentType === "MISC") {
-      const full: BusFormFields = await get(
+      const full: MiscFormFields = await get(
         `${import.meta.env.VITE_BACKEND_API_URL}/misc/records/${item.documentId}`,
       );
+      dispatch(setCurrentMISCForm(full))
 
     }
   };
@@ -260,6 +285,9 @@ export function RecordsTable() {
       <PcnViewModal item={selectedPcnItem} onClose={() => setSelectedPcnItem(null)} />
       <SwdiViewModal item={selectedSwdiItem} onClose={() => setSelectedSwdiItem(null)} />
       <MiscViewModal item={selectedMiscItem} onClose={() => setSelectedMiscItem(null)} />
+      <CvsViewModal item={selectedCVSItem} onClose={() => setSelectedCVSItem(null)} /> 
+
+
       <div className="bg-white border border-[#e8e8e0] rounded-xl px-6 py-4 flex items-center gap-3 flex-shrink-0">
         <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center">
           <Layers className="w-4 h-4 text-sky-600" />
@@ -476,11 +504,11 @@ export function RecordsTable() {
                     <td className="px-4 py-2.5 text-center">
                       <div className="flex items-center justify-center gap-1.5 group">
                         <span className="font-mono text-[11px] text-[#1a1a18]">
-                          {item.hhId}
+                          {item.idNumber}
                         </span>
                         <button
                           onClick={() =>
-                            navigator.clipboard.writeText(item.hhId)
+                            navigator.clipboard.writeText(item.idNumber)
                           }
                           className="opacity-0 group-hover:opacity-100 transition-opacity text-[#c4c4b8] hover:text-[#8a8a80] cursor-pointer bg-transparent border-none"
                           title="Copy HH ID"
@@ -511,7 +539,7 @@ export function RecordsTable() {
 
                     {/* Status */}
                     <td className="px-4 py-2.5 text-center">
-                      <EncodedBadge value={item.encoded} />
+                      <EncodedBadge value={item.remarks} />
                     </td>
 
                     {/* Username */}

@@ -34,8 +34,8 @@ const modules = [
 ];
 
 const stats = [
-  { num: "5", label: "Data modules" },
-  { num: "2", label: "Role levels" },
+  { num: "6", label: "Data modules" },
+  { num: "4", label: "Role levels" },
   { num: "∞", label: "Records tracked" },
   { num: "100%", label: "Audit trail" },
 ];
@@ -162,7 +162,8 @@ export default function IndexPage() {
         ref={addReveal}
         className="max-w-[1000px] mx-auto px-10 py-14 opacity-0 translate-y-5 transition-all duration-700"
       >
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        {/* Standard modules grid */}
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-3">
           {modules.map((m) => (
             <div
               key={m.tag}
@@ -181,6 +182,61 @@ export default function IndexPage() {
               </p>
             </div>
           ))}
+        </div>
+
+        {/* Verifications module — full width, under development */}
+        <div className="relative bg-white border border-dashed border-[#c8c8c0] rounded-xl p-6 overflow-hidden group">
+          {/* Subtle diagonal stripe background */}
+          <div
+            className="absolute inset-0 opacity-[0.03] pointer-events-none"
+            style={{
+              backgroundImage:
+                "repeating-linear-gradient(45deg, #1a1a18 0, #1a1a18 1px, transparent 0, transparent 50%)",
+              backgroundSize: "10px 10px",
+            }}
+          />
+
+          <div className="relative flex flex-col md:flex-row md:items-center gap-4">
+            {/* Left: tag + title + desc */}
+            <div className="flex-1">
+              <div className="flex items-center gap-2.5 mb-3">
+                <span className="inline-block font-mono text-[10px] font-medium px-2 py-1 rounded-[5px] tracking-[0.05em] bg-sky-50 text-sky-600">
+                  VER
+                </span> 
+                {/* Under development badge */}
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-amber-600 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-full">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                  Under Development
+                </span>
+              </div>
+              <h3 className="text-[15px] font-semibold tracking-tight text-[#1a1a18] mb-1.5">
+                Verifications
+              </h3>
+              <p className="text-[13px] text-[#8a8a80] leading-relaxed max-w-[640px]">
+                Centralized verification tracking for BUS and
+                CVS records. Admins can mark records as verified,
+                log the verifier's name, and audit the full verification trail
+                across all modules — coming soon.
+              </p>
+            </div>
+
+            {/* Right: upcoming features preview */}
+            <div className="shrink-0 flex flex-col gap-2 md:items-end">
+              {[
+                "Verify by record ID or HH ID",
+                "verifiedBy + verified status fields",
+                "Cross-module verification dashboard",
+              ].map((item) => (
+                <div
+                  key={item}
+                  className="flex items-center gap-2 opacity-50"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-sky-400 shrink-0" />
+                  <span className="text-[12.5px] text-[#8a8a80]">{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 

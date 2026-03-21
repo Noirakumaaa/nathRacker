@@ -6,6 +6,8 @@ import swdiReducer from './slice/swdi/swdiSlice'
 import dashboardReducer from './slice/dashboard/dashboardSlice'
 import pcnReducer from './slice/pcn/pcnSlice'
 import summaryReducer from './slice/summary/summerySlice'
+import cvsReducer from './slice/cvs/cvsSlice'
+
 
 export const store = configureStore({
   reducer: { 
@@ -15,7 +17,8 @@ export const store = configureStore({
     swdi : swdiReducer, 
     dashboard : dashboardReducer, 
     pcn: pcnReducer,
-    summary : summaryReducer
+    summary : summaryReducer,
+    cvs : cvsReducer
   }
 });
 

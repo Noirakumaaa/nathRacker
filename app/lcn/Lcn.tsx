@@ -1,9 +1,8 @@
 import React, {useState } from "react";
-import { IdCard } from "lucide-react";
-import { PcnForm } from "./pcnForm";
-import { PcnRecentTable } from "./pcnTable";
-import type { PcnFormFields } from "./../types/pcnTypes";
-import type { ToastStatus } from "./../types/pcnTypes";
+import { LcnForm } from "./LcnForm";
+import { LcnRecentTable } from "./Lcntable";
+import type { PcnFormFields } from "../types/pcnTypes";
+import type { ToastStatus } from "../types/pcnTypes";
 
 
 
@@ -61,12 +60,12 @@ export default function PcnMain() {
               Records Management
             </p>
             <h1 className="text-2xl font-semibold text-[#1a1a18] tracking-tight">
-              PCN RECORDS
+              LCN RECORDS
             </h1>
           </div>
 
-          <PcnForm currentForm={currentForm} onSuccess={handleSuccess} />
-          <PcnRecentTable newData={newData} onLoad={handleLoad} />
+          <LcnForm currentForm={currentForm} onSuccess={handleSuccess} />
+          <LcnRecentTable newData={newData} onLoad={handleLoad} />
 
       </div>
 
