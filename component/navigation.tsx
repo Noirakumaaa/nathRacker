@@ -1,14 +1,28 @@
-import { Menu, X, Search, User } from "lucide-react";
-import { useSelector } from "react-redux";
-import type { RootState } from "../redux/store";
-import  NathRackerIcon from "./../public/nathRacker.ico";
+import { useQuery } from "@tanstack/react-query";
+import APIFETCH from "lib/axios/axiosConfig";
+import { Menu, X, Search } from "lucide-react";
+import type { me } from "~/types/authTypes";
+import { LoadingScreen } from "./LoadingScreen";
+
 type TopNavbarProps = {
   onMenuToggle: () => void;
   isSidebarOpen: boolean;
 };
 
 const TopNavbar = ({ onMenuToggle, isSidebarOpen }: TopNavbarProps) => {
-  const user = useSelector((state: RootState) => state.user);
+
+  const { data : user } = useQuery({
+    queryKey : ["me"],
+    queryFn : async () => {
+      const res = await APIFETCH.get<me>("/auth/check-auth")
+      return res.data
+    },
+    retry : false
+  })
+
+  if(!user){
+    return <LoadingScreen />
+  }
 
   return (
     <nav className="bg-[#fafaf8] border-b border-[#e8e8e0] fixed top-0 left-0 right-0 z-50 h-[60px] font-sans antialiased">

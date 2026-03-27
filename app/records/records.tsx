@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { get, del } from "component/fetchComponent";
 import { useNavigate } from "react-router";
-import { useDispatch } from "react-redux";
+import { useDispatch } from "";
 import type { AppDispatch } from "redux/store";
 import { setCurrentBusForm } from "redux/slice/bus/busSlice";
 import { setCurrentSwdiForm } from "redux/slice/swdi/swdiSlice";

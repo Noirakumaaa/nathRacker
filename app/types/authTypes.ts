@@ -11,8 +11,32 @@ export type LoginInput = {
     password: string
 }
 
+export type me = { 
+    email : string
+    govUsername : string
+    role : string
+    firstName: string
+    lastName:string 
+}
+
+export type LoginResponse = { 
+    email : string
+    govUsername : string
+    role : string
+    firstName: string
+    lastName:string 
+}
+
 export type RegisterInput = {
     email: string;
     password : string;
-    username : string
+    govUsername : string
+    firstName : string
+    lastName :string 
+    phone : string 
+}
+
+export type RegisterResponse = { 
+    Register : string
+    newUser : string
 }

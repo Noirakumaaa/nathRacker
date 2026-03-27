@@ -1,14 +1,19 @@
-
-import { Login } from "~/Login/login"
-
-export function meta() {
-  return [
-    { title: "Login" },
-    { name: "description", content: "Login to your account" },
-  ];
-}
-
-export default function Home() {
+import { Login } from "~/Login/login";
+import { LoadingScreen } from "component/LoadingScreen";
+import { useEffect } from "react";
+import { useNavigate } from "react-router";
+import { useAuth
   
-  return (<Login />); // Optionally, render a loading spinner or placeholder
+ } from "component/authGuard";
+export default function LoginRoute() {
+  const navigate = useNavigate();
+  const { isAuthenticated, isLoading } = useAuth();
+
+  useEffect(() => {
+    if (isAuthenticated) navigate("/dashboard");
+  }, [isAuthenticated]);
+
+  if (isLoading) return <LoadingScreen />;
+
+  return <Login />;
 }

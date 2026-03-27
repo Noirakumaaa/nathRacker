@@ -13,10 +13,8 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { get } from "./fetchComponent";
-import { useDispatch, useSelector } from "react-redux";
-import type { RootState } from "redux/store";
-import { setLogout } from "redux/slice/user/userSlice";
+import { useQuery } from "@tanstack/react-query";
+
 
 type SidebarProps = {
   isOpen: boolean;
@@ -125,19 +123,28 @@ function NavItem({
 
 // ── Sidebar ───────────────────────────────────────────────────────────────────
 const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
-  const dispatch = useDispatch();
-  const User = useSelector((state: RootState) => state.user);
+
   const location = useLocation();
   const [activeItem, setActiveItem] = useState(
     location.pathname.replace("/", ""),
   );
   const navigate = useNavigate();
 
+  const { data: User } = useQuery({
+    queryKey: ["me"],
+    queryFn: async () => {
+      const res = await fetch("/auth/check-auth", { credentials: "include" });
+      if (!res.ok) throw new Error("Unauthorized");
+      return res.json();
+    },
+    retry : false
+  });
+
   const updateSidebar = (option: string) => {
     setActiveItem(option);
     if (option === "logout") {
-      logout();
-      dispatch(setLogout());
+      //logout();
+      //dispatch(setLogout());
     } else if (option === "msc") {
       navigate(`/miscellaneous`);
     } else {
@@ -146,13 +153,13 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
     updateSidebarOption(option);
   };
 
-  const logout = async () => {
-    const data = await get(
-      `${import.meta.env.VITE_BACKEND_API_URL}/auth/logout`,
-    );
-    if (!data) return;
-    navigate("/login");
-  };
+  // const logout = async () => {
+  //   const data = await get(
+  //     `${import.meta.env.VITE_BACKEND_API_URL}/auth/logout`,
+  //   );
+  //   if (!data) return;
+  //   navigate("/login");
+  // };
 
   const allItems = [...menuItems, ...bottomItems];
 

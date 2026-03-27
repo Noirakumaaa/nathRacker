@@ -1,46 +1,40 @@
-import { useDispatch, useSelector } from "react-redux";
-import { setCurrentBusForm, setNewData } from "redux/slice/bus/busSlice";
 import { Copy } from "lucide-react";
-import type { AppDispatch, RootState } from "redux/store";
 import type { FormFields } from "./../types/busTypes";
 import RecentTable from "./../../component/recentTables";
 import type { ColumnDef } from "./../../component/recentTables";
-
-const Cell = ({ value }: { value?: string }) => (
-  <span className="text-[#8a8a80] truncate block text-center" title={value}>
-    {value || <span className="text-[#d4d4cc]">—</span>}
-  </span>
-);
+import { useNavigate } from "react-router";
 
 export default function BusRecentTable() {
-  const User = useSelector((state: RootState) => state.user);
-  const busNewData = useSelector((state: RootState) => state.bus.newData);
-  const dispatch = useDispatch<AppDispatch>();
-  const today = new Date().toISOString().slice(0, 10);
+  const navigate = useNavigate()
 
   const handleEdit = (record: FormFields) => {
-    const { date, ...withoutDate } = record;
-    dispatch(setCurrentBusForm({ ...withoutDate, date: today }));
+    navigate(`/bus/${record.id}`)
   };
 
   const columns: ColumnDef<FormFields>[] = [
     {
       header: "LGU",
       cell: (r) => (
-        <span className="text-[13px] font-semibold text-[#1a1a18] whitespace-nowrap">{r.lgu}</span>
+        <span className="text-[13px] font-semibold text-[#1a1a18] whitespace-nowrap">
+          {r.lgu}
+        </span>
       ),
     },
     {
       header: "Barangay",
       cell: (r) => (
-        <span className="text-[12px] text-[#8a8a80] whitespace-nowrap">{r.barangay}</span>
+        <span className="text-[12px] text-[#8a8a80] whitespace-nowrap">
+          {r.barangay}
+        </span>
       ),
     },
     {
       header: "HH ID",
       cell: (r) => (
         <div className="flex items-center justify-center gap-1.5 group">
-          <span className="font-mono text-[11px] text-[#1a1a18] whitespace-nowrap">{r.hhId}</span>
+          <span className="font-mono text-[11px] text-[#1a1a18] whitespace-nowrap">
+            {r.hhId}
+          </span>
           <button
             onClick={() => navigator.clipboard.writeText(r.hhId)}
             className="opacity-0 group-hover:opacity-100 transition-opacity text-[#c4c4b8] hover:text-[#8a8a80] cursor-pointer bg-transparent border-none"
@@ -54,7 +48,9 @@ export default function BusRecentTable() {
     {
       header: "Grantee Name",
       cell: (r) => (
-        <span className="text-[12px] font-medium text-[#1a1a18] whitespace-nowrap">{r.granteeName}</span>
+        <span className="text-[12px] font-medium text-[#1a1a18] whitespace-nowrap">
+          {r.granteeName}
+        </span>
       ),
     },
     {
@@ -65,16 +61,40 @@ export default function BusRecentTable() {
         </span>
       ),
     },
-    { header: "Update Info",       cell: (r) => <Cell value={r.updateInfo} /> },
-    { header: "Subject of Change", cell: (r) => <Cell value={r.subjectOfChange} /> },
+    {
+      header: "Update Info",
+      cell: (r) => (
+        <span
+          className="text-[#8a8a80] truncate block text-center"
+          title={r.updateInfo}
+        >
+          {r.updateInfo || <span className="text-[#d4d4cc]">—</span>}
+        </span>
+      ),
+    },
+    {
+      header: "Subject Of Change",
+      cell: (r) => (
+        <span
+          className="text-[#8a8a80] truncate block text-center"
+          title={r.subjectOfChange}
+        >
+          {r.updateInfo || <span className="text-[#d4d4cc]">—</span>}
+        </span>
+      ),
+    },
     {
       header: "Remarks",
       cell: (r) => (
-        <span className={`inline-block px-2.5 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap ${
-          r.remarks === "YES"     ? "bg-emerald-50 text-emerald-600" :
-          r.remarks === "UPDATED" ? "bg-blue-50 text-blue-600" :
-                                    "bg-red-50 text-red-500"
-        }`}>
+        <span
+          className={`inline-block px-2.5 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap ${
+            r.remarks === "YES"
+              ? "bg-emerald-50 text-emerald-600"
+              : r.remarks === "UPDATED"
+                ? "bg-blue-50 text-blue-600"
+                : "bg-red-50 text-red-500"
+          }`}
+        >
           {r.remarks || "—"}
         </span>
       ),
@@ -99,7 +119,11 @@ export default function BusRecentTable() {
       header: "Date",
       cell: (r) => (
         <span className="text-[11px] text-[#8a8a80] whitespace-nowrap tabular-nums">
-          {new Date(r.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+          {new Date(r.date).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          })}
         </span>
       ),
     },
@@ -118,10 +142,9 @@ export default function BusRecentTable() {
 
   return (
     <RecentTable<FormFields>
-      queryKey={`recentBus-${User}`}
+      queryKey={`recentBus`}
       endpoint="/bus/recent"
       columns={columns}
-      newData={busNewData}
       title="Recent Updates"
     />
   );

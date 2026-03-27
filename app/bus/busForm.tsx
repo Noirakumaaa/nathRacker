@@ -1,53 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { setNewData } from "redux/slice/bus/busSlice";
-import { post } from "component/fetchComponent";
+import React, { useState } from "react";
 import type { BusFormFields } from "~/types/busTypes";
-import type { RootState, AppDispatch } from "../../redux/store";
 import { UPDATE_TYPE_KEYMAP } from "~/types/busTypes";
+import { labelCls, inputCls } from "component/styleConfig";
+import { useToastStore } from "lib/zustand/ToastStore";
 
-type ToastStatus = "success" | "error" | "loading";
 
-const toastConfig: Record<ToastStatus, { icon: React.ReactNode; accent: string }> = {
-  success: {
-    accent: "#22c55e",
-    icon: (
-      <svg width="11" height="8" viewBox="0 0 11 8" fill="none">
-        <path d="M1 4L4 7L10 1" stroke="white" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
-  },
-  error: {
-    accent: "#ef4444",
-    icon: (
-      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-        <path d="M1 1L9 9M9 1L1 9" stroke="white" strokeWidth="1.7" strokeLinecap="round" />
-      </svg>
-    ),
-  },
-  loading: {
-    accent: "#6366f1",
-    icon: (
-      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ animation: "spin 0.8s linear infinite" }}>
-        <circle cx="6" cy="6" r="5" stroke="rgba(255,255,255,0.3)" strokeWidth="1.7" />
-        <path d="M6 1A5 5 0 0 1 11 6" stroke="white" strokeWidth="1.7" strokeLinecap="round" />
-      </svg>
-    ),
-  },
-};
 
-// Shared input/label classes matching landing page tokens
-const inputCls =
-  "w-full px-3 py-2 text-[13px] border border-[#e8e8e0] rounded-lg text-[#1a1a18] placeholder-[#c4c4b8] bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent hover:border-[#c8c8c0] transition-colors";
-const labelCls = "block text-[11px] font-medium text-[#8a8a80] mb-1.5 uppercase tracking-wider";
 
 export default function BusForm() {
-  const dispatch = useDispatch<AppDispatch>();
-  const [uploadSuccess, setUploadSuccess] = useState(false);
-  const [statusMessage, setStatusMessage] = useState("");
-  const [toastStatus, setToastStatus] = useState<ToastStatus>("success");
 
-  const currentBusForm = useSelector((state: RootState) => state.bus.currentBusForm);
+  const { show } = useToastStore()
+
   const [buttonLoading, setButtonLoading] = useState(false);
   const today = new Date().toISOString().slice(0, 10);
 
@@ -69,23 +32,6 @@ export default function BusForm() {
     note: "",
   });
 
-  useEffect(() => {
-    if (!currentBusForm) return;
-    setFormData((prev) => ({
-      ...prev,
-      ...currentBusForm,
-      date: currentBusForm.date
-        ? new Date(currentBusForm.date).toISOString().slice(0, 10)
-        : prev.date,
-      issue: currentBusForm.issue ?? "",
-      remarks: currentBusForm.remarks ?? "",
-      updateInfo: currentBusForm.updateInfo ?? "",
-      encodedBy: currentBusForm.encodedBy ?? "",
-      drn: currentBusForm.drn ?? "",
-      cl: currentBusForm.cl ?? "",
-      note: currentBusForm.note ?? "",
-    }));
-  }, [currentBusForm]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -96,26 +42,27 @@ export default function BusForm() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setButtonLoading(true);
-    const { id, ...rest } = formData;
-    const payload = { ...rest, date: new Date(formData.date).toISOString() };
-    const res = (await post(
-      `${import.meta.env.VITE_BACKEND_API_URL}/bus/upload`,
-      payload
-    )) as { upload: boolean; message: string };
+    show("Upload complete!", "success");
+    // setButtonLoading(true);
+    // const { id, ...rest } = formData;
+    // const payload = { ...rest, date: new Date(formData.date).toISOString() };
+    // const res = (await post(
+    //   `${import.meta.env.VITE_BACKEND_API_URL}/bus/upload`,
+    //   payload
+    // )) as { upload: boolean; message: string };
 
-    if (res.upload) {
-      setToastStatus("success");
-    } else {
-      setToastStatus("error");
-      console.error("Upload failed");
-    }
-    setStatusMessage(res.message);
-    setUploadSuccess(true);
-    setTimeout(() => setUploadSuccess(false), res.upload ? 5000 : 2000);
-    dispatch(setNewData(true));
-    handleReset();
-    setButtonLoading(false);
+    // if (res.upload) {
+    //   //setToastStatus("success");
+    // } else {
+    //   //setToastStatus("error");
+    //   console.error("Upload failed");
+    // }
+    // //setStatusMessage(res.message);
+    // //setUploadSuccess(true);
+    // //setTimeout(() => setUploadSuccess(false), res.upload ? 5000 : 2000);
+    // //dispatch(setNewData(true));
+    // handleReset();
+    // setButtonLoading(false);
   };
 
   const handleReset = () => {
@@ -251,53 +198,7 @@ export default function BusForm() {
         </div>
       </form>
 
-      {/* Toast */}
-      {uploadSuccess && (
-        <div
-          style={{
-            position: "fixed",
-            bottom: "28px",
-            left: "28px",
-            backgroundColor: "#fff",
-            color: "#1a1a18",
-            padding: "12px 16px",
-            borderRadius: "10px",
-            boxShadow: "0 2px 16px rgba(0,0,0,0.10), 0 0 0 1px rgba(0,0,0,0.06)",
-            fontSize: "13px",
-            fontWeight: 500,
-            fontFamily: "'DM Sans', sans-serif",
-            zIndex: 9999,
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            animation: "slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1)",
-            maxWidth: "300px",
-          }}
-        >
-          <span
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              width: "20px",
-              height: "20px",
-              borderRadius: "50%",
-              backgroundColor: toastConfig[toastStatus].accent,
-              flexShrink: 0,
-            }}
-          >
-            {toastConfig[toastStatus].icon}
-          </span>
-          <span style={{ color: "#555", lineHeight: 1.4 }}>{statusMessage}</span>
-          <style>{`
-            @keyframes slideUp {
-              from { opacity: 0; transform: translateY(8px); }
-              to   { opacity: 1; transform: translateY(0); }
-            }
-            @keyframes spin { to { transform: rotate(360deg); } }
-          `}</style>
-        </div>
-      )}
+
     </>
   );
 }

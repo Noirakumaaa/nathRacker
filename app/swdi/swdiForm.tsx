@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "";
 import type { RootState, AppDispatch } from "../../redux/store";
 import SwdiRecent from "./swdiRecent";
 import { setNewData } from "redux/slice/swdi/swdiSlice";

@@ -4,7 +4,7 @@ import { get, post } from "component/fetchComponent";
 import type { ToastStatus } from "~/types/pcnTypes";
 import { labelCls, inputCls } from "./Lcn";
 import { toastAccent, toastIcon } from "./Lcn";
-import { useSelector } from "react-redux";
+import { useSelector } from "";
 
 
 // ── PCN Form ──────────────────────────────────────────────────────────────────

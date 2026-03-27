@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from "react";
-import Sidebar from "../component/sidebar";
+import Sidebar from "../component/sideMenu";
 import TopNavbar from "../component/navigation";
 
 type LayoutWrapperProps = {

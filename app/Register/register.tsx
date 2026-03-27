@@ -1,12 +1,19 @@
 import { useState } from "react";
-import { redirect } from "react-router";
 import OfficePic from "./office.jpg";
+import APIFETCH from "lib/axios/axiosConfig";
+import type { RegisterInput, RegisterResponse } from "~/types/authTypes";
+import { useToastStore } from "lib/zustand/ToastStore";
+import { useNavigate } from "react-router";
+
+
 
 export function Register() {
-  const [registerSuccess, setRegisterSuccess] = useState(false);
+  const navigate = useNavigate()
+  const { show } = useToastStore();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({
+  const [errorMessage, setErrorMessage] = useState("");
+  const [formData, setFormData] = useState<RegisterInput>({
     govUsername: "",
     email: "",
     password: "",
@@ -20,27 +27,20 @@ export function Register() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage("");
     setIsLoading(true);
+
     try {
-      const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_API_URL}/auth/register`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify(formData),
-        }
+      const res = await APIFETCH.post<RegisterResponse>(
+        "/auth/register",
+        formData,
       );
-      if (res.ok) {
-        setRegisterSuccess(true);
-        setTimeout(() => {
-          redirect("/login");
-        }, 4000);
-      } else {
-        console.error("Registration failed");
-      }
-    } catch (err) {
-      console.error("Network error during registration", err);
+      console.log(formData)
+      show("Login successful! Redirecting...", "success"); 
+      navigate("/login")
+    } catch {
+      setErrorMessage("Invalid email or password");
+      show("Invalid email or password", "error"); 
     } finally {
       setIsLoading(false);
     }
@@ -53,27 +53,36 @@ export function Register() {
 
   return (
     <main className="flex min-h-screen bg-[#fafaf8] font-sans antialiased">
-
       {/* Left panel — form */}
       <div className="w-full md:w-[55%] flex flex-col justify-center px-8 lg:px-20 py-16 bg-[#fafaf8] relative">
-
         {/* Back home */}
         <a
           href="/"
           className="absolute top-6 left-8 lg:left-20 flex items-center gap-1.5 text-[13px] text-[#8a8a80] hover:text-[#1a1a18] no-underline transition-colors"
         >
-          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          <svg
+            className="w-3.5 h-3.5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
           </svg>
           Home
         </a>
 
         <div className="max-w-[440px] w-full mx-auto">
-
           {/* Mobile logo */}
           <div className="flex items-center gap-2 mb-8 md:hidden">
             <span className="w-2 h-2 rounded-full bg-blue-600 inline-block" />
-            <span className="text-[#1a1a18] text-[17px] font-semibold tracking-tight">NathRacker</span>
+            <span className="text-[#1a1a18] text-[17px] font-semibold tracking-tight">
+              NathRacker
+            </span>
           </div>
 
           {/* Header */}
@@ -87,7 +96,6 @@ export function Register() {
           </div>
 
           <form className="space-y-4" onSubmit={handleSubmit}>
-
             {/* Name row */}
             <div className="flex gap-3">
               <div className="flex-1">
@@ -188,11 +196,17 @@ export function Register() {
               />
               <span className="text-[13px] text-[#8a8a80] leading-relaxed">
                 I agree to the{" "}
-                <a href="/terms" className="text-[#1a1a18] font-medium hover:underline no-underline">
+                <a
+                  href="/terms"
+                  className="text-[#1a1a18] font-medium hover:underline no-underline"
+                >
                   Terms of Service
                 </a>{" "}
                 and{" "}
-                <a href="/privacy" className="text-[#1a1a18] font-medium hover:underline no-underline">
+                <a
+                  href="/privacy"
+                  className="text-[#1a1a18] font-medium hover:underline no-underline"
+                >
                   Privacy Policy
                 </a>
               </span>
@@ -220,6 +234,12 @@ export function Register() {
               </a>
             </p>
           </div>
+          {errorMessage && (
+            <div className="mt-2 px-3 py-2.5 bg-red-50 border border-red-100 rounded-lg flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block flex-shrink-0" />
+              <p className="text-[13px] text-red-600">{errorMessage}</p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -237,7 +257,9 @@ export function Register() {
           {/* Logo */}
           <a href="/" className="flex items-center gap-2 no-underline">
             <span className="w-2 h-2 rounded-full bg-blue-500 inline-block" />
-            <span className="text-white text-[17px] font-semibold tracking-tight">NathRacker</span>
+            <span className="text-white text-[17px] font-semibold tracking-tight">
+              NathRacker
+            </span>
           </a>
 
           {/* Bottom content */}
@@ -246,11 +268,15 @@ export function Register() {
               Encoding Tracking System
             </p>
             <h2 className="text-white text-[32px] font-semibold tracking-tight leading-[1.2] mb-4">
-              Start tracking<br />
-              <span className="font-light text-white/60 italic">from day one.</span>
+              Start tracking
+              <br />
+              <span className="font-light text-white/60 italic">
+                from day one.
+              </span>
             </h2>
             <p className="text-white/50 text-[14px] leading-relaxed max-w-[320px]">
-              One account gives you access to all four modules — BUS, PCN, SWDI, and Miscellaneous — with full audit trails and role-based access.
+              One account gives you access to all four modules — BUS, PCN, SWDI,
+              and Miscellaneous — with full audit trails and role-based access.
             </p>
 
             {/* Feature list */}
@@ -269,21 +295,6 @@ export function Register() {
           </div>
         </div>
       </div>
-
-      {/* Success toast */}
-      {registerSuccess && (
-        <div className="fixed bottom-6 left-6 flex items-center gap-2.5 bg-[#1a1a18] text-white px-4 py-3 rounded-lg shadow-lg text-[13px] font-medium z-50 animate-[fadeUp_0.3s_ease_both]">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
-          Registered successfully! Redirecting…
-        </div>
-      )}
-
-      <style>{`
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(8px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
     </main>
   );
 }

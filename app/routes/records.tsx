@@ -5,7 +5,7 @@ import type { AppDispatch, RootState } from "redux/store";
 import { fetchUser } from "redux/thunks/userThunks";
 import LayoutWrapper from "layout/navLayout";
 import UnauthorizedPage from "~/notAuthorized/notAuthorized";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "";
 import { AuthorizedUser } from "~/types/authorizedUser";
 
 

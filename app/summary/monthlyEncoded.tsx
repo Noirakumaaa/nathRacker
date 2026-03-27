@@ -2,7 +2,7 @@ import { Calendar } from "lucide-react";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { get } from "component/fetchComponent";
-import { useSelector } from "react-redux";
+import { useSelector } from "";
 import { type RootState } from "redux/store";
 import LoadingOverlay from "component/overlayLoading";
 
