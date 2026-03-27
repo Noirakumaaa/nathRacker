@@ -3,7 +3,7 @@ export type SwdiFormFields = {
   lgu: string;
   barangay: string;
   grantee: string;
-  swdiScore: number;
+  swdiScore: string;
   swdiLevel: string;
   encodedBy: string;
   remarks: string;
@@ -21,7 +21,7 @@ export function getEncodedBadgeClass(remarks: string): string {
 }
 
 
-export type SwdiData = { 
+export type SwdiRecord = { 
     id : number;
     hhId: string
     lgu: string
@@ -39,4 +39,9 @@ export type SwdiData = {
     userId: number
     createdAt?: string
     updatedAt?: string
+}
+
+export type SwdiResponse = {
+  upload : boolean
+  message : string
 }

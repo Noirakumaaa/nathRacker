@@ -1,5 +1,5 @@
 import { Copy } from "lucide-react";
-import type { FormFields } from "./../types/busTypes";
+import type { BusRecord } from "./../types/busTypes";
 import RecentTable from "./../../component/recentTables";
 import type { ColumnDef } from "./../../component/recentTables";
 import { useNavigate } from "react-router";
@@ -7,24 +7,16 @@ import { useNavigate } from "react-router";
 export default function BusRecentTable() {
   const navigate = useNavigate()
 
-  const handleEdit = (record: FormFields) => {
+  const handleEdit = (record: BusRecord) => {
     navigate(`/bus/${record.id}`)
   };
 
-  const columns: ColumnDef<FormFields>[] = [
+  const columns: ColumnDef<BusRecord>[] = [
     {
       header: "LGU",
       cell: (r) => (
         <span className="text-[13px] font-semibold text-[#1a1a18] whitespace-nowrap">
           {r.lgu}
-        </span>
-      ),
-    },
-    {
-      header: "Barangay",
-      cell: (r) => (
-        <span className="text-[12px] text-[#8a8a80] whitespace-nowrap">
-          {r.barangay}
         </span>
       ),
     },
@@ -62,17 +54,6 @@ export default function BusRecentTable() {
       ),
     },
     {
-      header: "Update Info",
-      cell: (r) => (
-        <span
-          className="text-[#8a8a80] truncate block text-center"
-          title={r.updateInfo}
-        >
-          {r.updateInfo || <span className="text-[#d4d4cc]">—</span>}
-        </span>
-      ),
-    },
-    {
       header: "Subject Of Change",
       cell: (r) => (
         <span
@@ -100,22 +81,6 @@ export default function BusRecentTable() {
       ),
     },
     {
-      header: "DRN",
-      cell: (r) => (
-        <span className="font-mono text-[11px] text-[#8a8a80] whitespace-nowrap">
-          {r.drn || <span className="text-[#d4d4cc] font-sans">—</span>}
-        </span>
-      ),
-    },
-    {
-      header: "CL",
-      cell: (r) => (
-        <span className="font-mono text-[11px] text-[#8a8a80] whitespace-nowrap">
-          {r.cl || <span className="text-[#d4d4cc] font-sans">—</span>}
-        </span>
-      ),
-    },
-    {
       header: "Date",
       cell: (r) => (
         <span className="text-[11px] text-[#8a8a80] whitespace-nowrap tabular-nums">
@@ -128,7 +93,7 @@ export default function BusRecentTable() {
       ),
     },
     {
-      header: "",
+      header: "Action",
       cell: (r) => (
         <button
           onClick={() => handleEdit(r)}
@@ -141,7 +106,7 @@ export default function BusRecentTable() {
   ];
 
   return (
-    <RecentTable<FormFields>
+    <RecentTable<BusRecord>
       queryKey={`recentBus`}
       endpoint="/bus/recent"
       columns={columns}

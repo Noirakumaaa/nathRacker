@@ -7,7 +7,7 @@ import { RecentActivity } from "./RecentActivity";
 import { QuickActions } from "./QuickActions";
 import type { CountItem, RecentEntry, StatCard } from "~/types/dashboardTypes";
 import type { me } from "~/types/authTypes";
-import { moduleStyle } from "component/styleConfig";
+import { moduleStyle } from "./../../component/styleConfig";
 
 export default function Dashboard({ userData }: { userData: me }) {
   const { data: counts = [] } = useQuery<CountItem[]>({

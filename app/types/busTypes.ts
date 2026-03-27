@@ -1,6 +1,4 @@
 export type BusFormFields = {
-  id: string;
-
   lgu: string;
   barangay: string;
   hhId: string;
@@ -17,7 +15,7 @@ export type BusFormFields = {
   note: string;
 }
 
-export type FormFields = {
+export type BusRecord = {
   id: string;
   lgu: string;
   barangay: string;
@@ -76,3 +74,10 @@ export const UPDATE_TYPE_KEYMAP: Record<string, string> = {
   '11': 'Beneficiary Update',
   '12': 'Pregnancy Update',
 };
+
+
+export type BusResponse = {
+    message : string
+    data : BusRecord
+    upload : boolean
+}

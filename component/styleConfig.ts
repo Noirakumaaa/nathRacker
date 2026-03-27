@@ -29,3 +29,4 @@ export const sparkColor: Record<string, string> = {
   VERIFIED: "bg-purple-400",
 };
 
+

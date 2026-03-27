@@ -40,3 +40,7 @@ export type RegisterResponse = {
     Register : string
     newUser : string
 }
+
+export type RouteParams = {
+    id? : string
+}

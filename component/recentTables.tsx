@@ -16,7 +16,6 @@ type RecentTableProps<T extends { id: string | number }> = {
   queryKey: string;
   endpoint: string;
   columns: ColumnDef<T>[];
-  newData?: boolean;
   title?: string;
   maxHeight?: string;
   rowClassName?: (row: T, index: number) => string;
@@ -31,9 +30,8 @@ export default function RecentTable<T extends { id: string | number }>({
   queryKey,
   endpoint,
   columns,
-  newData = false,
   title = "Recent Updates",
-  maxHeight = "460px",
+  maxHeight = "calc(100vh - 780px)",
   rowClassName,
   headerRight,
   headerLeft,
@@ -51,9 +49,6 @@ const { data: records = [], isLoading, refetch } = useQuery<T[]>({
   },
 });
 
-  useEffect(() => {
-    if (newData) refetch();
-  }, [newData]);
 
   return (
     <div className="bg-white rounded-xl border border-[#e8e8e0] mt-2 overflow-hidden">

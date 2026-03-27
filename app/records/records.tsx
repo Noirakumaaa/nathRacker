@@ -27,7 +27,7 @@ import { MiscViewModal } from "./miscModal";
 import { CvsViewModal } from "./cvsModal";
 import type { BusFormFields } from "./../types/busTypes";
 import type { SwdiFormFields } from "~/types/swdiTypes";
-import type { PcnFormFields } from "~/types/pcnTypes";
+import type { PcnFormFields } from "~/types/lcnTypes";
 import type { MiscFormFields } from "~/types/miscTypes";
 import type { CvsFormFields } from "~/types/cvsTypes";
 

@@ -1,5 +1,5 @@
-import type { PcnFormFields } from "./../types/pcnTypes";
-import { getEncodedBadgeClass } from "./../types/pcnTypes";
+import type { PcnFormFields } from "../types/lcnTypes";
+import { getEncodedBadgeClass } from "../types/lcnTypes";
 
 type PcnViewModalProps = {
   item: PcnFormFields | null;
