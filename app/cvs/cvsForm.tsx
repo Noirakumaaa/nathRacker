@@ -1,24 +1,22 @@
 import { useState, useEffect } from "react";
-import { post } from "component/fetchComponent";
-import { labelCls, inputCls, toastAccent, toastIcon } from "./cvs";
-import type { ToastStatus } from "~/types/cvsTypes";
-import type { CvsFormFields } from "~/types/cvsTypes";
+import { useNavigate } from "react-router";
+import type { CvsRecord, CvsFormFields } from "~/types/cvsTypes";
+import { labelCls,inputCls } from "component/styleConfig";
+import { useParams } from "react-router";
+import type { RouteParams } from "~/types/authTypes";
+import { useQuery } from "@tanstack/react-query";
+import APIFETCH from "lib/axios/axiosConfig";
+import { useToastStore } from "lib/zustand/ToastStore";
 
-// ── CVS Form ──────────────────────────────────────────────────────────────────
-export function CvsForm({
-  currentForm,
-  onSuccess,
-}: {
-  currentForm: CvsFormFields | null;
-  onSuccess: () => void;
-}) {
+export function CvsForm() {
+  const navigate = useNavigate()
+  const { show } = useToastStore();
+  const { id } = useParams<RouteParams>()
   const today = new Date().toISOString().slice(0, 10);
   const [buttonLoading, setButtonLoading] = useState(false);
-  const [toast, setToast] = useState<{ show: boolean; status: ToastStatus; message: string }>({
-    show: false, status: "success", message: "",
-  });
 
-  const emptyForm: CvsFormFields = {
+
+  const [formData, setFormData] = useState<CvsFormFields>({
     idNumber: "",
     lgu: "",
     barangay: "",
@@ -26,23 +24,30 @@ export function CvsForm({
     formType: "",
     remarks: "",
     date: today,
-  };
+  });
 
-  const [formData, setFormData] = useState<CvsFormFields>(emptyForm);
+  const { data } = useQuery({
+    queryKey : ["SelectedCVS", id ],
+    queryFn : async () => {
+      const res = await APIFETCH.get<CvsRecord>(`/cvs/record/${id}`)
+      return res.data
+    },
+    enabled : !!id
+  })
 
-  useEffect(() => {
-    if (!currentForm) return;
-    setFormData({
-      ...emptyForm,
-      ...currentForm,
-      date: today,
-      lgu: currentForm.lgu ?? "",
-      barangay: currentForm.barangay ?? "",
-      facilityName: currentForm.facilityName ?? "",
-      formType: currentForm.formType ?? "",
-      remarks: currentForm.remarks ?? "",
-    });
-  }, [currentForm]);
+  useEffect(()=>{
+    if(data){
+      setFormData(()=>({
+        idNumber: data.idNumber ?? "",
+        lgu: data.lgu ?? "",
+        barangay: data.barangay ?? "",
+        facilityName: data.facilityName ?? "",
+        formType: data.formType ?? "",
+        remarks: data.remarks ?? "",
+        date: today,
+      }))
+    }
+  },[data])
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -54,36 +59,30 @@ export function CvsForm({
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setButtonLoading(true);
-
-    const { id, ...rest } = formData as any;
-    const payload = {
-      ...rest,
-      date: new Date(formData.date).toISOString(),
-    };
-    console.log("CVS PAYLOAD : ", payload )
-
-    try {
-      const res = (await post(
-        `${import.meta.env.VITE_BACKEND_API_URL}/cvs/upload`,
-        payload
-      )) as { upload: boolean; message: string };
-
-      const status: ToastStatus = res.upload ? "success" : "error";
-      setToast({ show: true, status, message: res.message });
-      setTimeout(() => setToast((t) => ({ ...t, show: false })), res.upload ? 5000 : 2000);
-
-      if (res.upload) {
-        handleReset();
-        onSuccess();
-      }
-    } catch {
-      setToast({ show: true, status: "error", message: "Submission failed." });
-      setTimeout(() => setToast((t) => ({ ...t, show: false })), 2000);
+    const res  = await APIFETCH.post("/cvs/upload", formData)
+    if(res.data.upload){
+      show(`${res.data.message}`, "success")
+      setButtonLoading(false)
+    }else if(res.data.upload){
+       show(`${res.data.message}`, "error")
+      setButtonLoading(false)
     }
+
     setButtonLoading(false);
   };
 
-  const handleReset = () => setFormData({ ...emptyForm, date: today });
+  const handleReset = () => {setFormData({    
+    idNumber: "",
+    lgu: "",
+    barangay: "",
+    facilityName: "",
+    formType: "",
+    remarks: "",
+    date: today,
+  });
+  navigate("/cvs")
+  }
+
 
   return (
     <>
@@ -169,8 +168,8 @@ export function CvsForm({
                   <label className={labelCls}>Remarks <span className="text-red-400">*</span></label>
                   <select name="remarks" value={formData.remarks} onChange={handleChange} required className={inputCls}>
                     <option value="">Select</option>
-                    <option value="YES">YES</option>
-                    <option value="NO">NO</option>
+                    <option value="ENCODED">ENCODED</option>
+                    <option value="ISSUE">ISSUE</option>
                   </select>
                 </div>
 
@@ -197,33 +196,6 @@ export function CvsForm({
           </div>
         </div>
       </form>
-
-      {/* Toast */}
-      {toast.show && (
-        <div style={{
-          position: "fixed", bottom: "28px", left: "28px",
-          backgroundColor: "#fff", color: "#1a1a18",
-          padding: "12px 16px", borderRadius: "10px",
-          boxShadow: "0 2px 16px rgba(0,0,0,0.10), 0 0 0 1px rgba(0,0,0,0.06)",
-          fontSize: "13px", fontWeight: 500,
-          fontFamily: "'DM Sans', sans-serif",
-          zIndex: 9999, display: "flex", alignItems: "center",
-          gap: "10px", maxWidth: "300px",
-          animation: "slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1)",
-        }}>
-          <span style={{
-            display: "flex", alignItems: "center", justifyContent: "center",
-            width: "20px", height: "20px", borderRadius: "50%",
-            backgroundColor: toastAccent[toast.status], flexShrink: 0,
-          }}>
-            {toastIcon[toast.status]}
-          </span>
-          <span style={{ color: "#555", lineHeight: 1.4 }}>{toast.message}</span>
-          <style>{`
-            @keyframes slideUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
-          `}</style>
-        </div>
-      )}
     </>
   );
 }

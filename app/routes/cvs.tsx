@@ -1,14 +1,11 @@
 import { useEffect } from "react"
-import CvsPage from "./../cvs/cvsPage"
+import CvsPage from "../cvs/cvsMain"
 import { useNavigate } from "react-router"
-import { useDispatch, useSelector } from ""
-import type { AppDispatch, RootState } from "redux/store"
-import { fetchUser } from "redux/thunks/userThunks"
 import LayoutWrapper from "layout/navLayout"
 import UnauthorizedPage from "~/notAuthorized/notAuthorized"
 import { AuthorizedUser } from "~/types/authorizedUser"
-
-
+import { LoadingScreen } from "component/LoadingScreen"
+import { useAuth } from "component/authGuard"
 
 export function meta() {
   return [
@@ -18,45 +15,25 @@ export function meta() {
 }
 
 
-export default function CVSRoute() {
-  const user = useSelector((state: RootState) => state.user)
-  const navigate = useNavigate()
-  const dispatch = useDispatch<AppDispatch>()
+export default function DashboardRoute() {
+  const navigate = useNavigate();
+  const { user, isLoading, isAuthenticated } = useAuth();
+
   useEffect(() => {
-     //console.log("User : ", user)
-    const tryFetch = async () => {
-      if (user.id !== '') return; // Skip if user data is already available
+    if (!isAuthenticated && !isLoading) navigate("/login");
+  }, [isAuthenticated, isLoading]);
 
-      try {
-        await dispatch(fetchUser()).unwrap();
-      } catch {
-        try {
-          await dispatch(fetchUser()).unwrap();
-        } catch {
-          if (!user.role) {
-            navigate("/login");
-
-          }
-
-        }
-      }
-    };
-
-    tryFetch();
-  }, [user.role]);
-
-
-  if (!user.role) {
-    return null // still loading user, render nothing
-  }
+  if (isLoading) return <LoadingScreen />;
+  if (!isAuthenticated) return null;
 
   if (!AuthorizedUser.includes(user.role)) {
     return (
       <LayoutWrapper>
         <UnauthorizedPage />
       </LayoutWrapper>
-    )
+    );
   }
+
 
   return (
     <LayoutWrapper>

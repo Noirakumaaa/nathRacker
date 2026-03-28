@@ -11,7 +11,7 @@ export default [
   // route("records", "routes/records.tsx"),
   // route("summary", "routes/summary.tsx"),
   // route("settings", "routes/settings.tsx"),
-  // route("cvs", "routes/cvs.tsx"),
+  route("cvs/:id?", "routes/cvs.tsx"),
   // route("miscellaneous", "routes/miscellaneous.tsx"),
   route("404", "routes/notAuthorized.tsx"),
 
