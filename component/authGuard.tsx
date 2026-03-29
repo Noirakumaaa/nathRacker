@@ -7,10 +7,20 @@ export function useAuth() {
     queryKey: ["me"],
     queryFn: async () => {
       const res = await APIFETCH.get(`/auth/check-auth`);
+      if (res.data?.error || res.data?.statusCode === 401) {
+        throw new Error("Unauthorized"); // ✅ force isError = true
+      }
       return res.data;
     },
     retry: false,
+    staleTime: 0,
+    gcTime: 0,
   });
 
-  return { user: data, isLoading, isAuthenticated: !!data, isError };
+  return {
+    user: data,
+    isLoading,
+    isAuthenticated: !!data && !isError,
+    isError,
+  };
 }

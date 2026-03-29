@@ -1,14 +1,11 @@
 import { useEffect } from "react";
 import { RecordsTable } from "./../records/records";
 import { useNavigate } from "react-router";
-import type { AppDispatch, RootState } from "redux/store";
-import { fetchUser } from "redux/thunks/userThunks";
 import LayoutWrapper from "layout/navLayout";
 import UnauthorizedPage from "~/notAuthorized/notAuthorized";
-import { useDispatch, useSelector } from "";
 import { AuthorizedUser } from "~/types/authorizedUser";
-
-
+import { useAuth } from "component/authGuard";
+import { LoadingScreen } from "component/LoadingScreen";
 export function meta() {
   return [
     { title: "Records" },
@@ -18,44 +15,22 @@ export function meta() {
 
 
 export default function RecordsRoute() {
-  const user = useSelector((state: RootState) => state.user)
-  const navigate = useNavigate();
-  const dispatch = useDispatch<AppDispatch>();
+   const navigate = useNavigate();
+  const { user, isLoading, isAuthenticated } = useAuth();
 
   useEffect(() => {
-     //console.log("User : ", user)
-    const tryFetch = async () => {
-      if (user.id !== '') return; // Skip if user data is already available
+    if (!isAuthenticated && !isLoading) navigate("/login");
+  }, [isAuthenticated, isLoading]);
 
-      try {
-        await dispatch(fetchUser()).unwrap();
-      } catch {
-        try {
-          await dispatch(fetchUser()).unwrap();
-        } catch {
-          if (!user.role) {
-            navigate("/login");
-
-          }
-
-        }
-      }
-    };
-
-    tryFetch();
-  }, [user.role]);
-
-
-  if (!user.role) {
-    return null // still loading user, render nothing
-  }
+  if (isLoading) return <LoadingScreen />;
+  if (!isAuthenticated) return null;
 
   if (!AuthorizedUser.includes(user.role)) {
     return (
       <LayoutWrapper>
         <UnauthorizedPage />
       </LayoutWrapper>
-    )
+    );
   }
   return (
     <LayoutWrapper>

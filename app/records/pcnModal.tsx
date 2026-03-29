@@ -1,8 +1,8 @@
-import type { PcnFormFields } from "../types/lcnTypes";
-import { getEncodedBadgeClass } from "../types/lcnTypes";
+import type { LcnFormFields } from "../types/lcnTypes";
+import { getEncodedBadgeClass } from "~/types/busTypes";
 
 type PcnViewModalProps = {
-  item: PcnFormFields | null;
+  item: LcnFormFields | null;
   onClose: () => void;
 };
 
@@ -102,7 +102,7 @@ export function PcnViewModal({ item, onClose }: PcnViewModalProps) {
               <DetailRow label="DRN" value={item.drn} />
               <DetailRow label="CL" value={item.cl} />
               <DetailRow label="PCN" value={item.pcn} />
-              <DetailRow label="TR" value={item.tr} />
+              <DetailRow label="TR" value={item.lrn} />
               <DetailRow label="LGU" value={item.lgu} />
               <DetailRow label="Barangay" value={item.barangay} />
             </div>

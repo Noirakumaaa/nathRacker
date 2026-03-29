@@ -142,7 +142,7 @@ export function LcnRecentTable() {
   return (
     <RecentTable<LcnRecord>
       queryKey="recentPcn"
-      endpoint="/pcn/UserRecent"
+      endpoint="/lcn/recent"
       columns={buildColumns}
       title="Recent Updates"
       rowClassName={(_, i) =>

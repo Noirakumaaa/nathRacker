@@ -3,21 +3,18 @@ import { Copy } from "lucide-react";
 import RecentTable from "./../../component/recentTables";
 import type { ColumnDef } from "./../../component/recentTables";
 import type { MiscRecord, MiscFormFields } from "./../types/miscTypes";
+import { EncodedBadge } from "component/StyleBadge";
+import { useNavigate } from "react-router";
 
-function EncodedBadge({ value }: { value: string }) {
-  const cls =
-    value === "YES"     ? "bg-emerald-50 text-emerald-600" :
-    value === "NO"      ? "bg-red-50 text-red-500" :
-    value === "UPDATED" ? "bg-blue-50 text-blue-600" :
-                          "bg-[#f5f5f2] text-[#8a8a80]";
-  return (
-    <span className={`inline-block px-2.5 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap ${cls}`}>
-      {value || "—"}
-    </span>
-  );
-}
 
-const buildColumns = (onLoad: (record: MiscFormFields) => void): ColumnDef<MiscRecord>[] => [
+
+export default function MiscRecentTable() {
+  const navigate = useNavigate()
+
+  const handleEdit=(record : MiscRecord)=>{
+    navigate(`/miscellaneous/${record.id}`)
+  }
+const buildColumns : ColumnDef<MiscRecord>[] = [
   {
     header: "HH ID",
     cell: (r) => (
@@ -81,7 +78,7 @@ const buildColumns = (onLoad: (record: MiscFormFields) => void): ColumnDef<MiscR
     header: "",
     cell: (r) => (
       <button
-        onClick={() => onLoad(r)}
+        onClick={() => handleEdit(r)}
         className="text-[11px] font-medium text-blue-600 hover:text-blue-800 hover:underline transition-colors whitespace-nowrap cursor-pointer bg-transparent border-none"
       >
         Load
@@ -90,19 +87,11 @@ const buildColumns = (onLoad: (record: MiscFormFields) => void): ColumnDef<MiscR
   },
 ];
 
-export default function MiscRecentTable({
-  newData,
-  onLoad,
-}: {
-  newData: boolean;
-  onLoad: (record: MiscFormFields) => void;
-}) {
   return (
     <RecentTable<MiscRecord>
       queryKey="recentMisc"
       endpoint="/miscellaneous/recent"
-      columns={buildColumns(onLoad)}
-      newData={newData}
+      columns={buildColumns}
       title="Recent Updates"
     />
   );

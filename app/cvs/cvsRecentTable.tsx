@@ -22,7 +22,7 @@ export default function CvsRecentTable() {
             {r.idNumber}
           </span>
           <button
-            onClick={() => navigator.clipboard.writeText(String(r.idNumber))}
+            onClick={() => navigator.clipboard.writeText((r.idNumber))}
             className="opacity-0 group-hover:opacity-100 transition-opacity text-[#c4c4b8] hover:text-[#8a8a80] cursor-pointer bg-transparent border-none p-0"
             title="Copy ID Number"
           >

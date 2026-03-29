@@ -1,14 +1,6 @@
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { get, del } from "component/fetchComponent";
 import { useNavigate } from "react-router";
-import { useDispatch } from "";
-import type { AppDispatch } from "redux/store";
-import { setCurrentBusForm } from "redux/slice/bus/busSlice";
-import { setCurrentSwdiForm } from "redux/slice/swdi/swdiSlice";
-import { setCurrentPcnForm } from "redux/slice/pcn/pcnSlice";
-import { setCurrentCVSForm } from "redux/slice/cvs/cvsSlice";
-import { setCurrentMISCForm } from "redux/slice/misc/miscSlice";
 import {
   Loader2,
   InboxIcon,
@@ -27,11 +19,15 @@ import { MiscViewModal } from "./miscModal";
 import { CvsViewModal } from "./cvsModal";
 import type { BusFormFields } from "./../types/busTypes";
 import type { SwdiFormFields } from "~/types/swdiTypes";
-import type { PcnFormFields } from "~/types/lcnTypes";
+import type { LcnFormFields } from "~/types/lcnTypes";
 import type { MiscFormFields } from "~/types/miscTypes";
 import type { CvsFormFields } from "~/types/cvsTypes";
-
-
+import APIFETCH from "lib/axios/axiosConfig";
+import { labelCls, inputCls } from "component/styleConfig";
+import { EncodedBadge } from "component/StyleBadge";
+import { useToastStore } from "lib/zustand/ToastStore";
+import { DeleteModal } from "./deleteModal";
+import { queryClient } from "~/root";
 // ── Types ─────────────────────────────────────────────────────────────────────
 type AllDocuments = {
   id: number;
@@ -55,36 +51,18 @@ type FilterState = {
   username: string;
 };
 
-// ── Shared classes ─────────────────────────────────────────────────────────────
-const inputCls =
-  "w-full px-3 py-2 text-[13px] border border-[#e8e8e0] rounded-lg text-[#1a1a18] placeholder-[#c4c4b8] bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent hover:border-[#c8c8c0] transition-colors";
-const labelCls =
-  "block text-[11px] font-medium text-[#8a8a80] mb-1.5 uppercase tracking-wider";
-
-function EncodedBadge({ value }: { value: string }) {
-  const cls =
-    value === "YES"
-      ? "bg-emerald-50 text-emerald-600"
-      : value === "NO"
-        ? "bg-red-50 text-red-500"
-        : value === "UPDATED"
-          ? "bg-blue-50 text-blue-600"
-          : value === "PENDING"
-            ? "bg-amber-50 text-amber-600"
-            : "bg-[#f5f5f2] text-[#8a8a80]";
-  return (
-    <span
-      className={`inline-block px-2.5 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap ${cls}`}
-    >
-      {value || "—"}
-    </span>
-  );
-}
-
 // ── Component ─────────────────────────────────────────────────────────────────
 export function RecordsTable() {
   const navigate = useNavigate();
-  const dispatch = useDispatch<AppDispatch>();
+  const { show } = useToastStore();
+
+  const [deleteModal, setDeleteModal] = useState<{
+    open: boolean;
+    id: number | null;
+  }>({
+    open: false,
+    id: null,
+  });
 
   const [filters, setFilters] = useState<FilterState>({
     search: "",
@@ -96,11 +74,19 @@ export function RecordsTable() {
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
-  const [selectedBusItem, setSelectedBusItem] = useState<BusFormFields | null>(null);
-  const [ selectedPcnItem, setSelectedPcnItem ] = useState<PcnFormFields | null>(null);
-  const [ selectedSwdiItem, setSelectedSwdiItem ] = useState<SwdiFormFields | null>(null);
-  const [ selectedMiscItem, setSelectedMiscItem ] = useState<MiscFormFields | null>(null);
-   const [ selectedCVSItem, setSelectedCVSItem ] = useState<CvsFormFields | null>(null);
+  const [selectedBusItem, setSelectedBusItem] = useState<BusFormFields | null>(
+    null,
+  );
+  const [selectedPcnItem, setSelectedPcnItem] = useState<LcnFormFields | null>(
+    null,
+  );
+  const [selectedSwdiItem, setSelectedSwdiItem] =
+    useState<SwdiFormFields | null>(null);
+  const [selectedMiscItem, setSelectedMiscItem] =
+    useState<MiscFormFields | null>(null);
+  const [selectedCVSItem, setSelectedCVSItem] = useState<CvsFormFields | null>(
+    null,
+  );
   const itemsPerPage = 10;
 
   const {
@@ -109,11 +95,19 @@ export function RecordsTable() {
     refetch,
   } = useQuery<AllDocuments[]>({
     queryKey: ["allDocuments"],
-    queryFn: async () =>
-      await get(
-        `${import.meta.env.VITE_BACKEND_API_URL}/alldocuments/globalRecords`,
-      ),
+    queryFn: async () => {
+      const res = await APIFETCH.get("alldocuments/globalRecords");
+      return res.data;
+    },
+
   });
+  const {data : user_id } = useQuery({
+    queryKey : ["me"],
+    queryFn : async () => {
+      const res = await APIFETCH.get("/auth/check-auth")
+      return res.data
+    }
+  })
 
   const filteredData = useMemo(
     () =>
@@ -186,107 +180,104 @@ export function RecordsTable() {
 
   const activeFilterCount = Object.values(filters).filter(Boolean).length;
 
-
   const handleView = async (item: AllDocuments) => {
-
-    console.log(" ITEM : ", item)
     if (item.documentType === "BUS") {
-      const full: BusFormFields = await get(
-        `${import.meta.env.VITE_BACKEND_API_URL}/bus/records/${item.documentId}`,
-      );
-      setSelectedBusItem(full);
+      const res = await APIFETCH.get(`/bus/records/${item.documentId}`);
+      setSelectedBusItem(res.data);
     }
 
     if (item.documentType === "SWDI") {
-      const full: SwdiFormFields = await get(
-        `${import.meta.env.VITE_BACKEND_API_URL}/swdi/records/${item.documentId}`,
-      );
-      console.log("Fetched SWDI record:", full, "from ID:", item.id);
-      setSelectedSwdiItem(full);
+      const res = await APIFETCH.get(`/bus/records/${item.documentId}`);
+      setSelectedSwdiItem(res.data);
     }
 
     if (item.documentType === "PCN") {
-      const full: PcnFormFields = await get(
-        `${import.meta.env.VITE_BACKEND_API_URL}/pcn/records/${item.documentId}`,
-      );
-      setSelectedPcnItem(full);
+      const res = await APIFETCH.get(`/bus/records/${item.documentId}`);
+      setSelectedPcnItem(res.data);
     }
-      if (item.documentType === "CVS") {
-      
-      const full: CvsFormFields = await get(
-        `${import.meta.env.VITE_BACKEND_API_URL}/cvs/records/${item.documentId}`,
-      );
-      setSelectedCVSItem(full);
-
+    if (item.documentType === "CVS") {
+      const res = await APIFETCH.get(`/bus/records/${item.documentId}`);
+      setSelectedCVSItem(res.data);
     }
 
     if (item.documentType === "MISC") {
-      const full: MiscFormFields = await get(
-        `${import.meta.env.VITE_BACKEND_API_URL}/miscellaneous/records/${item.documentId}`,
-      );
-      setSelectedMiscItem(full);
+      const res = await APIFETCH.get(`/bus/records/${item.documentId}`);
+      setSelectedMiscItem(res.data);
     }
   };
 
   const handleLoad = async (item: AllDocuments) => {
     if (item.documentType === "BUS") {
-      const full: BusFormFields = await get(
-        `${import.meta.env.VITE_BACKEND_API_URL}/bus/records/${item.documentId}`,
-      );
-      dispatch(setCurrentBusForm(full));
-      navigate("/bus");
+      navigate(`/bus/${item.documentId}`);
     }
     if (item.documentType === "SWDI") {
-      const full: SwdiFormFields = await get(
-        `${import.meta.env.VITE_BACKEND_API_URL}/swdi/records/${item.documentId}`,
-      );
-      console.log("Full SWDI record:", full);
-      dispatch(setCurrentSwdiForm(full));
-      navigate("/swdi");
+      navigate(`/swdi/${item.documentId}`);
     }
     if (item.documentType === "PCN") {
-      const full: PcnFormFields = await get(
-        `${import.meta.env.VITE_BACKEND_API_URL}/pcn/records/${item.documentId}`,
-      );
-      console.log("Full PCN record:", full);
-      dispatch(setCurrentPcnForm(full));
-      navigate("/pcn");
+      navigate(`/lcn/${item.documentId}`);
     }
-        if (item.documentType === "CVS") {
-      const full: CvsFormFields = await get(
-        `${import.meta.env.VITE_BACKEND_API_URL}/cvs/records/${item.documentId}`,
-      );
-      console.log("Full CVS record:", full);
-      dispatch(setCurrentCVSForm(full));
-      navigate("/cvs");
+    if (item.documentType === "CVS") {
+      navigate(`/cvs/${item.documentId}`);
     }
     if (item.documentType === "MISC") {
-      const full: MiscFormFields = await get(
-        `${import.meta.env.VITE_BACKEND_API_URL}/misc/records/${item.documentId}`,
-      );
-      dispatch(setCurrentMISCForm(full))
-
+      navigate(`/miscellaneous/${item.documentId}`);
     }
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm("Are you sure you want to delete this record?")) return;
-    try {
-      await del(`${import.meta.env.VITE_BACKEND_API_URL}/bus/records/${id}`);
-      refetch();
-    } catch (err) {
-      console.error("Failed to delete:", err);
+  const handleDeleteClick = (id: number) => {
+    setDeleteModal({ open: true, id });
+  };
+
+const handleDeleteConfirm = async () => {
+  if (!deleteModal.id) return;
+
+  try {
+    const res = await APIFETCH.delete(`/alldocuments/delete/${deleteModal.id}`);
+    if (res.data.deleted) {
+      show(res.data.message, "success");
+      await refetch();
+    } else {
+      show(res.data.message, "error");
     }
+  } catch (err) {
+    console.error("Failed to delete:", err);
+  } finally {
+    setDeleteModal({ open: false, id: null });
+  }
+};
+
+  const handleDeleteCancel = () => {
+    setDeleteModal({ open: false, id: null });
   };
 
   return (
     <div className="p-6 bg-[#fafaf8] min-h-screen font-sans antialiased">
-      <BusViewModal item={selectedBusItem} onClose={() => setSelectedBusItem(null)} />
-      <PcnViewModal item={selectedPcnItem} onClose={() => setSelectedPcnItem(null)} />
-      <SwdiViewModal item={selectedSwdiItem} onClose={() => setSelectedSwdiItem(null)} />
-      <MiscViewModal item={selectedMiscItem} onClose={() => setSelectedMiscItem(null)} />
-      <CvsViewModal item={selectedCVSItem} onClose={() => setSelectedCVSItem(null)} /> 
+      <DeleteModal
+        open={deleteModal.open}
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+      />
 
+      <BusViewModal
+        item={selectedBusItem}
+        onClose={() => setSelectedBusItem(null)}
+      />
+      <PcnViewModal
+        item={selectedPcnItem}
+        onClose={() => setSelectedPcnItem(null)}
+      />
+      <SwdiViewModal
+        item={selectedSwdiItem}
+        onClose={() => setSelectedSwdiItem(null)}
+      />
+      <MiscViewModal
+        item={selectedMiscItem}
+        onClose={() => setSelectedMiscItem(null)}
+      />
+      <CvsViewModal
+        item={selectedCVSItem}
+        onClose={() => setSelectedCVSItem(null)}
+      />
 
       <div className="bg-white border border-[#e8e8e0] rounded-xl px-6 py-4 flex items-center gap-3 flex-shrink-0">
         <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center">
@@ -571,12 +562,14 @@ export function RecordsTable() {
                         >
                           <Download size={11} /> Load
                         </button>
-                        <button
-                          onClick={() => handleDelete(item.id)}
+                        {item.userId == Number(user_id.id) &&
+                                       <button
+                          onClick={() => handleDeleteClick(item.id)}
                           className="inline-flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-medium text-red-500 bg-red-50 border border-red-100 rounded-lg hover:bg-red-100 transition-colors cursor-pointer"
                         >
                           <Trash2 size={11} /> Delete
-                        </button>
+                        </button>}
+
                       </div>
                     </td>
                   </tr>

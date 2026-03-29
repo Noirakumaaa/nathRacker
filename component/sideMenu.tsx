@@ -14,7 +14,9 @@ import {
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-
+import APIFETCH from "lib/axios/axiosConfig";
+import { useToastStore } from "lib/zustand/ToastStore";
+import { queryClient } from "~/root";
 
 type SidebarProps = {
   isOpen: boolean;
@@ -36,9 +38,7 @@ const menuItems = [
     icon: FileInput,
     tag: "bg-emerald-50 text-emerald-600",
   },
-  { id: "LCN", label: "LCN", 
-    icon: IdCard, 
-    tag: "bg-rose-50 text-rose-500" },
+  { id: "LCN", label: "LCN", icon: IdCard, tag: "bg-rose-50 text-rose-500" },
   {
     id: "cvs",
     label: "CVS",
@@ -63,7 +63,6 @@ const verificationMenuItems = [
     id: "cvsVer",
     label: "CVS Verification",
     icon: FileText,
-
   },
 ];
 
@@ -123,7 +122,7 @@ function NavItem({
 
 // ── Sidebar ───────────────────────────────────────────────────────────────────
 const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
-
+  const { show } = useToastStore();
   const location = useLocation();
   const [activeItem, setActiveItem] = useState(
     location.pathname.replace("/", ""),
@@ -137,14 +136,13 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
       if (!res.ok) throw new Error("Unauthorized");
       return res.json();
     },
-    retry : false
+    retry: false,
   });
 
   const updateSidebar = (option: string) => {
     setActiveItem(option);
     if (option === "logout") {
-      //logout();
-      //dispatch(setLogout());
+      logout();
     } else if (option === "msc") {
       navigate(`/miscellaneous`);
     } else {
@@ -153,13 +151,17 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
     updateSidebarOption(option);
   };
 
-  // const logout = async () => {
-  //   const data = await get(
-  //     `${import.meta.env.VITE_BACKEND_API_URL}/auth/logout`,
-  //   );
-  //   if (!data) return;
-  //   navigate("/login");
-  // };
+  const logout = async () => {
+    const res = await APIFETCH.get("/auth/logout");
+    const check = await APIFETCH.get("/auth/check-auth");
+    if (res.data.logout) {
+      show(`${res.data.message}`, "success");
+      queryClient.removeQueries({ queryKey: ["me"] });
+      navigate("/login");
+    } else {
+      show(`${res.data.message}`, "error");
+    }
+  };
 
   const allItems = [...menuItems, ...bottomItems];
 
@@ -206,7 +208,7 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
             ))}
           </nav>
 
-          <SectionLabel label="VERIFICATION MODULES - UNDERDEVELOPMENT" /> 
+          <SectionLabel label="VERIFICATION MODULES - UNDERDEVELOPMENT" />
           <nav className="space-y-0.5">
             {verificationMenuItems.map((item) => (
               <NavItem
