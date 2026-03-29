@@ -8,14 +8,12 @@ import { useNavigate } from "react-router";
 import { useParams } from "react-router";
 import type { RouteParams } from "~/types/authTypes";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-
+import { Opt,Req } from "component/LabelStyle";
 
 
 export default function BusForm() {
-  
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
-
 
   const { id } = useParams<RouteParams>();
   const { show } = useToastStore();
@@ -41,21 +39,21 @@ export default function BusForm() {
   });
 
   const { data } = useQuery({
-    queryKey : ["SelectedBus", id],
-    queryFn : async () => {
-      const res = await APIFETCH.get<BusRecord>(`/bus/records/${id}`)
-      return res.data
+    queryKey: ["SelectedBus", id],
+    queryFn: async () => {
+      const res = await APIFETCH.get<BusRecord>(`/bus/records/${id}`);
+      return res.data;
     },
-    enabled : !!id
-  })
+    enabled: !!id,
+  });
 
-  useEffect(()=>{
-    console.log(data)
-    if(data) {
-      setFormData(()=>({
+  useEffect(() => {
+    console.log(data);
+    if (data) {
+      setFormData(() => ({
         lgu: data.lgu ?? "",
         barangay: data.barangay ?? "",
-        hhId: data.hhId ??"",
+        hhId: data.hhId ?? "",
         granteeName: data.granteeName ?? "",
         subjectOfChange: data.subjectOfChange ?? "",
         typeOfUpdate: data.typeOfUpdate ?? "",
@@ -67,14 +65,12 @@ export default function BusForm() {
         cl: data.cl ?? "",
         date: today,
         note: data.note ?? "",
-      }))
+      }));
     }
-  },[data])
+  }, [data]);
 
   const handleInputChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >,
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value.toUpperCase() }));
@@ -83,16 +79,15 @@ export default function BusForm() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const res = await APIFETCH.post<BusResponse>("/bus/upload", formData);
-    setButtonLoading(true)
-    if(res.data.upload){
+    setButtonLoading(true);
+    if (res.data.upload) {
       show(`${res.data.message}`, "success");
-      queryClient.invalidateQueries({queryKey : ["recentBus"]})
-      setButtonLoading(false)
-    }else if(res.data.upload === false){
+      queryClient.invalidateQueries({ queryKey: ["recentBus"] });
+      setButtonLoading(false);
+    } else if (res.data.upload === false) {
       show(`${res.data.message}`, "error");
-      setButtonLoading(false)
+      setButtonLoading(false);
     }
-
   };
 
   const handleReset = () => {
@@ -112,7 +107,7 @@ export default function BusForm() {
       date: today,
       note: "",
     });
-    navigate("/bus")
+    navigate("/bus");
   };
 
   return (
@@ -121,13 +116,21 @@ export default function BusForm() {
         onSubmit={handleSubmit}
         className="bg-white rounded-xl border border-[#e8e8e0] overflow-hidden"
       >
+        {/* Header with legend */}
         <div className="px-6 py-4 border-b border-[#e8e8e0] flex items-center justify-between">
           <p className="text-[11px] font-medium text-[#8a8a80] uppercase tracking-wider">
             Fill in the form below
           </p>
-          <span className="text-[11px] text-[#c4c4b8] font-mono">
-            * required
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-red-600 bg-red-50 border border-red-200 px-2 py-1 rounded-md uppercase tracking-wide">
+              <span className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block shrink-0" />
+              Required
+            </span>
+            <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-[#8a8a80] bg-[#f5f5f2] border border-[#e8e8e0] px-2 py-1 rounded-md uppercase tracking-wide">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#c4c4b8] inline-block shrink-0" />
+              Optional
+            </span>
+          </div>
         </div>
 
         <div className="p-6">
@@ -142,7 +145,7 @@ export default function BusForm() {
               <div className="space-y-3.5">
                 <div>
                   <label htmlFor="lgu" className={labelCls}>
-                    LGU <span className="text-red-400">*</span>
+                    LGU <Req />
                   </label>
                   <input
                     type="text"
@@ -157,7 +160,7 @@ export default function BusForm() {
                 </div>
                 <div>
                   <label htmlFor="barangay" className={labelCls}>
-                    Barangay <span className="text-red-400">*</span>
+                    Barangay <Req />
                   </label>
                   <input
                     type="text"
@@ -172,7 +175,7 @@ export default function BusForm() {
                 </div>
                 <div>
                   <label htmlFor="hhId" className={labelCls}>
-                    HH ID Number <span className="text-red-400">*</span>
+                    HH ID Number <Req />
                   </label>
                   <input
                     type="text"
@@ -187,7 +190,7 @@ export default function BusForm() {
                 </div>
                 <div>
                   <label htmlFor="granteeName" className={labelCls}>
-                    Grantee Name <span className="text-red-400">*</span>
+                    Grantee Name <Req />
                   </label>
                   <input
                     type="text"
@@ -202,7 +205,7 @@ export default function BusForm() {
                 </div>
                 <div>
                   <label htmlFor="subjectOfChange" className={labelCls}>
-                    Subject of Change <span className="text-red-400">*</span>
+                    Subject of Change <Req />
                   </label>
                   <input
                     type="text"
@@ -228,7 +231,7 @@ export default function BusForm() {
               <div className="space-y-3.5">
                 <div>
                   <label htmlFor="typeOfUpdate" className={labelCls}>
-                    Type of Update <span className="text-red-400">*</span>
+                    Type of Update <Req />
                   </label>
                   <select
                     id="typeOfUpdate"
@@ -248,7 +251,7 @@ export default function BusForm() {
                 </div>
                 <div>
                   <label htmlFor="updateInfo" className={labelCls}>
-                    Update Info <span className="text-red-400">*</span>
+                    Update Info <Req />
                   </label>
                   <input
                     type="text"
@@ -263,7 +266,7 @@ export default function BusForm() {
                 </div>
                 <div>
                   <label htmlFor="remarks" className={labelCls}>
-                    Encoded Y/N <span className="text-red-400">*</span>
+                    Encoded Y/N <Req />
                   </label>
                   <select
                     id="remarks"
@@ -281,8 +284,7 @@ export default function BusForm() {
                 </div>
                 <div>
                   <label htmlFor="cl" className={labelCls}>
-                    Assigned City Link or SWA{" "}
-                    <span className="text-red-400">*</span>
+                    Assigned City Link or SWA <Req />
                   </label>
                   <input
                     type="text"
@@ -297,7 +299,7 @@ export default function BusForm() {
                 </div>
                 <div>
                   <label htmlFor="date" className={labelCls}>
-                    Date Accomplished
+                    Date Accomplished <Req />
                   </label>
                   <input
                     type="date"
@@ -322,7 +324,7 @@ export default function BusForm() {
               <div className="space-y-3.5">
                 <div>
                   <label htmlFor="issue" className={labelCls}>
-                    Issues
+                    Issues <Opt />
                   </label>
                   <textarea
                     id="issue"
@@ -336,7 +338,7 @@ export default function BusForm() {
                 </div>
                 <div>
                   <label htmlFor="drn" className={labelCls}>
-                    DRN <span className="text-red-400">*</span>
+                    DRN <Req />
                   </label>
                   <input
                     type="text"
@@ -351,7 +353,7 @@ export default function BusForm() {
                 </div>
                 <div>
                   <label htmlFor="note" className={labelCls}>
-                    Note
+                    Note <Opt />
                   </label>
                   <textarea
                     id="note"

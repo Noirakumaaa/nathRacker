@@ -6,7 +6,8 @@ import APIFETCH from "lib/axios/axiosConfig";
 import type { RouteParams } from "~/types/authTypes";
 import { labelCls,inputCls } from "component/styleConfig";
 import { useToastStore } from "lib/zustand/ToastStore";
-
+import { queryClient } from "~/root";
+import { Req } from "component/LabelStyle";
 
 export default function MiscForm() {
   const { id } = useParams<RouteParams>()
@@ -86,6 +87,7 @@ useEffect(() => {
     const res = await APIFETCH.post("/miscellaneous/upload", formData)
     if(res.data.upload){
       show(`${res.data.message}`, "success")
+      queryClient.invalidateQueries({queryKey : ["recentMisc"]})
       setButtonLoading(false);
     }else if(res.data.upload){
       show(`${res.data.message}`, "error")
@@ -161,7 +163,7 @@ useEffect(() => {
                 </div>
                 <div>
                   <label className={labelCls}>
-                    HH ID Number <span className="text-red-400">*</span>
+                    HH ID Number <Req />
                   </label>
                   <input
                     type="text"
@@ -175,7 +177,7 @@ useEffect(() => {
                 </div>
                 <div>
                   <label className={labelCls}>
-                    Grantee Name <span className="text-red-400">*</span>
+                    Grantee Name <Req />
                   </label>
                   <input
                     type="text"
@@ -210,7 +212,7 @@ useEffect(() => {
               <div className="space-y-3.5">
                 <div>
                   <label className={labelCls}>
-                    Document Type <span className="text-red-400">*</span>
+                    Document Type <Req />
                   </label>
                   <input
                     type="text"
@@ -224,7 +226,7 @@ useEffect(() => {
                 </div>
                 <div>
                   <label className={labelCls}>
-                    REMARKS <span className="text-red-400">*</span>
+                    REMARKS <Req />
                   </label>
                   <select
                     name="remarks"

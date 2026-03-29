@@ -7,9 +7,9 @@ import {
   IdCard,
   BookText,
   ClipboardCheck,
-  HelpCircle,
   FileIcon,
   ChevronRight,
+  Construction,
 } from "lucide-react";
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -26,101 +26,83 @@ type SidebarProps = {
 
 const menuItems = [
   { id: "dashboard", label: "Dashboard", icon: Home },
-  {
-    id: "bus",
-    label: "BUS",
-    icon: FileText,
-    tag: "bg-indigo-50 text-indigo-500",
-  },
-  {
-    id: "swdi",
-    label: "SWDI",
-    icon: FileInput,
-    tag: "bg-emerald-50 text-emerald-600",
-  },
-  { id: "LCN", label: "LCN", icon: IdCard, tag: "bg-rose-50 text-rose-500" },
-  {
-    id: "cvs",
-    label: "CVS",
-    icon: FileText,
-    tag: "bg-violet-50 text-violet-500",
-  },
-  {
-    id: "msc",
-    label: "Miscellaneous",
-    icon: FileIcon,
-    tag: "bg-violet-50 text-sky-500",
-  },
+  { id: "bus",  label: "BUS",          icon: FileText,  tag: "bg-indigo-50 text-indigo-500" },
+  { id: "swdi", label: "SWDI",         icon: FileInput, tag: "bg-emerald-50 text-emerald-600" },
+  { id: "LCN",  label: "LCN",          icon: IdCard,    tag: "bg-rose-50 text-rose-500" },
+  { id: "cvs",  label: "CVS",          icon: FileText,  tag: "bg-violet-50 text-violet-500" },
+  { id: "msc",  label: "Miscellaneous",icon: FileIcon,  tag: "bg-sky-50 text-sky-500" },
 ];
 
 const verificationMenuItems = [
-  {
-    id: "busVer",
-    label: "BUS Verification",
-    icon: FileText,
-  },
-  {
-    id: "cvsVer",
-    label: "CVS Verification",
-    icon: FileText,
-  },
+  { id: "busVer", label: "BUS Verification", icon: FileText },
+  { id: "cvsVer", label: "CVS Verification", icon: FileText },
 ];
 
 const bottomItems = [
   { id: "records", label: "Records", icon: BookText },
   { id: "summary", label: "Summary", icon: ClipboardCheck },
-  { id: "settings", label: "Settings", icon: Settings },
 ];
 
-// ── Section label ─────────────────────────────────────────────────────────────
+const AccountItems = [
+  { id: "settings", label: "Settings", icon: Settings },
+  { id: "logout",   label: "Logout",   icon: LogOut },
+];
+
+// ── Section label ─────────────────────────────────────────────
 function SectionLabel({ label }: { label: string }) {
   return (
-    <p className="text-[10px] font-semibold text-[#c4c4b8] uppercase tracking-widest px-3 pt-4 pb-1.5">
+    <p className="text-[9.5px] font-semibold text-[#b8b8b0] uppercase tracking-widest px-3 pt-5 pb-1.5 select-none">
       {label}
     </p>
   );
 }
 
-// ── Nav button ────────────────────────────────────────────────────────────────
+// ── Nav item ──────────────────────────────────────────────────
 function NavItem({
   item,
   isActive,
   onClick,
+  disabled,
 }: {
-  item: (typeof menuItems)[0];
+  item: { id: string; label: string; icon: React.ElementType; tag?: string };
   isActive: boolean;
   onClick: () => void;
+  disabled?: boolean;
 }) {
   const Icon = item.icon;
   return (
     <button
       onClick={onClick}
+      disabled={disabled}
       className={`
         w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-left
-        text-[13px] font-medium transition-all duration-150 cursor-pointer group
+        text-[13px] font-medium transition-all duration-150 cursor-pointer
+        ${disabled ? "opacity-40 cursor-not-allowed" : ""}
         ${
           isActive
-            ? "bg-[#1a1a18] text-white shadow-sm"
+            ? "bg-[#1a1a18] text-white"
             : "text-[#6a6a60] hover:text-[#1a1a18] hover:bg-[#f0f0ec]"
         }
       `}
     >
-      <Icon size={14} className="shrink-0 opacity-80" />
-      <span className="flex-1 leading-none">{item.label}</span>
-      {"tag" in item && item.tag && !isActive ? (
+      <Icon
+        size={14}
+        className={`shrink-0 ${isActive ? "opacity-90" : "opacity-60"}`}
+      />
+      <span className="flex-1 leading-none truncate">{item.label}</span>
+      {item.tag && !isActive && (
         <span
           className={`font-mono text-[9px] font-semibold px-1.5 py-0.5 rounded tracking-wider ${item.tag}`}
         >
           {item.id.toUpperCase()}
         </span>
-      ) : isActive ? (
-        <ChevronRight size={11} className="opacity-40" />
-      ) : null}
+      )}
+      {isActive && <ChevronRight size={11} className="opacity-30 shrink-0" />}
     </button>
   );
 }
 
-// ── Sidebar ───────────────────────────────────────────────────────────────────
+// ── Sidebar ───────────────────────────────────────────────────
 const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
   const { show } = useToastStore();
   const location = useLocation();
@@ -144,7 +126,7 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
     if (option === "logout") {
       logout();
     } else if (option === "msc") {
-      navigate(`/miscellaneous`);
+      navigate("/miscellaneous");
     } else {
       navigate(`/${option}`);
     }
@@ -153,24 +135,23 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
 
   const logout = async () => {
     const res = await APIFETCH.get("/auth/logout");
-    const check = await APIFETCH.get("/auth/check-auth");
     if (res.data.logout) {
       show(`${res.data.message}`, "success");
-      queryClient.removeQueries({ queryKey: ["me"] });
+      queryClient.clear();
       navigate("/login");
     } else {
       show(`${res.data.message}`, "error");
     }
   };
 
-  const allItems = [...menuItems, ...bottomItems];
+  const initials = (User?.govUsername?.[0] ?? "U").toUpperCase();
 
   return (
     <>
       {/* Mobile overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-[#1a1a18]/20 backdrop-blur-sm z-30 lg:hidden"
+          className="fixed inset-0 bg-[#1a1a18]/25 backdrop-blur-[2px] z-30 lg:hidden"
           onClick={onClose}
         />
       )}
@@ -178,25 +159,28 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
       {/* Sidebar */}
       <aside
         className={`
-          fixed top-0 left-0 h-screen w-[220px] bg-[#fafaf8] border-r border-[#e8e8e0]
-          z-40 flex flex-col transform transition-transform duration-300
+          fixed top-0 left-0 h-screen w-55 bg-[#fafaf8] border-r border-[#e8e8e0]
+          z-40 flex flex-col transform transition-transform duration-300 ease-in-out
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
           lg:translate-x-0 lg:relative lg:z-0
         `}
       >
         {/* Logo */}
-        <div className="h-[60px] flex items-center px-5 border-b border-[#e8e8e0] flex-shrink-0">
-          <a href="/" className="flex items-center gap-2 no-underline">
-            <span className="w-2 h-2 rounded-full bg-blue-600 inline-block" />
-            <span className="text-[16px] font-semibold tracking-tight text-[#1a1a18]">
+        <div className="h-15 flex items-center px-5 border-b border-[#e8e8e0] shrink-0">
+          <a href="/" className="flex items-center gap-2.5 no-underline group">
+            <div className="w-5 h-5 rounded-md bg-[#1a1a18] flex items-center justify-center">
+              <span className="w-1.5 h-1.5 rounded-full bg-white inline-block" />
+            </div>
+            <span className="text-[15px] font-semibold tracking-tight text-[#1a1a18]">
               NathRacker
             </span>
           </a>
         </div>
 
         {/* Nav */}
-        <div className="flex-1 overflow-y-auto py-3 px-2.5">
-          <SectionLabel label="ENCODER MODULES" />
+        <div className="flex-1 overflow-y-auto py-2 px-2.5 space-y-0">
+
+          <SectionLabel label="Encoders Modules" />
           <nav className="space-y-0.5">
             {menuItems.map((item) => (
               <NavItem
@@ -208,7 +192,7 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
             ))}
           </nav>
 
-          <SectionLabel label="VERIFICATION MODULES - UNDERDEVELOPMENT" />
+          <SectionLabel label="Verification Modules" />
           <nav className="space-y-0.5">
             {verificationMenuItems.map((item) => (
               <NavItem
@@ -216,9 +200,13 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
                 item={item}
                 isActive={activeItem === item.id}
                 onClick={() => console.log("UNDERDEVELOPMENT")}
-                // onClick={() => updateSidebar(item.id)}
+                disabled
               />
             ))}
+            <div className="flex items-center gap-1.5 px-3 py-1">
+              <Construction size={10} className="text-[#c4c4b8]" />
+              <span className="text-[10px] text-[#c4c4b8]">Under development</span>
+            </div>
           </nav>
 
           <SectionLabel label="Reports" />
@@ -232,17 +220,27 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
               />
             ))}
           </nav>
+
+          <SectionLabel label="Account" />
+          <nav className="space-y-0.5">
+            {AccountItems.map((item) => (
+              <NavItem
+                key={item.id}
+                item={item}
+                isActive={activeItem === item.id}
+                onClick={() => updateSidebar(item.id)}
+              />
+            ))}
+          </nav>
+
         </div>
 
-        {/* Footer */}
-        <div className="border-t border-[#e8e8e0] p-2.5 flex-shrink-0 space-y-1">
-          {/* User card */}
+        {/* Footer — user card */}
+        <div className="border-t border-[#e8e8e0] p-2.5 shrink-0">
           {User && (
             <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg bg-white border border-[#e8e8e0]">
               <div className="w-7 h-7 rounded-full bg-[#1a1a18] flex items-center justify-center shrink-0">
-                <span className="text-[11px] font-bold text-white">
-                  {(User.govUsername?.[0] ?? "U").toUpperCase()}
-                </span>
+                <span className="text-[11px] font-bold text-white">{initials}</span>
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-[12px] font-semibold text-[#1a1a18] truncate leading-tight">
@@ -254,31 +252,6 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
               </div>
             </div>
           )}
-
-          {/* Quick links row */}
-          <div className="flex gap-1">
-            <a
-              href="#"
-              className="flex-1 flex items-center justify-center gap-1.5 py-2 text-[11px] text-[#8a8a80] hover:text-[#1a1a18] no-underline transition-colors rounded-lg hover:bg-[#f0f0ec]"
-            >
-              <HelpCircle size={12} />
-              Help
-            </a>
-            <a
-              href="#"
-              className="flex-1 flex items-center justify-center gap-1.5 py-2 text-[11px] text-[#8a8a80] hover:text-[#1a1a18] no-underline transition-colors rounded-lg hover:bg-[#f0f0ec]"
-            >
-              <FileIcon size={12} />
-              Docs
-            </a>
-            <button
-              onClick={() => updateSidebar("logout")}
-              className="flex-1 flex items-center justify-center gap-1.5 py-2 text-[11px] font-medium text-red-400 hover:text-red-600 hover:bg-red-50 transition-colors rounded-lg cursor-pointer"
-            >
-              <LogOut size={12} />
-              Out
-            </button>
-          </div>
         </div>
       </aside>
     </>

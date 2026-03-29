@@ -7,6 +7,9 @@ import type { RouteParams } from "~/types/authTypes";
 import { useQuery } from "@tanstack/react-query";
 import APIFETCH from "lib/axios/axiosConfig";
 import { useToastStore } from "lib/zustand/ToastStore";
+import { Opt,Req } from "component/LabelStyle";
+
+
 
 export function CvsForm() {
   const navigate = useNavigate()
@@ -23,6 +26,8 @@ export function CvsForm() {
     facilityName: "",
     formType: "",
     remarks: "",
+    period : "",
+    issue : " ",
     date: today,
   });
 
@@ -44,6 +49,8 @@ export function CvsForm() {
         facilityName: data.facilityName ?? "",
         formType: data.formType ?? "",
         remarks: data.remarks ?? "",
+        period: data.period ?? "",
+        issue : data.issue ??" ",
         date: today,
       }))
     }
@@ -78,6 +85,7 @@ export function CvsForm() {
     facilityName: "",
     formType: "",
     remarks: "",
+    period :"",
     date: today,
   });
   navigate("/cvs")
@@ -102,7 +110,7 @@ export function CvsForm() {
               </div>
               <div className="space-y-3.5">
                 <div>
-                  <label className={labelCls}>ID Number <span className="text-red-400">*</span></label>
+                  <label className={labelCls}>ID Number <Req /></label>
                   <input
                     type="text"
                     name="idNumber"
@@ -114,11 +122,11 @@ export function CvsForm() {
                   />
                 </div>
                 <div>
-                  <label className={labelCls}>LGU <span className="text-red-400">*</span></label>
+                  <label className={labelCls}>LGU <Req /></label>
                   <input type="text" name="lgu" value={formData.lgu} onChange={handleChange} className={inputCls} placeholder="Enter LGU" required />
                 </div>
                 <div>
-                  <label className={labelCls}>Barangay <span className="text-red-400">*</span></label>
+                  <label className={labelCls}>Barangay <Req /></label>
                   <input type="text" name="barangay" value={formData.barangay} onChange={handleChange} className={inputCls} placeholder="Enter Barangay" required />
                 </div>
               </div>
@@ -131,11 +139,11 @@ export function CvsForm() {
               </div>
               <div className="space-y-3.5">
                 <div>
-                  <label className={labelCls}>Facility Name <span className="text-red-400">*</span></label>
+                  <label className={labelCls}>Facility Name <Req /></label>
                   <input type="text" name="facilityName" value={formData.facilityName} onChange={handleChange} className={inputCls} placeholder="Enter Facility Name" required />
                 </div>
                 <div>
-                  <label className={labelCls}> FORM TYPE <span className="text-red-400">*</span></label>
+                  <label className={labelCls}> FORM TYPE <Req /></label>
                   <select name="formType" value={formData.formType } onChange={handleChange} required className={inputCls}>
                     <option value="">Select</option>
                     <option value="F2">FORM 2 - Education</option>
@@ -165,12 +173,38 @@ export function CvsForm() {
               </div>
               <div className="space-y-3.5">
                 <div>
-                  <label className={labelCls}>Remarks <span className="text-red-400">*</span></label>
+                  <label className={labelCls}>Remarks <Req /></label>
                   <select name="remarks" value={formData.remarks} onChange={handleChange} required className={inputCls}>
                     <option value="">Select</option>
                     <option value="ENCODED">ENCODED</option>
                     <option value="ISSUE">ISSUE</option>
                   </select>
+                </div>
+                
+                <div>
+                  <label className={labelCls}>Period <Req /></label>
+                  <input
+                    type="text"
+                    name="text"
+                    value={formData.period}
+                    onChange={handleChange}
+                    required
+                    placeholder="Enter CVS PERIOD"
+                    className={inputCls + " cursor-default"}
+                  />
+                </div>
+
+                <div>
+                  <label className={labelCls}>Issue <Opt /></label>
+                  <input
+                    type="text"
+                    name="text"
+                    value={formData.issue}
+                    onChange={handleChange}
+                    required
+                    placeholder="Enter ISSUE"
+                    className={inputCls + " cursor-default"}
+                  />
                 </div>
 
                 <div className="flex gap-2.5 pt-1">

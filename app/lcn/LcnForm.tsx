@@ -8,7 +8,7 @@ import type { RouteParams } from "~/types/authTypes";
 import { useToastStore } from "lib/zustand/ToastStore";
 import { labelCls, inputCls } from "component/styleConfig";
 import { queryClient } from "~/root";
-
+import { Req } from "component/LabelStyle";
 export function LcnForm() {
   const { id } = useParams<RouteParams>();
   const { show } = useToastStore();
@@ -49,19 +49,19 @@ export function LcnForm() {
     if (!data) return;
     setFormData({
       lgu: data.lgu ?? "",
-      barangay: "",
-      hhId: "",
-      granteeName: "",
-      remarks: "",
-      issue: "",
-      encodedBy: "",
-      subjectOfChange: "",
-      pcn: "",
-      lrn: "",
-      drn: "",
-      cl: "",
+      barangay: data.barangay ?? "",
+      hhId: data.hhId ?? "",
+      granteeName: data.granteeName ?? "",
+      remarks: data.remarks ?? "",
+      issue: data.issue ?? "",
+      encodedBy: data.encodedBy ?? "",
+      subjectOfChange: data.subjectOfChange ?? "",
+      pcn: data.pcn ?? "",
+      lrn: data.lrn ?? "",
+      drn: data.drn ?? "",
+      cl: data.cl ?? "",
       date: today,
-      note: "",
+      note: data.note ?? "",
     });
   }, [data]);
 
@@ -76,6 +76,10 @@ export function LcnForm() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!formData.pcn.trim() && !formData.lrn.trim()) {
+      show("Please enter at least one of PCN or LRN.", "error");
+      return;
+    }
     setButtonLoading(true);
     const res = await APIFETCH.post(`/lcn/upload`, formData);
     if (res.data.upload) {
@@ -135,7 +139,7 @@ export function LcnForm() {
               <div className="space-y-3.5">
                 <div>
                   <label className={labelCls}>
-                    HH ID Number <span className="text-red-400">*</span>
+                    HH ID Number <Req />
                   </label>
                   <input
                     type="text"
@@ -149,7 +153,9 @@ export function LcnForm() {
                 </div>
 
                 <div>
-                  <label className={labelCls}>LGU</label>
+                  <label className={labelCls}>
+                    LGU <Req />
+                  </label>
                   <input
                     type="text"
                     name="lgu"
@@ -157,10 +163,13 @@ export function LcnForm() {
                     onChange={handleChange}
                     className={inputCls}
                     placeholder="Enter LGU"
+                    required
                   />
                 </div>
                 <div>
-                  <label className={labelCls}>Grantee Name</label>
+                  <label className={labelCls}>
+                    Grantee Name <Req />
+                  </label>
                   <input
                     type="text"
                     name="granteeName"
@@ -168,10 +177,13 @@ export function LcnForm() {
                     onChange={handleChange}
                     className={inputCls}
                     placeholder="Enter Name"
+                    required
                   />
                 </div>
                 <div>
-                  <label className={labelCls}>Barangay</label>
+                  <label className={labelCls}>
+                    Barangay <Req />{" "}
+                  </label>
                   <input
                     type="text"
                     name="barangay"
@@ -179,11 +191,12 @@ export function LcnForm() {
                     onChange={handleChange}
                     className={inputCls}
                     placeholder="Enter Barangay"
+                    required
                   />
                 </div>
                 <div>
                   <label className={labelCls}>
-                    Subject of Change <span className="text-red-400">*</span>
+                    Subject of Change <Req />
                   </label>
                   <input
                     type="text"
@@ -210,7 +223,7 @@ export function LcnForm() {
                   <label className={labelCls}>
                     PCN{" "}
                     <span className="text-[#c4c4b8] normal-case tracking-normal font-normal">
-                      (at least one of PCN / TR required)
+                      (at least one of PCN / LRN required)
                     </span>
                   </label>
                   <input
@@ -223,7 +236,12 @@ export function LcnForm() {
                   />
                 </div>
                 <div>
-                  <label className={labelCls}>LRN</label>
+                  <label className={labelCls}>
+                    LRN{" "}
+                    <span className="text-[#c4c4b8] normal-case tracking-normal font-normal">
+                      (at least one of PCN / LRN required)
+                    </span>
+                  </label>
                   <input
                     type="text"
                     name="lrn"
@@ -235,7 +253,7 @@ export function LcnForm() {
                 </div>
                 <div>
                   <label className={labelCls}>
-                    Encoded Y/N <span className="text-red-400">*</span>
+                    Encoded Y/N <Req />
                   </label>
                   <select
                     name="remarks"
@@ -245,8 +263,8 @@ export function LcnForm() {
                     className={inputCls}
                   >
                     <option value="">Select</option>
-                    <option value="YES">Yes</option>
-                    <option value="NO">No</option>
+                    <option value="ENCODED">ENCODED</option>
+                    <option value="ISSUE">ISSUE</option>
                     <option value="UPDATED">Updated</option>
                   </select>
                 </div>

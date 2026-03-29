@@ -12,6 +12,7 @@ import type { RouteParams } from "~/types/authTypes";
 import { useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { queryClient } from "~/root";
+import { Req } from "component/LabelStyle";
 
 export default function SWDIForm() {
   const navigate = useNavigate();
@@ -150,7 +151,7 @@ export default function SWDIForm() {
               <div className="space-y-3.5">
                 <div>
                   <label htmlFor="hhId" className={labelCls}>
-                    HH ID <span className="text-red-400">*</span>
+                    HH ID <Req />
                   </label>
                   <input
                     type="text"
@@ -165,7 +166,7 @@ export default function SWDIForm() {
                 </div>
                 <div>
                   <label className={labelCls}>
-                    LGU <span className="text-red-400">*</span>
+                    LGU <Req />
                   </label>
                   <input
                     type="text"
@@ -179,7 +180,7 @@ export default function SWDIForm() {
                 </div>
                 <div>
                   <label className={labelCls}>
-                    Barangay <span className="text-red-400">*</span>
+                    Barangay <Req />
                   </label>
                   <input
                     type="text"
@@ -193,7 +194,7 @@ export default function SWDIForm() {
                 </div>
                 <div>
                   <label htmlFor="grantee" className={labelCls}>
-                    Grantee <span className="text-red-400">*</span>
+                    Grantee <Req />
                   </label>
                   <input
                     type="text"
@@ -219,7 +220,7 @@ export default function SWDIForm() {
               <div className="space-y-3.5">
                 <div>
                   <label htmlFor="remarks" className={labelCls}>
-                    Encoded Y/N <span className="text-red-400">*</span>
+                    Remarks<Req />
                   </label>
                   <select
                     id="remarks"
@@ -237,7 +238,7 @@ export default function SWDIForm() {
                 </div>
                 <div>
                   <label htmlFor="swdiScore" className={labelCls}>
-                    SWDI Score <span className="text-red-400">*</span>
+                    SWDI Score <Req />
                   </label>
                   <input
                     type="text"
@@ -247,6 +248,7 @@ export default function SWDIForm() {
                     max={3}
                     step="0.01"
                     value={swdiScoreInput}
+                    required
                     placeholder="Enter SWDI Score (1–3)"
                     onChange={(e) => {
                       const raw = e.target.value;
@@ -269,7 +271,7 @@ export default function SWDIForm() {
                 </div>
                 <div>
                   <label className={labelCls}>
-                    SWDI Level <span className="text-red-400">*</span>
+                    SWDI Level
                   </label>
                   <input
                     type="text"
@@ -286,7 +288,7 @@ export default function SWDIForm() {
                 </div>
                 <div>
                   <label htmlFor="date" className={labelCls}>
-                    Date <span className="text-red-400">*</span>
+                    Date <Req />
                   </label>
                   <input
                     type="date"
@@ -326,7 +328,7 @@ export default function SWDIForm() {
                 <div>
                   <label className={labelCls}>
                     Assigned City Link or SWA{" "}
-                    <span className="text-red-400">*</span>
+                    <Req />
                   </label>
                   <input
                     type="text"

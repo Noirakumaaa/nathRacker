@@ -10,6 +10,8 @@ export interface CvsFormFields {
   facilityName: string;
   formType: string;
   remarks: string;
+  period: string;
+  issue?: string;
   date: string;
 }
 

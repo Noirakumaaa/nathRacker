@@ -39,6 +39,7 @@ type AllDocuments = {
   userId: number;
   govUsername: string;
   subjectOfChange?: string;
+  drn?: string;
   date: string;
 };
 
@@ -120,6 +121,7 @@ export function RecordsTable() {
               item.documentType,
               item.remarks,
               item.govUsername,
+              item.drn,
             ].some((v) => v?.toLowerCase().includes(s))
           : true;
         const matchesEncoded = filters.encoded
@@ -279,7 +281,7 @@ const handleDeleteConfirm = async () => {
         onClose={() => setSelectedCVSItem(null)}
       />
 
-      <div className="bg-white border border-[#e8e8e0] rounded-xl px-6 py-4 flex items-center gap-3 flex-shrink-0">
+      <div className="bg-white border border-[#e8e8e0] rounded-xl px-6 py-4 flex items-center gap-3 shrink-0">
         <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center">
           <Layers className="w-4 h-4 text-sky-600" />
         </div>
@@ -446,6 +448,9 @@ const handleDeleteConfirm = async () => {
                   Subject of Change
                 </th>
                 <th className="px-4 py-3 text-center text-[10px] font-semibold text-[#8a8a80] uppercase tracking-widest whitespace-nowrap">
+                  DRN
+                </th>
+                <th className="px-4 py-3 text-center text-[10px] font-semibold text-[#8a8a80] uppercase tracking-widest whitespace-nowrap">
                   Status
                 </th>
                 <th className="px-4 py-3 text-center text-[10px] font-semibold text-[#8a8a80] uppercase tracking-widest whitespace-nowrap">
@@ -464,7 +469,7 @@ const handleDeleteConfirm = async () => {
             <tbody className="divide-y divide-[#f5f5f2]">
               {isLoading ? (
                 <tr>
-                  <td colSpan={8} className="py-14 text-center">
+                  <td colSpan={9} className="py-14 text-center">
                     <div className="flex flex-col items-center gap-2 text-[#c4c4b8]">
                       <Loader2 size={18} className="animate-spin" />
                       <span className="text-[12px]">Loading records…</span>
@@ -473,7 +478,7 @@ const handleDeleteConfirm = async () => {
                 </tr>
               ) : paginatedData.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="py-16 text-center">
+                  <td colSpan={9} className="py-16 text-center">
                     <div className="flex flex-col items-center gap-2">
                       <InboxIcon size={22} className="text-[#d4d4cc]" />
                       <p className="text-[13px] font-medium text-[#1a1a18]">
@@ -522,10 +527,15 @@ const handleDeleteConfirm = async () => {
                     </td>
 
                     {/* Subject of Change */}
-                    <td className="px-4 py-2.5 text-center text-[12px] text-[#8a8a80] max-w-[140px] truncate">
+                    <td className="px-4 py-2.5 text-center text-[12px] text-[#8a8a80] max-w-35 truncate">
                       {item.subjectOfChange || (
                         <span className="text-[#d4d4cc]">—</span>
                       )}
+                    </td>
+
+                    {/* DRN */}
+                    <td className="px-4 py-2.5 text-center text-[12px] text-[#8a8a80] whitespace-nowrap">
+                      {item.drn || <span className="text-[#d4d4cc]">—</span>}
                     </td>
 
                     {/* Status */}
