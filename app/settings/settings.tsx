@@ -537,11 +537,7 @@ function SecuritySettings() {
 
   const handleSave = () =>
     trigger(async () => {
-      await fetch("/api/auth/sessionTimeout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionTime: sec.sessionTimeout }),
-      }).catch(() => {});
+      await APIFETCH.post("/auth/sessionTimeout", { sessionTime: sec.sessionTimeout }).catch(() => {});
     });
 
   return (

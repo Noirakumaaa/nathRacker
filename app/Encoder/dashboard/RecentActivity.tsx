@@ -22,7 +22,7 @@ export function RecentActivity({
           {recentAll.length} entries
         </span>
       </div>
-      <div className="overflow-y-auto max-h-[360px]">
+      <div className="overflow-y-auto max-h-90">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-12 gap-2 text-[#c4c4b8]">
             <Loader2 size={18} className="animate-spin" />
@@ -77,7 +77,7 @@ export function RecentActivity({
                       </button>
                     </div>
                   </td>
-                  <td className="px-4 py-2.5 text-[12px] text-[#1a1a18] max-w-[140px] truncate">
+                  <td className="px-4 py-2.5 text-[12px] text-[#1a1a18] max-w-35 truncate">
                     {entry.name ?? <span className="text-[#d4d4cc]">—</span>}
                   </td>
                   <td className="px-4 py-2.5">

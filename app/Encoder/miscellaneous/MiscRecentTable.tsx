@@ -44,7 +44,7 @@ const buildColumns : ColumnDef<MiscRecord>[] = [
   },
   {
     header: "Subject",
-    cell: (r) => <span className="max-w-[120px] truncate block">{r.subjectOfChange || <span className="text-[#d4d4cc]">—</span>}</span>,
+    cell: (r) => <span className="max-w-30 truncate block">{r.subjectOfChange || <span className="text-[#d4d4cc]">—</span>}</span>,
   },
   {
     header: "Encoded By",
@@ -72,7 +72,7 @@ const buildColumns : ColumnDef<MiscRecord>[] = [
   },
   {
     header: "Note",
-    cell: (r) => <span className="max-w-[100px] truncate block">{r.note || <span className="text-[#d4d4cc]">—</span>}</span>,
+    cell: (r) => <span className="max-w-25 truncate block">{r.note || <span className="text-[#d4d4cc]">—</span>}</span>,
   },
   {
     header: "",

@@ -8,17 +8,14 @@ import { QuickActions } from "./QuickActions";
 import type { CountItem, RecentEntry, StatCard } from "~/types/dashboardTypes";
 import type { me } from "~/types/authTypes";
 import { moduleStyle } from "../../../component/styleConfig";
+import APIFETCH from "lib/axios/axiosConfig";
 
 export default function Dashboard({ userData }: { userData: me }) {
   const { data: counts = [] } = useQuery<CountItem[]>({
     queryKey: ["documentCounts"],
     queryFn: async () => {
-      const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_API_URL}/alldocuments/count/documents`,
-        { credentials: "include" },
-      );
-      if (!res.ok) throw new Error("Failed to fetch counts");
-      const data = await res.json();
+      const res = await APIFETCH.get("/alldocuments/count/documents");
+      const data = res.data;
       return Array.isArray(data) ? data : (data.data ?? []);
     },
   });
@@ -26,12 +23,8 @@ export default function Dashboard({ userData }: { userData: me }) {
   const { data: sparklines = {} } = useQuery<Record<string, number[]>>({
     queryKey: ["weeklyDocumentCounts"],
     queryFn: async (): Promise<Record<string, number[]>> => {
-      const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_API_URL}/alldocuments/weekly-count`,
-        { credentials: "include" },
-      );
-      if (!res.ok) throw new Error("Failed to fetch weekly counts");
-      const data = await res.json();
+      const res = await APIFETCH.get("/alldocuments/weekly-count");
+      const data = res.data;
       if (typeof data === "object" && !Array.isArray(data) && "data" in data)
         return data.data as Record<string, number[]>;
       return typeof data === "object" && !Array.isArray(data) ? data : {};
@@ -41,12 +34,8 @@ export default function Dashboard({ userData }: { userData: me }) {
   const { data: recentBus = [], isLoading } = useQuery({
     queryKey: ["UserRecent"],
     queryFn: async () => {
-      const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_API_URL}/alldocuments/UserRecent`,
-        { credentials: "include" },
-      );
-      if (!res.ok) throw new Error("Failed to fetch recent");
-      const data = await res.json();
+      const res = await APIFETCH.get("/alldocuments/UserRecent");
+      const data = res.data;
       return (
         (data as any[])
           ?.slice(0, 8)

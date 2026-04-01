@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { Loader2, InboxIcon } from "lucide-react";
+import APIFETCH from "lib/axios/axiosConfig";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -41,11 +42,8 @@ export default function RecentTable<T extends { id: string | number }>({
 const { data: records = [], isLoading, refetch } = useQuery<T[]>({
   queryKey: [queryKey],
   queryFn: async () => {
-    const res = await fetch(`${import.meta.env.VITE_BACKEND_API_URL}${endpoint}`, {
-      credentials: "include",
-    });
-    if (!res.ok) throw new Error("Failed to fetch records");
-    return res.json() as Promise<T[]>;
+    const res = await APIFETCH.get(endpoint);
+    return res.data as T[];
   },
 });
 

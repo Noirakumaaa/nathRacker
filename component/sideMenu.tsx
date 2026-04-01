@@ -133,9 +133,8 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
   const { data: User } = useQuery({
     queryKey: ["me"],
     queryFn: async () => {
-      const res = await fetch("/auth/check-auth", { credentials: "include" });
-      if (!res.ok) throw new Error("Unauthorized");
-      return res.json();
+      const res = await APIFETCH.get("/auth/check-auth");
+      return res.data;
     },
     retry: false,
   });

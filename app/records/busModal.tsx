@@ -16,7 +16,7 @@ function DetailRow({
   return (
     <div className="grid grid-cols-2 gap-4 py-2.5 border-b border-[#f0f0ec] last:border-0">
       <span className="text-[11px] font-medium text-[#8a8a80] uppercase tracking-wider">{label}</span>
-      <span className="text-[13px] font-medium text-[#1a1a18] text-right break-words">
+      <span className="text-[13px] font-medium text-[#1a1a18] text-right wrap-break-word">
         {value ?? <span className="text-[#d4d4cc] italic font-normal">—</span>}
       </span>
     </div>
@@ -68,7 +68,7 @@ export function BusViewModal({ item, onClose }: BusViewModalProps) {
       <div className="relative bg-white rounded-2xl w-full max-w-2xl z-10 flex flex-col max-h-[90vh] overflow-hidden border border-[#e8e8e0] shadow-[0_24px_60px_rgba(0,0,0,0.15)]">
 
         {/* Top accent line */}
-        <div className="h-px w-full bg-gradient-to-r from-indigo-400 via-blue-400 to-transparent" />
+        <div className="h-px w-full bg-linear-to-r from-indigo-400 via-blue-400 to-transparent" />
 
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#e8e8e0]">

@@ -33,9 +33,10 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
-export function Layout({ children }: { children: React.ReactNode }) {
-  const { open, statusMessage, toastStatus } = useToastStore();
+// root.tsx
 
+export function Layout({ children }: { children: React.ReactNode }) {
+  // ❌ removed useToastStore from here — causes SSR hydration mismatch
   return (
     <html lang="en">
       <head>
@@ -46,13 +47,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {children}
-        {open && (
-          <Toast
-            statusMessage={statusMessage}
-            toastStatus={toastStatus}
-            toastConfig={toastConfig}
-          />
-        )}
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -61,9 +55,18 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function Root() {
+  const { open, statusMessage, toastStatus } = useToastStore(); // ✅ client only
+  
   return (
     <QueryClientProvider client={queryClient}>
       <Outlet />
+      {open && ( // ✅ renders after hydration, no mismatch
+        <Toast
+          statusMessage={statusMessage}
+          toastStatus={toastStatus}
+          toastConfig={toastConfig}
+        />
+      )}
     </QueryClientProvider>
   );
 }
