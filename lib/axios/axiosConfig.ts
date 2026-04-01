@@ -27,7 +27,7 @@ APIFETCH.interceptors.response.use(
       const url = error.config?.url ?? '';
       if (!url.includes('/auth/')) {
         queryClient.removeQueries({ queryKey: ["me"] }); // ← clear cache
-        await fetch(`${import.meta.env.VITE_BACKEND_API_URL}/auth/logout`, {
+        await fetch(`/api/auth/logout`, {
           credentials: "include",
         });
         window.location.href = "/login";
