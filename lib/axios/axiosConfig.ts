@@ -4,7 +4,7 @@ import type { AxiosResponse, InternalAxiosRequestConfig } from "axios";
 import { queryClient } from "./../../app/root"; // ← import the instance directly
 
 const APIFETCH = axios.create({
-  baseURL: "/api",
+  baseURL: import.meta.env.VITE_API_URL ?? "/api",
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
