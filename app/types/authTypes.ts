@@ -20,11 +20,14 @@ export type me = {
 }
 
 export type LoginResponse = { 
+    message : string
+    token : {
     email : string
     govUsername : string
     role : string
     firstName: string
     lastName:string 
+    }
 }
 
 export type RegisterInput = {

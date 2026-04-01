@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import RegisterForm from "~/Register/register";
+import BusMain from "~/bus/busMain";
 import { useNavigate } from "react-router";
 import LayoutWrapper from "layout/navLayout";
 import UnauthorizedPage from "~/notAuthorized/notAuthorized";
@@ -14,7 +14,7 @@ export function meta() {
   ];
 }
 
-export default function RegisterRoute() {
+export default function DashboardRoute() {
   const navigate = useNavigate();
   const { user, isLoading, isAuthenticated } = useAuth();
 
@@ -35,7 +35,7 @@ export default function RegisterRoute() {
 
   return (
     <LayoutWrapper>
-      <RegisterForm />
+      <BusMain />
     </LayoutWrapper>
   );
 }

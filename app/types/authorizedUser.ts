@@ -1,1 +1,1 @@
-export const AuthorizedUser = ["ENCODER", "ADMIN"];
+export const AuthorizedUser = ["ENCODER", "ADMIN", "AREA_COORDINATOR", "SOCIAL_WORKER_III"];

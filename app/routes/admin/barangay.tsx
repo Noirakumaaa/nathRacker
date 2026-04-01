@@ -1,20 +1,20 @@
 import { useEffect } from "react";
-import RegisterForm from "~/Register/register";
 import { useNavigate } from "react-router";
 import LayoutWrapper from "layout/navLayout";
 import UnauthorizedPage from "~/notAuthorized/notAuthorized";
 import { AuthorizedUser } from "~/types/authorizedUser";
 import { LoadingScreen } from "component/LoadingScreen";
 import { useAuth } from "component/authGuard";
+import BarangayTab from "~/adminSettings/BarangayTab";
 
 export function meta() {
   return [
-    { title: "BUS" },
-    { name: "description", content: "Encoding Bus Forms" },
+    { title: "Barangay" },
+    { name: "description", content: "Manage barangays" },
   ];
 }
 
-export default function RegisterRoute() {
+export default function AdminBarangayRoute() {
   const navigate = useNavigate();
   const { user, isLoading, isAuthenticated } = useAuth();
 
@@ -35,7 +35,7 @@ export default function RegisterRoute() {
 
   return (
     <LayoutWrapper>
-      <RegisterForm />
+      <BarangayTab />
     </LayoutWrapper>
   );
 }

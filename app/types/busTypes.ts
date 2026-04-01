@@ -31,9 +31,12 @@ export type BusRecord = {
   cl: string;
   date: string;
   note: string;
+  verified: string;
+  verifiedBy: string;
+  verificationIssue: string | null;
   userId: number;
-  createdAt: string
-  updatedAt: string
+  createdAt: string;
+  updatedAt: string;
 }
 
 export type BusData = {

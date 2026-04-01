@@ -1,20 +1,20 @@
-import { useEffect } from "react";
-import RegisterForm from "~/Register/register";
-import { useNavigate } from "react-router";
+import Dashboard from "~/Encoder/dashboard/dashboard";
 import LayoutWrapper from "layout/navLayout";
 import UnauthorizedPage from "~/notAuthorized/notAuthorized";
 import { AuthorizedUser } from "~/types/authorizedUser";
+import { useNavigate } from "react-router";
+import { useEffect } from "react";
 import { LoadingScreen } from "component/LoadingScreen";
 import { useAuth } from "component/authGuard";
 
 export function meta() {
   return [
-    { title: "BUS" },
-    { name: "description", content: "Encoding Bus Forms" },
+    { title: "Dashboard" },
+    { name: "description", content: "View your dashboard" },
   ];
 }
 
-export default function RegisterRoute() {
+export default function DashboardRoute() {
   const navigate = useNavigate();
   const { user, isLoading, isAuthenticated } = useAuth();
 
@@ -35,7 +35,7 @@ export default function RegisterRoute() {
 
   return (
     <LayoutWrapper>
-      <RegisterForm />
+      <Dashboard userData={user} />
     </LayoutWrapper>
   );
 }

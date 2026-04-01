@@ -10,6 +10,11 @@ import {
   FileIcon,
   ChevronRight,
   Construction,
+  UserPlus,
+  Users,
+  Building2,
+  MapPin,
+  Landmark,
 } from "lucide-react";
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -34,13 +39,27 @@ const menuItems = [
 ];
 
 const verificationMenuItems = [
-  { id: "busVer", label: "BUS Verification", icon: FileText },
-  { id: "cvsVer", label: "CVS Verification", icon: FileText },
+  { id: "verification/bus", label: "BUS Verification", icon: FileText, enabled: true },
+  { id: "cvsVer",           label: "CVS Verification", icon: FileText, enabled: false },
 ];
 
 const bottomItems = [
   { id: "records", label: "Records", icon: BookText },
   { id: "summary", label: "Summary", icon: ClipboardCheck },
+];
+
+const adminItems = [
+  { id: "operations/dashboard", label: "Ops Dashboard",    icon: Home },
+  { id: "admin/register",       label: "Register Account", icon: UserPlus },
+  { id: "admin/employees",      label: "Employees",        icon: Users },
+  { id: "admin/office",         label: "Operations Office",icon: Building2 },
+  { id: "admin/lgu",            label: "LGU",              icon: Landmark },
+  { id: "admin/barangay",       label: "Barangay",         icon: MapPin },
+];
+
+const operationsItems = [
+  { id: "operations/my-office", label: "My Office", icon: Building2 },
+  { id: "operations/staff",     label: "Staff",     icon: Users },
 ];
 
 const AccountItems = [
@@ -133,6 +152,10 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
     updateSidebarOption(option);
   };
 
+  const isAdmin = User?.role === "ADMIN";
+  const isOpsStaff =
+    User?.role === "AREA_COORDINATOR" || User?.role === "SOCIAL_WORKER_III" || "ADMIN";
+
   const logout = async () => {
     const res = await APIFETCH.get("/auth/logout");
     if (res.data.logout) {
@@ -199,14 +222,22 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
                 key={item.id}
                 item={item}
                 isActive={activeItem === item.id}
-                onClick={() => console.log("UNDERDEVELOPMENT")}
-                disabled
+                onClick={() =>
+                  item.enabled
+                    ? updateSidebar(item.id)
+                    : console.log("UNDERDEVELOPMENT")
+                }
+                disabled={!item.enabled}
               />
             ))}
-            <div className="flex items-center gap-1.5 px-3 py-1">
-              <Construction size={10} className="text-[#c4c4b8]" />
-              <span className="text-[10px] text-[#c4c4b8]">Under development</span>
-            </div>
+            {verificationMenuItems.some((i) => !i.enabled) && (
+              <div className="flex items-center gap-1.5 px-3 py-1">
+                <Construction size={10} className="text-[#c4c4b8]" />
+                <span className="text-[10px] text-[#c4c4b8]">
+                  Some modules under development
+                </span>
+              </div>
+            )}
           </nav>
 
           <SectionLabel label="Reports" />
@@ -220,6 +251,38 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
               />
             ))}
           </nav>
+
+          {isOpsStaff && (
+            <>
+              <SectionLabel label="Operations" />
+              <nav className="space-y-0.5">
+                {operationsItems.map((item) => (
+                  <NavItem
+                    key={item.id}
+                    item={item}
+                    isActive={activeItem === item.id}
+                    onClick={() => updateSidebar(item.id)}
+                  />
+                ))}
+              </nav>
+            </>
+          )}
+
+          {isAdmin && (
+            <>
+              <SectionLabel label="Admin" />
+              <nav className="space-y-0.5">
+                {adminItems.map((item) => (
+                  <NavItem
+                    key={item.id}
+                    item={item}
+                    isActive={activeItem === item.id}
+                    onClick={() => updateSidebar(item.id)}
+                  />
+                ))}
+              </nav>
+            </>
+          )}
 
           <SectionLabel label="Account" />
           <nav className="space-y-0.5">

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import RegisterForm from "~/Register/register";
 import { useNavigate } from "react-router";
+import AdminSettingsPage from "~/adminSettings/AdminSettingsPage";
 import LayoutWrapper from "layout/navLayout";
 import UnauthorizedPage from "~/notAuthorized/notAuthorized";
 import { AuthorizedUser } from "~/types/authorizedUser";
@@ -35,7 +35,7 @@ export default function RegisterRoute() {
 
   return (
     <LayoutWrapper>
-      <RegisterForm />
+      <AdminSettingsPage />
     </LayoutWrapper>
   );
 }

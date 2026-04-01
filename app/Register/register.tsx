@@ -1,300 +1,359 @@
-import { useState } from "react";
-import OfficePic from "./office.jpg";
-import APIFETCH from "lib/axios/axiosConfig";
-import type { RegisterInput, RegisterResponse } from "~/types/authTypes";
+import React, { useState } from "react";
 import { useToastStore } from "lib/zustand/ToastStore";
+import APIFETCH from "lib/axios/axiosConfig";
 import { useNavigate } from "react-router";
+import { labelCls, inputCls } from "component/styleConfig";
+import { Opt, Req } from "component/LabelStyle";
 
+interface CreateRegisterAccount {
+  firstName: string;
+  lastName: string;
+  middleName: string;
+  govUsername: string;
+  email: string;
+  password: string;
+  phone: string;
+  role: "ENCODER" | "ADMIN" | "";
+  assignedOperationId: number | "";
+  assignedLGUID: number | "";
+  assignedBarangayId: number | "";
+}
 
+const EMPTY_FORM: CreateRegisterAccount = {
+  firstName: "",
+  lastName: "",
+  middleName: "",
+  govUsername: "",
+  email: "",
+  password: "",
+  phone: "",
+  role: "",
+  assignedOperationId: "",
+  assignedLGUID: "",
+  assignedBarangayId: "",
+};
 
-export function Register() {
-  const navigate = useNavigate()
+export default function RegisterForm() {
+  const navigate = useNavigate();
   const { show } = useToastStore();
-  const [isLoading, setIsLoading] = useState(false);
+  const [buttonLoading, setButtonLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [formData, setFormData] = useState<RegisterInput>({
-    govUsername: "",
-    email: "",
-    password: "",
-    firstName: "",
-    lastName: "",
-    phone: "",
-  });
 
-  const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
-    setFormData({ ...formData, [field]: e.target.value });
+  const [formData, setFormData] = useState<CreateRegisterAccount>(EMPTY_FORM);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+
+    // Don't uppercase email or password
+    const noUppercase = ["email", "password", "govUsername"];
+    const formatted = noUppercase.includes(name) ? value : value.toUpperCase();
+
+    const numberFields = ["assignedOperationId", "assignedLGUID", "assignedBarangayId"];
+    setFormData((prev) => ({
+      ...prev,
+      [name]: numberFields.includes(name) ? (value === "" ? "" : Number(value)) : formatted,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setErrorMessage("");
-    setIsLoading(true);
-
+    setButtonLoading(true);
     try {
-      const res = await APIFETCH.post<RegisterResponse>(
-        "/auth/register",
-        formData,
-      );
-      console.log(formData)
-      show("Login successful! Redirecting...", "success"); 
-      navigate("/login")
+      const res = await APIFETCH.post("/auth/register", formData);
+      if (res.data?.success) {
+        show(res.data.message ?? "Account created successfully.", "success");
+        handleReset();
+      } else {
+        show(res.data?.message ?? "Registration failed.", "error");
+      }
     } catch {
-      setErrorMessage("Invalid email or password");
-      show("Invalid email or password", "error"); 
+      show("An error occurred during registration.", "error");
     } finally {
-      setIsLoading(false);
+      setButtonLoading(false);
     }
   };
 
-  const inputClass =
-    "block w-full px-4 py-3 border border-[#e8e8e0] rounded-lg text-[14px] text-[#1a1a18] placeholder-[#c4c4b8] bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent hover:border-[#c8c8c0] transition-colors";
-
-  const labelClass = "block text-[13px] font-medium text-[#1a1a18] mb-1.5";
+  const handleReset = () => {
+    setFormData(EMPTY_FORM);
+    navigate(-1);
+  };
 
   return (
-    <main className="flex min-h-screen bg-[#fafaf8] font-sans antialiased">
-      {/* Left panel — form */}
-      <div className="w-full md:w-[55%] flex flex-col justify-center px-8 lg:px-20 py-16 bg-[#fafaf8] relative">
-        {/* Back home */}
-        <a
-          href="/"
-          className="absolute top-6 left-8 lg:left-20 flex items-center gap-1.5 text-[13px] text-[#8a8a80] hover:text-[#1a1a18] no-underline transition-colors"
-        >
-          <svg
-            className="w-3.5 h-3.5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-          Home
-        </a>
+    <form
+      onSubmit={handleSubmit}
+      className="bg-white rounded-xl border border-[#e8e8e0] overflow-hidden"
+    >
+      {/* Header */}
+      <div className="px-6 py-4 border-b border-[#e8e8e0] flex items-center justify-between">
+        <p className="text-[11px] font-medium text-[#8a8a80] uppercase tracking-wider">
+          New Account Registration
+        </p>
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-red-600 bg-red-50 border border-red-200 px-2 py-1 rounded-md uppercase tracking-wide">
+            <span className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block shrink-0" />
+            Required
+          </span>
+          <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-[#8a8a80] bg-[#f5f5f2] border border-[#e8e8e0] px-2 py-1 rounded-md uppercase tracking-wide">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#c4c4b8] inline-block shrink-0" />
+            Optional
+          </span>
+        </div>
+      </div>
 
-        <div className="max-w-[440px] w-full mx-auto">
-          {/* Mobile logo */}
-          <div className="flex items-center gap-2 mb-8 md:hidden">
-            <span className="w-2 h-2 rounded-full bg-blue-600 inline-block" />
-            <span className="text-[#1a1a18] text-[17px] font-semibold tracking-tight">
-              NathRacker
-            </span>
-          </div>
+      <div className="p-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-          {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-[28px] font-semibold tracking-[-0.03em] text-[#1a1a18] mb-2">
-              Create an account
-            </h1>
-            <p className="text-[14px] text-[#8a8a80]">
-              Join NathRacker to start tracking your encoded records.
-            </p>
-          </div>
-
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            {/* Name row */}
-            <div className="flex gap-3">
-              <div className="flex-1">
-                <label className={labelClass}>First Name</label>
+          {/* Column 1 — Personal Info */}
+          <div className="space-y-4">
+            <div className="pb-2 border-b border-[#e8e8e0]">
+              <h3 className="text-[11px] font-semibold text-[#1a1a18] uppercase tracking-wider">
+                Personal Information
+              </h3>
+            </div>
+            <div className="space-y-3.5">
+              <div>
+                <label htmlFor="firstName" className={labelCls}>
+                  First Name <Req />
+                </label>
                 <input
                   type="text"
-                  className={inputClass}
-                  placeholder="First name"
+                  id="firstName"
+                  name="firstName"
                   value={formData.firstName}
-                  onChange={set("firstName")}
+                  onChange={handleInputChange}
                   required
+                  className={inputCls}
+                  placeholder="Enter First Name"
                 />
               </div>
-              <div className="flex-1">
-                <label className={labelClass}>Last Name</label>
+              <div>
+                <label htmlFor="middleName" className={labelCls}>
+                  Middle Name <Opt />
+                </label>
                 <input
                   type="text"
-                  className={inputClass}
-                  placeholder="Last name"
+                  id="middleName"
+                  name="middleName"
+                  value={formData.middleName}
+                  onChange={handleInputChange}
+                  className={inputCls}
+                  placeholder="Enter Middle Name"
+                />
+              </div>
+              <div>
+                <label htmlFor="lastName" className={labelCls}>
+                  Last Name <Req />
+                </label>
+                <input
+                  type="text"
+                  id="lastName"
+                  name="lastName"
                   value={formData.lastName}
-                  onChange={set("lastName")}
+                  onChange={handleInputChange}
                   required
+                  className={inputCls}
+                  placeholder="Enter Last Name"
+                />
+              </div>
+              <div>
+                <label htmlFor="phone" className={labelCls}>
+                  Phone Number <Req />
+                </label>
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  required
+                  className={inputCls}
+                  placeholder="e.g. 09XXXXXXXXX"
                 />
               </div>
             </div>
+          </div>
 
-            {/* Gov username */}
-            <div>
-              <label className={labelClass}>Government Username</label>
-              <input
-                type="text"
-                name="username"
-                className={inputClass}
-                placeholder="Enter your PPIS username"
-                value={formData.govUsername}
-                onChange={set("govUsername")}
-                required
-              />
+          {/* Column 2 — Account Credentials */}
+          <div className="space-y-4">
+            <div className="pb-2 border-b border-[#e8e8e0]">
+              <h3 className="text-[11px] font-semibold text-[#1a1a18] uppercase tracking-wider">
+                Account Credentials
+              </h3>
             </div>
-
-            {/* Phone */}
-            <div>
-              <label className={labelClass}>Phone Number</label>
-              <input
-                type="tel"
-                className={inputClass}
-                placeholder="Enter your phone number"
-                value={formData.phone}
-                onChange={set("phone")}
-                required
-              />
-            </div>
-
-            {/* Email */}
-            <div>
-              <label className={labelClass}>Email Address</label>
-              <input
-                type="email"
-                name="email"
-                className={inputClass}
-                placeholder="email@example.com"
-                value={formData.email}
-                onChange={set("email")}
-                required
-              />
-            </div>
-
-            {/* Password */}
-            <div>
-              <label className={labelClass}>Password</label>
-              <div className="relative">
+            <div className="space-y-3.5">
+              <div>
+                <label htmlFor="govUsername" className={labelCls}>
+                  Government Username <Req />
+                </label>
                 <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  className={inputClass + " pr-16"}
-                  placeholder="Create a strong password"
-                  value={formData.password}
-                  onChange={set("password")}
+                  type="text"
+                  id="govUsername"
+                  name="govUsername"
+                  value={formData.govUsername}
+                  onChange={handleInputChange}
                   required
+                  className={inputCls}
+                  placeholder="Enter Gov Username"
                 />
+              </div>
+              <div>
+                <label htmlFor="email" className={labelCls}>
+                  Email Address <Req />
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  required
+                  className={inputCls}
+                  placeholder="Enter Email"
+                />
+              </div>
+              <div>
+                <label htmlFor="password" className={labelCls}>
+                  Password <Req />
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    required
+                    className={inputCls + " pr-10"}
+                    placeholder="Enter Password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8a8a80] hover:text-[#1a1a18] transition-colors text-[11px] font-medium uppercase tracking-wide"
+                  >
+                    {showPassword ? "Hide" : "Show"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Column 3 — Role & Assignment */}
+          <div className="space-y-4">
+            <div className="pb-2 border-b border-[#e8e8e0]">
+              <h3 className="text-[11px] font-semibold text-[#1a1a18] uppercase tracking-wider">
+                Role & Assignment
+              </h3>
+            </div>
+            <div className="space-y-3.5">
+              <div>
+                <label htmlFor="role" className={labelCls}>
+                  Role <Req />
+                </label>
+                <select
+                  id="role"
+                  name="role"
+                  value={formData.role}
+                  onChange={handleInputChange}
+                  required
+                  className={inputCls}
+                >
+                  <option value="">Select Role</option>
+                  <option value="ENCODER">ENCODER</option>
+                  <option value="ADMIN">ADMIN</option>
+                </select>
+              </div>
+              <div>
+                <label htmlFor="assignedOperationId" className={labelCls}>
+                  Assigned Operation ID <Opt />
+                </label>
+                <input
+                  type="number"
+                  id="assignedOperationId"
+                  name="assignedOperationId"
+                  value={formData.assignedOperationId}
+                  onChange={handleInputChange}
+                  min={1}
+                  className={inputCls}
+                  placeholder="Enter Operation ID"
+                />
+              </div>
+              <div>
+                <label htmlFor="assignedLGUID" className={labelCls}>
+                  Assigned LGU ID <Opt />
+                </label>
+                <input
+                  type="number"
+                  id="assignedLGUID"
+                  name="assignedLGUID"
+                  value={formData.assignedLGUID}
+                  onChange={handleInputChange}
+                  min={1}
+                  className={inputCls}
+                  placeholder="Enter LGU ID"
+                />
+              </div>
+              <div>
+                <label htmlFor="assignedBarangayId" className={labelCls}>
+                  Assigned Barangay ID <Opt />
+                </label>
+                <input
+                  type="number"
+                  id="assignedBarangayId"
+                  name="assignedBarangayId"
+                  value={formData.assignedBarangayId}
+                  onChange={handleInputChange}
+                  min={1}
+                  className={inputCls}
+                  placeholder="Enter Barangay ID"
+                />
+              </div>
+
+              {/* Role hint card */}
+              <div className="rounded-lg border border-[#e8e8e0] bg-[#f8f8f4] p-3 mt-1">
+                <p className="text-[10px] font-semibold text-[#8a8a80] uppercase tracking-wider mb-1.5">
+                  Role Reference
+                </p>
+                <div className="space-y-1">
+                  <div className="flex items-start gap-2">
+                    <span className="mt-0.5 w-1.5 h-1.5 rounded-full bg-[#1a1a18] shrink-0" />
+                    <p className="text-[11px] text-[#1a1a18]">
+                      <span className="font-semibold">ENCODER</span> — Can input and manage records
+                    </p>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="mt-0.5 w-1.5 h-1.5 rounded-full bg-[#1a1a18] shrink-0" />
+                    <p className="text-[11px] text-[#1a1a18]">
+                      <span className="font-semibold">ADMIN</span> — Full system access
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-2.5 pt-1">
+                <button
+                  type="submit"
+                  disabled={buttonLoading}
+                  className="flex-1 h-10 bg-[#1a1a18] text-white text-[13px] font-medium rounded-lg hover:bg-[#333] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                >
+                  {buttonLoading ? "Creating…" : "Create Account →"}
+                </button>
                 <button
                   type="button"
-                  tabIndex={-1}
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-[12px] font-medium text-[#8a8a80] hover:text-[#1a1a18] transition-colors bg-transparent border-none cursor-pointer"
+                  onClick={handleReset}
+                  disabled={buttonLoading}
+                  className="flex-1 h-10 bg-transparent text-[#1a1a18] text-[13px] font-medium rounded-lg border border-[#e8e8e0] hover:border-[#1a1a18] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
-                  {showPassword ? "Hide" : "Show"}
+                  Cancel
                 </button>
               </div>
             </div>
-
-            {/* Terms */}
-            <label className="flex items-start gap-2 cursor-pointer select-none pt-1">
-              <input
-                type="checkbox"
-                className="mt-0.5 h-4 w-4 rounded border-[#e8e8e0] text-blue-600 focus:ring-blue-500 cursor-pointer shrink-0"
-                required
-              />
-              <span className="text-[13px] text-[#8a8a80] leading-relaxed">
-                I agree to the{" "}
-                <a
-                  href="/terms"
-                  className="text-[#1a1a18] font-medium hover:underline no-underline"
-                >
-                  Terms of Service
-                </a>{" "}
-                and{" "}
-                <a
-                  href="/privacy"
-                  className="text-[#1a1a18] font-medium hover:underline no-underline"
-                >
-                  Privacy Policy
-                </a>
-              </span>
-            </label>
-
-            {/* Submit */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full py-3 px-4 rounded-lg text-[14px] font-medium text-white bg-[#1a1a18] hover:bg-[#333] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1a1a18] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer mt-2"
-            >
-              {isLoading ? "Creating account…" : "Create account →"}
-            </button>
-          </form>
-
-          {/* Login link */}
-          <div className="mt-8 pt-6 border-t border-[#e8e8e0] text-center">
-            <p className="text-[13px] text-[#8a8a80]">
-              Already have an account?{" "}
-              <a
-                href="/login"
-                className="text-[#1a1a18] font-medium hover:underline no-underline transition-colors"
-              >
-                Sign in
-              </a>
-            </p>
           </div>
-          {errorMessage && (
-            <div className="mt-2 px-3 py-2.5 bg-red-50 border border-red-100 rounded-lg flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block flex-shrink-0" />
-              <p className="text-[13px] text-red-600">{errorMessage}</p>
-            </div>
-          )}
+
         </div>
       </div>
-
-      {/* Right panel — image side */}
-      <div className="hidden md:flex md:w-[45%] h-screen sticky top-0 flex-col relative overflow-hidden bg-[#1a1a18]">
-        <img
-          src={OfficePic}
-          alt="Office"
-          className="absolute inset-0 w-full h-full object-cover opacity-30"
-          draggable={false}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#1a1a18]/40 via-transparent to-[#1a1a18]/80" />
-
-        <div className="relative z-10 flex flex-col justify-between h-full p-12">
-          {/* Logo */}
-          <a href="/" className="flex items-center gap-2 no-underline">
-            <span className="w-2 h-2 rounded-full bg-blue-500 inline-block" />
-            <span className="text-white text-[17px] font-semibold tracking-tight">
-              NathRacker
-            </span>
-          </a>
-
-          {/* Bottom content */}
-          <div>
-            <p className="text-white/40 text-[11px] font-mono tracking-widest uppercase mb-4">
-              Encoding Tracking System
-            </p>
-            <h2 className="text-white text-[32px] font-semibold tracking-tight leading-[1.2] mb-4">
-              Start tracking
-              <br />
-              <span className="font-light text-white/60 italic">
-                from day one.
-              </span>
-            </h2>
-            <p className="text-white/50 text-[14px] leading-relaxed max-w-[320px]">
-              One account gives you access to all four modules — BUS, PCN, SWDI,
-              and Miscellaneous — with full audit trails and role-based access.
-            </p>
-
-            {/* Feature list */}
-            <div className="mt-8 space-y-3">
-              {[
-                "Full encoder attribution on every record",
-                "HH ID search across all modules",
-                "Role-based access for encoders & admins",
-              ].map((item) => (
-                <div key={item} className="flex items-center gap-3">
-                  <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
-                  <span className="text-[13px] text-white/60">{item}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    </main>
+    </form>
   );
 }

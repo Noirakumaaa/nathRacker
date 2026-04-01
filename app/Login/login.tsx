@@ -26,11 +26,12 @@ export function Login() {
     try {
       const res = await APIFETCH.post<LoginResponse>('/auth/login', formData);
       queryClient.setQueryData(['me'], res.data);
-      show('Login successful! Redirecting...', 'success'); 
+      show(`${res.data.message}`, 'success'); 
       navigate(`/dashboard`)
-    } catch {
-      setErrorMessage('Invalid email or password');
-      show('Invalid email or password', 'error'); 
+    } catch (error: any) {
+      const message = error?.response?.data?.message ?? 'Invalid email or password';
+      setErrorMessage(message);
+      show(message, 'error');
     } finally {
       setIsLoading(false);
     }
@@ -40,14 +41,14 @@ export function Login() {
     <main className="flex min-h-screen bg-[#fafaf8] font-sans antialiased">
 
       {/* Left panel — image side */}
-      <div className="hidden md:flex md:w-[45%] h-screen sticky top-0 flex-col relative overflow-hidden bg-[#1a1a18]">
+      <div className="hidden md:flex md:w-[45%] h-screen sticky top-0 flex-col overflow-hidden bg-[#1a1a18]">
         <img
           src={OfficePic}
           alt="Office"
           className="absolute inset-0 w-full h-full object-cover opacity-30"
           draggable={false}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#1a1a18]/40 via-transparent to-[#1a1a18]/80" />
+        <div className="absolute inset-0 bg-linear-to-b from-[#1a1a18]/40 via-transparent to-[#1a1a18]/80" />
 
         <div className="relative z-10 flex flex-col justify-between h-full p-12">
           <a href="/" className="flex items-center gap-2 no-underline">
@@ -92,7 +93,7 @@ export function Login() {
           Home
         </a>
 
-        <div className="max-w-[400px] w-full mx-auto">
+        <div className="max-w-100 w-full mx-auto">
 
           <div className="mb-10">
             <div className="flex items-center gap-2 mb-8 md:hidden">
@@ -160,7 +161,7 @@ export function Login() {
 
               {errorMessage && (
                 <div className="mt-2 px-3 py-2.5 bg-red-50 border border-red-100 rounded-lg flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block flex-shrink-0" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block shrink-0" />
                   <p className="text-[13px] text-red-600">{errorMessage}</p>
                 </div>
               )}

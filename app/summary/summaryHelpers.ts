@@ -28,7 +28,7 @@ export function downloadAccomplishment(
     data[type].entries.forEach((e) => {
       const d = new Date(e.date);
       
-      const key = `${d.getUTCFullYear()}-${d.getUTCMonth()}-${d.getUTCDate()}`;
+      const key = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
       entryDateKeys.add(key);
     });
   });
@@ -63,9 +63,9 @@ export function downloadAccomplishment(
       const dayEntries = data[type].entries.filter((e) => {
         const entryDate = new Date(e.date);
         return (
-          entryDate.getUTCFullYear() === wd.getFullYear() &&
-          entryDate.getUTCMonth()    === wd.getMonth() &&
-          entryDate.getUTCDate()     === wd.getDate()
+          entryDate.getFullYear() === wd.getFullYear() &&
+          entryDate.getMonth()    === wd.getMonth() &&
+          entryDate.getDate()     === wd.getDate()
         );
       });
 

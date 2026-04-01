@@ -1,20 +1,19 @@
-import { useEffect } from "react";
-import RegisterForm from "~/Register/register";
-import { useNavigate } from "react-router";
+import OperationsDashboard from "~/operations/dashboard/OperationsDashboard";
 import LayoutWrapper from "layout/navLayout";
 import UnauthorizedPage from "~/notAuthorized/notAuthorized";
-import { AuthorizedUser } from "~/types/authorizedUser";
+import { useNavigate } from "react-router";
+import { useEffect } from "react";
 import { LoadingScreen } from "component/LoadingScreen";
 import { useAuth } from "component/authGuard";
 
 export function meta() {
   return [
-    { title: "BUS" },
-    { name: "description", content: "Encoding Bus Forms" },
+    { title: "Operations Dashboard" },
+    { name: "description", content: "Operations head overview dashboard" },
   ];
 }
 
-export default function RegisterRoute() {
+export default function OperationsDashboardRoute() {
   const navigate = useNavigate();
   const { user, isLoading, isAuthenticated } = useAuth();
 
@@ -25,7 +24,7 @@ export default function RegisterRoute() {
   if (isLoading) return <LoadingScreen />;
   if (!isAuthenticated) return null;
 
-  if (!AuthorizedUser.includes(user.role)) {
+  if (user.role !== "ADMIN") {
     return (
       <LayoutWrapper>
         <UnauthorizedPage />
@@ -35,7 +34,7 @@ export default function RegisterRoute() {
 
   return (
     <LayoutWrapper>
-      <RegisterForm />
+      <OperationsDashboard userData={user} />
     </LayoutWrapper>
   );
 }

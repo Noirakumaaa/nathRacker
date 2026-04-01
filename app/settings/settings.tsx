@@ -1,11 +1,9 @@
-import { useState, useCallback } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useState, useCallback, useEffect } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import APIFETCH from "lib/axios/axiosConfig";
 import { useToastStore } from "lib/zustand/ToastStore";
 import {
   Check,
-  Eye,
-  EyeOff,
   Upload,
   Download,
   Shield,
@@ -211,18 +209,49 @@ function RowDivider({
   );
 }
 
+type UserInfo =  { 
+  firstName : string;
+  lastName : string;
+  phone : string
+  password : string;
+  user : {
+    govUsername : string;
+    email : string
+  }
+}
+
 // ── 1. General Settings ───────────────────────────────────────────────────────
 function GeneralSettings() {
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
-    username: "",
+    govUsername: "",
     email: "",
     phone: "",
     password: "",
   });
   const [showPass, setShowPass] = useState(false);
   const { status, trigger } = useSaveStatus();
+
+  const { data : userInfo } = useQuery({
+    queryKey : ["SettingsUserInfo"],
+    queryFn : async () => {
+      const res = await APIFETCH.get<UserInfo>(`/settings/UserInfo`)
+      return res.data
+    }
+  })
+
+  useEffect(()=>{
+    if(!userInfo) return
+    setForm(()=>({
+      firstName : userInfo.firstName ?? "",
+      lastName  : userInfo.lastName  ?? "",
+      govUsername  : userInfo.user.govUsername  ?? "",
+      email     : userInfo.user.email     ?? "",
+      phone     : userInfo.phone     ?? "",
+      password  : "",
+    }))
+  },[userInfo])
 
   const set =
     (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -258,8 +287,8 @@ function GeneralSettings() {
         <Field label="Username" required>
           <input
             type="text"
-            value={form.username}
-            onChange={set("username")}
+            value={form.govUsername}
+            onChange={set("govUsername")}
             className={inputCls}
             placeholder="juandelacruz"
           />
@@ -289,7 +318,7 @@ function GeneralSettings() {
               value={form.password}
               onChange={set("password")}
               className={inputCls + " pr-14"}
-              placeholder="••••••••"
+              placeholder="Insert New Password"
             />
             <button
               type="button"
@@ -310,7 +339,7 @@ function GeneralSettings() {
             setForm({
               firstName: "",
               lastName: "",
-              username: "",
+              govUsername: "",
               email: "",
               phone: "",
               password: "",
