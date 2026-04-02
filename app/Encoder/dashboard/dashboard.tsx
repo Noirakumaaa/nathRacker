@@ -11,7 +11,7 @@ import { moduleStyle } from "../../../component/styleConfig";
 import APIFETCH from "lib/axios/axiosConfig";
 
 export default function Dashboard({ userData }: { userData: me }) {
-  const { data: counts = [] } = useQuery<CountItem[]>({
+  const { data: counts = [], isLoading: countsLoading } = useQuery<CountItem[]>({
     queryKey: ["documentCounts"],
     queryFn: async () => {
       const res = await APIFETCH.get("/alldocuments/count/documents");
@@ -114,9 +114,9 @@ export default function Dashboard({ userData }: { userData: me }) {
     <main className="p-6 bg-[#fafaf8] min-h-screen font-sans antialiased">
       <div className="max-w-full mx-auto flex flex-col gap-5">
         <DashboardHeader userData={userData} />
-        <StatCards stats={stats} sparklines={sparklines} />
+        <StatCards stats={stats} sparklines={sparklines} isLoading={countsLoading} />
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-3">
-          <TotalBreakdown stats={stats} total={total} />
+          <TotalBreakdown stats={stats} total={total} isLoading={countsLoading} />
           <RecentActivity recentAll={recentAll} isLoading={isLoading} />
         </div>
         <QuickActions />

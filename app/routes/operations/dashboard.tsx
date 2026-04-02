@@ -1,9 +1,5 @@
 import OperationsDashboard from "~/operations/dashboard/OperationsDashboard";
-import LayoutWrapper from "layout/navLayout";
 import UnauthorizedPage from "~/notAuthorized/notAuthorized";
-import { useNavigate } from "react-router";
-import { useEffect } from "react";
-import { LoadingScreen } from "component/LoadingScreen";
 import { useAuth } from "component/authGuard";
 
 export function meta() {
@@ -14,27 +10,9 @@ export function meta() {
 }
 
 export default function OperationsDashboardRoute() {
-  const navigate = useNavigate();
-  const { user, isLoading, isAuthenticated } = useAuth();
+  const { user } = useAuth();
 
-  useEffect(() => {
-    if (!isAuthenticated && !isLoading) navigate("/login");
-  }, [isAuthenticated, isLoading]);
+  if (user.role !== "ADMIN") return <UnauthorizedPage />;
 
-  if (isLoading) return <LoadingScreen />;
-  if (!isAuthenticated) return null;
-
-  if (user.role !== "ADMIN") {
-    return (
-      <LayoutWrapper>
-        <UnauthorizedPage />
-      </LayoutWrapper>
-    );
-  }
-
-  return (
-    <LayoutWrapper>
-      <OperationsDashboard userData={user} />
-    </LayoutWrapper>
-  );
+  return <OperationsDashboard userData={user} />;
 }

@@ -5,9 +5,11 @@ import { sparkColor } from "component/styleConfig";
 export function StatCards({
   stats,
   sparklines,
+  isLoading,
 }: {
   stats: StatCard[];
   sparklines: Record<string, number[]>;
+  isLoading: boolean;
 }) {
   return (
     <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
@@ -32,7 +34,7 @@ export function StatCards({
             </div>
             <div className="mb-3">
               <p className="text-[30px] font-semibold tracking-[-0.04em] text-[#1a1a18] leading-none">
-                {s.value.toLocaleString()}
+                {isLoading ? <span className="inline-block w-12 h-7 bg-[#f0f0ec] rounded animate-pulse" /> : s.value.toLocaleString()}
               </p>
               <p className="text-[12px] text-[#8a8a80] mt-1">{s.label}</p>
             </div>

@@ -30,11 +30,9 @@ export default function BusForm() {
     typeOfUpdate: "",
     updateInfo: "",
     issue: "",
-    encodedBy: "",
     remarks: "",
     drn: "",
     cl: "",
-    date: today,
     note: "",
   });
 
@@ -100,11 +98,9 @@ export default function BusForm() {
       typeOfUpdate: "",
       updateInfo: "",
       issue: "",
-      encodedBy: "",
       remarks: "",
       drn: "",
       cl: "",
-      date: today,
       note: "",
     });
     navigate("/bus");
@@ -307,7 +303,7 @@ export default function BusForm() {
                     name="date"
                     required
                     readOnly
-                    value={formData.date}
+                    value={today}
                     className={inputCls + " cursor-default"}
                   />
                 </div>

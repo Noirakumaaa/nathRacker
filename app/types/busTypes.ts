@@ -7,11 +7,9 @@ export type BusFormFields = {
   updateInfo: string;
   remarks: string;
   issue: string;
-  encodedBy: string;
   subjectOfChange: string;
   drn: string;
   cl: string;
-  date: string;
   note: string;
 }
 

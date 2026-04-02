@@ -1,11 +1,7 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router";
-import LayoutWrapper from "layout/navLayout";
+import OfficeTab from "~/adminSettings/OfficeTab";
 import UnauthorizedPage from "~/notAuthorized/notAuthorized";
 import { AuthorizedUser } from "~/types/authorizedUser";
-import { LoadingScreen } from "component/LoadingScreen";
 import { useAuth } from "component/authGuard";
-import OfficeTab from "~/adminSettings/OfficeTab";
 
 export function meta() {
   return [
@@ -15,27 +11,9 @@ export function meta() {
 }
 
 export default function AdminOfficeRoute() {
-  const navigate = useNavigate();
-  const { user, isLoading, isAuthenticated } = useAuth();
+  const { user } = useAuth();
 
-  useEffect(() => {
-    if (!isAuthenticated && !isLoading) navigate("/login");
-  }, [isAuthenticated, isLoading]);
+  if (!AuthorizedUser.includes(user.role)) return <UnauthorizedPage />;
 
-  if (isLoading) return <LoadingScreen />;
-  if (!isAuthenticated) return null;
-
-  if (!AuthorizedUser.includes(user.role)) {
-    return (
-      <LayoutWrapper>
-        <UnauthorizedPage />
-      </LayoutWrapper>
-    );
-  }
-
-  return (
-    <LayoutWrapper>
-      <OfficeTab />
-    </LayoutWrapper>
-  );
+  return <OfficeTab />;
 }

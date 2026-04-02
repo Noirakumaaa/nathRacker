@@ -3,9 +3,11 @@ import type { StatCard } from "~/types/dashboardTypes";
 export function TotalBreakdown({
   stats,
   total,
+  isLoading,
 }: {
   stats: StatCard[];
   total: number;
+  isLoading: boolean;
 }) {
   return (
     <div className="bg-[#1a1a18] rounded-xl p-6 flex flex-col justify-between">
@@ -14,7 +16,7 @@ export function TotalBreakdown({
           Total Encoded
         </p>
         <p className="text-[52px] font-semibold tracking-[-0.05em] text-white leading-none">
-          {total.toLocaleString()}
+          {isLoading ? <span className="inline-block w-24 h-12 bg-white/10 rounded animate-pulse" /> : total.toLocaleString()}
         </p>
         <p className="text-[13px] text-white/50 mt-2">
           records across all modules
@@ -27,7 +29,7 @@ export function TotalBreakdown({
               {s.tag}
             </p>
             <p className="text-[18px] font-semibold text-white leading-tight mt-0.5">
-              {Number(s.value).toLocaleString()}
+              {isLoading ? <span className="inline-block w-8 h-5 bg-white/10 rounded animate-pulse" /> : Number(s.value).toLocaleString()}
             </p>
             <div className="mt-1.5 h-1 /*  */rounded-full bg-white/10 overflow-hidden">
               <div

@@ -1,10 +1,6 @@
-import { useEffect } from "react";
 import LcnMain from "~/Encoder/lcn/Lcn";
-import { useNavigate } from "react-router";
-import LayoutWrapper from "layout/navLayout";
 import UnauthorizedPage from "~/notAuthorized/notAuthorized";
-import {AuthorizedUser} from "~/types/authorizedUser";
-import { LoadingScreen } from "component/LoadingScreen";
+import { AuthorizedUser } from "~/types/authorizedUser";
 import { useAuth } from "component/authGuard";
 
 export function meta() {
@@ -15,27 +11,9 @@ export function meta() {
 }
 
 export default function LCNRoute() {
-  const navigate = useNavigate();
-  const { user, isLoading, isAuthenticated } = useAuth();
+  const { user } = useAuth();
 
-  useEffect(() => {
-    if (!isAuthenticated && !isLoading) navigate("/login");
-  }, [isAuthenticated, isLoading]);
+  if (!AuthorizedUser.includes(user.role)) return <UnauthorizedPage />;
 
-  if (isLoading) return <LoadingScreen />;
-  if (!isAuthenticated) return null;
-
-  if (!AuthorizedUser.includes(user.role)) {
-    return (
-      <LayoutWrapper>
-        <UnauthorizedPage />
-      </LayoutWrapper>
-    );
-  }
-
-  return (
-    <LayoutWrapper>
-      <LcnMain />
-    </LayoutWrapper>
-  );
+  return <LcnMain />;
 }

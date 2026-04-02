@@ -16,8 +16,8 @@ import {
   MapPin,
   Landmark,
 } from "lucide-react";
-import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useState, useRef, useLayoutEffect } from "react";
+import { useLocation, useNavigate } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import APIFETCH from "lib/axios/axiosConfig";
 import { useToastStore } from "lib/zustand/ToastStore";
@@ -129,6 +129,12 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
     location.pathname.replace("/", ""),
   );
   const navigate = useNavigate();
+  const navRef = useRef<HTMLDivElement>(null);
+  const scrollPos = useRef(0);
+
+  useLayoutEffect(() => {
+    if (navRef.current) navRef.current.scrollTop = scrollPos.current;
+  });
 
   const { data: User } = useQuery({
     queryKey: ["me"],
@@ -140,6 +146,7 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
   });
 
   const updateSidebar = (option: string) => {
+    scrollPos.current = navRef.current?.scrollTop ?? 0;
     setActiveItem(option);
     if (option === "logout") {
       logout();
@@ -200,7 +207,7 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
         </div>
 
         {/* Nav */}
-        <div className="flex-1 overflow-y-auto py-2 px-2.5 space-y-0">
+        <div ref={navRef} className="flex-1 overflow-y-auto py-2 px-2.5 space-y-0" style={{ overflowAnchor: 'none' }}>
 
           <SectionLabel label="Encoders Modules" />
           <nav className="space-y-0.5">

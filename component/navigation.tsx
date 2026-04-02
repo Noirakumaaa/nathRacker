@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import APIFETCH from "lib/axios/axiosConfig";
 import { Menu, X, Search } from "lucide-react";
 import type { me } from "~/types/authTypes";
-import { LoadingScreen } from "./LoadingScreen";
 
 type TopNavbarProps = {
   onMenuToggle: () => void;
@@ -20,12 +19,22 @@ const TopNavbar = ({ onMenuToggle, isSidebarOpen }: TopNavbarProps) => {
     retry : false
   })
 
-  if(!user){
-    return <LoadingScreen />
+  if (!user) {
+    return (
+      <nav className="bg-[#fafaf8] border-b border-[#e8e8e0] fixed top-0 left-0 right-0 z-50 h-15 font-sans antialiased">
+        <div className="flex items-center justify-between h-full px-5">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-blue-600 inline-block" />
+            <span className="text-[16px] font-semibold tracking-tight text-[#1a1a18]">NathRacker</span>
+          </div>
+          <div className="w-24 h-5 bg-[#f0f0ec] rounded animate-pulse" />
+        </div>
+      </nav>
+    );
   }
 
   return (
-    <nav className="bg-[#fafaf8] border-b border-[#e8e8e0] fixed top-0 left-0 right-0 z-50 h-[60px] font-sans antialiased">
+    <nav className="bg-[#fafaf8] border-b border-[#e8e8e0] fixed top-0 left-0 right-0 z-50 h-15 font-sans antialiased">
       <div className="flex items-center justify-between h-full px-5">
 
         {/* Left — hamburger (mobile) + logo */}
