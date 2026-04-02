@@ -197,9 +197,7 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
         {/* Logo */}
         <div className="h-15 flex items-center px-5 border-b border-[#e8e8e0] shrink-0">
           <a href="/" className="flex items-center gap-2.5 no-underline group">
-            <div className="w-5 h-5 rounded-md bg-[#1a1a18] flex items-center justify-center">
-              <span className="w-1.5 h-1.5 rounded-full bg-white inline-block" />
-            </div>
+            <img src="/nathracker_icon_v9.svg" alt="NathRacker" className="w-10 h-10" />
             <span className="text-[15px] font-semibold tracking-tight text-[#1a1a18]">
               NathRacker
             </span>

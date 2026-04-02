@@ -1,40 +1,70 @@
 import { useEffect, useRef } from "react";
 
-const modules = [
+const capabilities = [
   {
-    tag: "BUS",
-    tagClass: "bg-indigo-50 text-indigo-600",
-    title: "Beneficiary Updates",
-    desc: "Track household grantee changes, DRN references, control lists, and update history per LGU and barangay.",
+    icon: (
+      <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+    ),
+    iconBg: "bg-blue-50",
+    title: "Record Tracking",
+    desc: "Log and manage records of any type with structured fields, statuses, and full history per entry.",
   },
   {
-    tag: "PCN",
-    tagClass: "bg-rose-50 text-rose-600",
-    title: "Pending Change Notif.",
-    desc: "Log PCN records for household members with full subject-of-change tracking and compliance references.",
+    icon: (
+      <svg className="w-5 h-5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+    ),
+    iconBg: "bg-rose-50",
+    title: "Instant Search",
+    desc: "Look up any record by ID, name, date, or status in seconds — across all modules at once.",
   },
   {
-    tag: "CVS",
-    tagClass: "bg-violet-50 text-violet-600",
-    title: "CVS Monitoring",
-    desc: "Record facility-level CVS form submissions per LGU and barangay with remarks and completion tracking.",
+    icon: (
+      <svg className="w-5 h-5 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+    ),
+    iconBg: "bg-violet-50",
+    title: "Team Access",
+    desc: "Role-based permissions so each team member sees exactly what they need — nothing more.",
   },
   {
-    tag: "SWDI",
-    tagClass: "bg-emerald-50 text-emerald-600",
-    title: "Social Welfare Scores",
-    desc: "Record and monitor SWDI scores and level classifications per household with encoder attribution.",
+    icon: (
+      <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+      </svg>
+    ),
+    iconBg: "bg-emerald-50",
+    title: "Verification",
+    desc: "Mark records as verified with a named verifier and timestamp — full accountability on every entry.",
   },
   {
-    tag: "MISC",
-    tagClass: "bg-amber-50 text-amber-600",
-    title: "Miscellaneous",
-    desc: "A flexible catch-all module for any record type that falls outside the standard categories.",
+    icon: (
+      <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+      </svg>
+    ),
+    iconBg: "bg-amber-50",
+    title: "Import Data",
+    desc: "Upload .csv or .xlsx files to bring existing records straight in — no manual re-entry needed.",
+  },
+  {
+    icon: (
+      <svg className="w-5 h-5 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+      </svg>
+    ),
+    iconBg: "bg-sky-50",
+    title: "Reports & Summaries",
+    desc: "Get a clear breakdown of your records by category, status, date, or team member at any time.",
   },
 ];
 
 const stats = [
-  { num: "6", label: "Data modules" },
+  { num: "6", label: "Record modules" },
   { num: "4", label: "Role levels" },
   { num: "∞", label: "Records tracked" },
   { num: "100%", label: "Audit trail" },
@@ -44,17 +74,17 @@ const features = [
   {
     num: "01",
     title: "Role-based access",
-    desc: "Encoders focus on data entry. Admins get full oversight. Each role sees exactly what it needs.",
+    desc: "Each user sees exactly what their role allows. Staff log records; managers get full oversight.",
   },
   {
     num: "02",
-    title: "HH ID search across all modules",
-    desc: "Look up a single household ID and pull its complete history from BUS, PCN, CVS, SWDI, and Misc at once.",
+    title: "Cross-module search",
+    desc: "Look up a single ID and pull its complete history across every module at once.",
   },
   {
     num: "03",
-    title: "Full encoder attribution",
-    desc: "Every record is linked to its encoder by both user ID and government username — nothing is anonymous.",
+    title: "Full attribution on every record",
+    desc: "Every entry is linked to the person who created it — nothing is anonymous.",
   },
   {
     num: "04",
@@ -63,13 +93,13 @@ const features = [
   },
   {
     num: "05",
-    title: "Filter by LGU, barangay, date, encoder",
-    desc: "Drill into exactly the slice of data you need without sifting through unrelated records.",
+    title: "Flexible filters",
+    desc: "Drill into exactly the slice of data you need — by location, date, status, or team member.",
   },
   {
     num: "06",
     title: "Personalized user profiles",
-    desc: "Session control, timezone, 2FA, alert preferences, and theme settings for every account.",
+    desc: "Session control, preferences, and alert settings for every account on the platform.",
   },
 ];
 
@@ -98,13 +128,14 @@ export default function IndexPage() {
 
   return (
     <div className="min-h-screen bg-[#fafaf8] text-[#1a1a18] font-sans antialiased">
+
       {/* NAV */}
-      <nav className="sticky top-0 z-50 bg-[#fafaf8]/90 backdrop-blur-md border-b border-[#e8e8e0] h-15 flex items-center justify-between px-10">
+      <nav className="sticky top-0 z-50 bg-[#fafaf8]/90 backdrop-blur-md border-b border-[#e8e8e0] h-15 flex items-center justify-between px-6 sm:px-10">
         <a
           href="#"
-          className="flex items-center gap-2 text-[17px] font-semibold tracking-tight no-underline text-[#1a1a18]"
+          className="flex items-center gap-2.5 text-[17px] font-semibold tracking-tight no-underline text-[#1a1a18]"
         >
-          <span className="w-2 h-2 rounded-full bg-blue-600 inline-block animate-pulse" />
+          <img src="/nathracker_icon_v9.svg" alt="NathRacker" className="w-10 h-10" />
           NathRacker
         </a>
         <div className="flex items-center gap-1.5">
@@ -124,29 +155,29 @@ export default function IndexPage() {
       </nav>
 
       {/* HERO */}
-      <section className="max-w-180 mx-auto px-10 pt-24 pb-20 text-center animate-[fadeUp_0.5s_ease_both]">
+      <section className="max-w-180 mx-auto px-6 sm:px-10 pt-24 pb-20 text-center animate-[fadeUp_0.5s_ease_both]">
         <div className="inline-flex items-center gap-2 text-[13px] font-medium text-blue-600 bg-blue-50 px-3.5 py-1.5 rounded-full mb-8">
           <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse" />
-          Encoding Tracking System
+          Record Management System
         </div>
-        <h1 className="text-[clamp(40px,7vw,64px)] font-semibold tracking-[-0.04em] leading-[1.08] text-[#1a1a18] mb-6">
-          All your encoded
+        <h1 className="text-[clamp(36px,7vw,64px)] font-semibold tracking-[-0.04em] leading-[1.08] text-[#1a1a18] mb-6">
+          Track and manage
           <br />
-          records,{" "}
+          your records,{" "}
           <em className="not-italic font-light text-[#8a8a80]">
-            in one place.
+            all in one place.
           </em>
         </h1>
         <p className="text-[18px] text-[#8a8a80] leading-[1.65] max-w-120 mx-auto mb-10 font-normal">
-          NathRacker tracks every BUS, PCN, CVS, SWDI, and Miscellaneous record
-          you encode — organized, searchable, and always up to date.
+          NathRacker gives your team a single platform to log, search, verify,
+          and manage records — organized, auditable, and always up to date.
         </p>
         <div className="flex gap-2.5 justify-center flex-wrap">
           <button
             onClick={() => (window.location.href = "/register")}
             className="px-7 py-3 rounded-[10px] text-[15px] font-medium bg-[#1a1a18] text-white hover:bg-[#333] transition-colors cursor-pointer"
           >
-            Start tracking →
+            Get started →
           </button>
           <button
             onClick={() => (window.location.href = "/login")}
@@ -157,86 +188,28 @@ export default function IndexPage() {
         </div>
       </section>
 
-      {/* MODULES */}
+      {/* CAPABILITIES GRID */}
       <div
         ref={addReveal}
-        className="max-w-250 mx-auto px-10 py-14 opacity-0 translate-y-5 transition-all duration-700"
+        className="max-w-250 mx-auto px-6 sm:px-10 py-14 opacity-0 translate-y-5 transition-all duration-700"
       >
-        {/* Standard modules grid */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-3">
-          {modules.map((m) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+          {capabilities.map((c) => (
             <div
-              key={m.tag}
+              key={c.title}
               className="bg-white border border-[#e8e8e0] rounded-xl p-6 hover:-translate-y-0.5 hover:shadow-[0_8px_30px_rgba(0,0,0,0.07)] transition-all duration-200"
             >
-              <span
-                className={`inline-block font-mono text-[10px] font-medium px-2 py-1 rounded-[5px] mb-4 tracking-[0.05em] ${m.tagClass}`}
-              >
-                {m.tag}
-              </span>
+              <div className={`w-9 h-9 ${c.iconBg} rounded-xl flex items-center justify-center mb-4`}>
+                {c.icon}
+              </div>
               <h3 className="text-[15px] font-semibold tracking-tight text-[#1a1a18] mb-1.5">
-                {m.title}
+                {c.title}
               </h3>
               <p className="text-[13px] text-[#8a8a80] leading-relaxed">
-                {m.desc}
+                {c.desc}
               </p>
             </div>
           ))}
-        </div>
-
-        {/* Verifications module — full width, under development */}
-        <div className="relative bg-white border border-dashed border-[#c8c8c0] rounded-xl p-6 overflow-hidden group">
-          {/* Subtle diagonal stripe background */}
-          <div
-            className="absolute inset-0 opacity-[0.03] pointer-events-none"
-            style={{
-              backgroundImage:
-                "repeating-linear-gradient(45deg, #1a1a18 0, #1a1a18 1px, transparent 0, transparent 50%)",
-              backgroundSize: "10px 10px",
-            }}
-          />
-
-          <div className="relative flex flex-col md:flex-row md:items-center gap-4">
-            {/* Left: tag + title + desc */}
-            <div className="flex-1">
-              <div className="flex items-center gap-2.5 mb-3">
-                <span className="inline-block font-mono text-[10px] font-medium px-2 py-1 rounded-[5px] tracking-[0.05em] bg-sky-50 text-sky-600">
-                  VER
-                </span> 
-                {/* Under development badge */}
-                <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-amber-600 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-full">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                  Under Development
-                </span>
-              </div>
-              <h3 className="text-[15px] font-semibold tracking-tight text-[#1a1a18] mb-1.5">
-                Verifications
-              </h3>
-              <p className="text-[13px] text-[#8a8a80] leading-relaxed max-w-160">
-                Centralized verification tracking for BUS and
-                CVS records. Admins can mark records as verified,
-                log the verifier's name, and audit the full verification trail
-                across all modules — coming soon.
-              </p>
-            </div>
-
-            {/* Right: upcoming features preview */}
-            <div className="shrink-0 flex flex-col gap-2 md:items-end">
-              {[
-                "Verify by record ID or HH ID",
-                "verifiedBy + verified status fields",
-                "Cross-module verification dashboard",
-              ].map((item) => (
-                <div
-                  key={item}
-                  className="flex items-center gap-2 opacity-50"
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-sky-400 shrink-0" />
-                  <span className="text-[12.5px] text-[#8a8a80]">{item}</span>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       </div>
 
@@ -245,11 +218,11 @@ export default function IndexPage() {
         ref={addReveal}
         className="border-t border-b border-[#e8e8e0] bg-white opacity-0 translate-y-5 transition-all duration-700"
       >
-        <div className="max-w-250 mx-auto px-10 grid grid-cols-2 md:grid-cols-4">
+        <div className="max-w-250 mx-auto px-6 sm:px-10 grid grid-cols-2 md:grid-cols-4">
           {stats.map((s, i) => (
             <div
               key={s.label}
-              className={`py-10 pl-8 ${i === 0 ? "pl-0" : ""} ${i < stats.length - 1 ? "border-r border-[#e8e8e0]" : ""}`}
+              className={`py-10 ${i === 0 ? "pl-0" : "pl-8"} ${i < stats.length - 1 ? "border-r border-[#e8e8e0]" : ""}`}
             >
               <div className="text-[36px] font-semibold tracking-[-0.04em] text-[#1a1a18] leading-none mb-1.5">
                 {s.num}
@@ -263,7 +236,7 @@ export default function IndexPage() {
       {/* IMPORT FEATURE */}
       <section
         ref={addReveal}
-        className="max-w-250 mx-auto px-10 py-20 opacity-0 translate-y-5 transition-all duration-700"
+        className="max-w-250 mx-auto px-6 sm:px-10 py-20 opacity-0 translate-y-5 transition-all duration-700"
       >
         <div className="grid grid-cols-1 md:grid-cols-[1fr_1.4fr] gap-16 items-center">
           {/* Left — text */}
@@ -272,11 +245,11 @@ export default function IndexPage() {
               Import your existing
               <br />
               <em className="not-italic font-light text-[#8a8a80]">
-                tracked data.
+                records instantly.
               </em>
             </h2>
             <p className="text-[15px] text-[#8a8a80] leading-[1.7] mb-6">
-              Already have records in a spreadsheet? Upload a{" "}
+              Already have data in a spreadsheet? Upload a{" "}
               <span className="font-mono text-[13px] bg-[#f0f0ec] text-[#1a1a18] px-1.5 py-0.5 rounded">
                 .csv
               </span>{" "}
@@ -284,15 +257,15 @@ export default function IndexPage() {
               <span className="font-mono text-[13px] bg-[#f0f0ec] text-[#1a1a18] px-1.5 py-0.5 rounded">
                 .xlsx
               </span>{" "}
-              file and bring your BUS, PCN, CVS, SWDI, or Miscellaneous data
-              straight into NathRacker — no manual re-entry needed.
+              file and bring your records straight into NathRacker — no
+              manual re-entry needed.
             </p>
             <div className="flex flex-col gap-3">
               {[
                 "Supports .csv and .xlsx formats",
-                "Maps columns to module fields automatically",
-                "Validates HH IDs and flags errors before import",
-                "Preview records before confirming",
+                "Maps columns to record fields automatically",
+                "Validates IDs and flags errors before import",
+                "Preview all rows before confirming",
               ].map((item) => (
                 <div key={item} className="flex items-center gap-2.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#1a1a18] shrink-0" />
@@ -304,49 +277,6 @@ export default function IndexPage() {
 
           {/* Right — upload card mockup */}
           <div className="bg-white border border-[#e8e8e0] rounded-2xl p-8">
-            {/* Module selector */}
-            <div className="mb-5">
-              <p className="text-[12px] font-medium text-[#8a8a80] mb-2 uppercase tracking-wider">
-                Select module
-              </p>
-              <div className="grid grid-cols-5 gap-2">
-                {[
-                  {
-                    tag: "BUS",
-                    active: true,
-                    cls: "bg-indigo-50 text-indigo-600 border-indigo-200",
-                  },
-                  {
-                    tag: "PCN",
-                    active: false,
-                    cls: "bg-white text-[#8a8a80] border-[#e8e8e0]",
-                  },
-                  {
-                    tag: "CVS",
-                    active: false,
-                    cls: "bg-white text-[#8a8a80] border-[#e8e8e0]",
-                  },
-                  {
-                    tag: "SWDI",
-                    active: false,
-                    cls: "bg-white text-[#8a8a80] border-[#e8e8e0]",
-                  },
-                  {
-                    tag: "MISC",
-                    active: false,
-                    cls: "bg-white text-[#8a8a80] border-[#e8e8e0]",
-                  },
-                ].map((m) => (
-                  <button
-                    key={m.tag}
-                    className={`font-mono text-[11px] font-medium py-2 rounded-lg border tracking-wider transition-colors cursor-pointer ${m.cls}`}
-                  >
-                    {m.tag}
-                  </button>
-                ))}
-              </div>
-            </div>
-
             {/* Drop zone */}
             <div className="border-2 border-dashed border-[#e8e8e0] rounded-xl p-8 flex flex-col items-center justify-center text-center hover:border-[#c8c8c0] transition-colors mb-5">
               <div className="w-10 h-10 bg-[#f5f5f2] rounded-xl flex items-center justify-center mb-3">
@@ -378,7 +308,7 @@ export default function IndexPage() {
             {/* Preview rows (static mockup) */}
             <div className="border border-[#e8e8e0] rounded-xl overflow-hidden">
               <div className="grid grid-cols-3 gap-2 px-4 py-2.5 bg-[#f5f5f2] border-b border-[#e8e8e0]">
-                {["HH ID", "Grantee Name", "Status"].map((h) => (
+                {["Record ID", "Name", "Status"].map((h) => (
                   <span
                     key={h}
                     className="text-[11px] font-medium text-[#8a8a80] uppercase tracking-wider"
@@ -388,9 +318,9 @@ export default function IndexPage() {
                 ))}
               </div>
               {[
-                ["HH-2024-0883", "Juan Dela Cruz", "Ready"],
-                ["HH-2024-1120", "Maria Santos", "Ready"],
-                ["HH-2024-0771", "Pedro Reyes", "Warning"],
+                ["REC-2024-0883", "Juan Dela Cruz", "Ready"],
+                ["REC-2024-1120", "Maria Santos", "Ready"],
+                ["REC-2024-0771", "Pedro Reyes", "Warning"],
               ].map(([id, name, status]) => (
                 <div
                   key={id}
@@ -420,15 +350,15 @@ export default function IndexPage() {
       {/* FEATURES */}
       <section
         ref={addReveal}
-        className="max-w-250 mx-auto px-10 py-20 grid grid-cols-1 md:grid-cols-[1fr_1.6fr] gap-20 items-start opacity-0 translate-y-5 transition-all duration-700"
+        className="max-w-250 mx-auto px-6 sm:px-10 py-20 grid grid-cols-1 md:grid-cols-[1fr_1.6fr] gap-20 items-start opacity-0 translate-y-5 transition-all duration-700"
       >
         <div>
           <h2 className="text-[32px] font-semibold tracking-[-0.03em] leading-[1.2] text-[#1a1a18] mb-3.5">
-            Everything you need to stay on top of encoding.
+            Everything you need to stay on top of your records.
           </h2>
           <p className="text-[15px] text-[#8a8a80] leading-[1.7]">
-            Designed around how field encoders actually work — fast entry, clear
-            filters, and full visibility for admins.
+            Designed around how teams actually work — fast entry, clear
+            filters, and full visibility for everyone who needs it.
           </p>
         </div>
         <div className="flex flex-col">
@@ -459,12 +389,12 @@ export default function IndexPage() {
       {/* CTA */}
       <section
         ref={addReveal}
-        className="max-w-250 mx-auto px-10 py-24 flex flex-col md:flex-row justify-between items-start md:items-center gap-10 opacity-0 translate-y-5 transition-all duration-700"
+        className="max-w-250 mx-auto px-6 sm:px-10 py-24 flex flex-col md:flex-row justify-between items-start md:items-center gap-10 opacity-0 translate-y-5 transition-all duration-700"
       >
         <h2 className="text-[clamp(28px,4vw,42px)] font-semibold tracking-[-0.03em] leading-[1.15] text-[#1a1a18] max-w-100">
-          Ready to track your{" "}
+          Ready to take control of{" "}
           <em className="not-italic font-light text-[#8a8a80]">
-            encoded records?
+            your records?
           </em>
         </h2>
         <div className="flex flex-col gap-2.5 items-start shrink-0">
@@ -487,8 +417,11 @@ export default function IndexPage() {
       </section>
 
       {/* FOOTER */}
-      <footer className="border-t border-[#e8e8e0] px-10 py-7 max-w-250 mx-auto flex flex-col md:flex-zZrow justify-between items-center gap-4">
-        <p className="text-[13px] text-[#8a8a80]">© 2026 NathRacker</p>
+      <footer className="border-t border-[#e8e8e0] px-6 sm:px-10 py-7 max-w-250 mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div className="flex items-center gap-2.5">
+          <img src="/nathracker_icon_v9.svg" alt="NathRacker" className="w-7 h-7" />
+          <p className="text-[13px] text-[#8a8a80]">© 2026 NathRacker</p>
+        </div>
         <div className="flex gap-5">
           <a
             href="/login"
@@ -505,11 +438,10 @@ export default function IndexPage() {
         </div>
       </footer>
 
-      {/* Keyframe for hero animation */}
       <style>{`
         @keyframes fadeUp {
           from { opacity: 0; transform: translateY(16px); }
-          to   { opacity: 1; transform: translateY(0);    }
+          to   { opacity: 1; transform: translateY(0); }
         }
       `}</style>
     </div>
