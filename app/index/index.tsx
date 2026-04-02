@@ -74,7 +74,7 @@ const features = [
 ];
 
 export default function IndexPage() {
-  const revealRefs = useRef([]);
+  const revealRefs = useRef<HTMLElement[]>([]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -92,14 +92,14 @@ export default function IndexPage() {
     return () => observer.disconnect();
   }, []);
 
-  const addReveal = (el: any) => {
+  const addReveal = (el: HTMLElement | null) => {
     if (el && !revealRefs.current.includes(el)) revealRefs.current.push(el);
   };
 
   return (
     <div className="min-h-screen bg-[#fafaf8] text-[#1a1a18] font-sans antialiased">
       {/* NAV */}
-      <nav className="sticky top-0 z-50 bg-[#fafaf8]/90 backdrop-blur-md border-b border-[#e8e8e0] h-[60px] flex items-center justify-between px-10">
+      <nav className="sticky top-0 z-50 bg-[#fafaf8]/90 backdrop-blur-md border-b border-[#e8e8e0] h-15 flex items-center justify-between px-10">
         <a
           href="#"
           className="flex items-center gap-2 text-[17px] font-semibold tracking-tight no-underline text-[#1a1a18]"
@@ -124,7 +124,7 @@ export default function IndexPage() {
       </nav>
 
       {/* HERO */}
-      <section className="max-w-[720px] mx-auto px-10 pt-24 pb-20 text-center animate-[fadeUp_0.5s_ease_both]">
+      <section className="max-w-180 mx-auto px-10 pt-24 pb-20 text-center animate-[fadeUp_0.5s_ease_both]">
         <div className="inline-flex items-center gap-2 text-[13px] font-medium text-blue-600 bg-blue-50 px-3.5 py-1.5 rounded-full mb-8">
           <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse" />
           Encoding Tracking System
@@ -137,7 +137,7 @@ export default function IndexPage() {
             in one place.
           </em>
         </h1>
-        <p className="text-[18px] text-[#8a8a80] leading-[1.65] max-w-[480px] mx-auto mb-10 font-normal">
+        <p className="text-[18px] text-[#8a8a80] leading-[1.65] max-w-120 mx-auto mb-10 font-normal">
           NathRacker tracks every BUS, PCN, CVS, SWDI, and Miscellaneous record
           you encode — organized, searchable, and always up to date.
         </p>
@@ -160,7 +160,7 @@ export default function IndexPage() {
       {/* MODULES */}
       <div
         ref={addReveal}
-        className="max-w-[1000px] mx-auto px-10 py-14 opacity-0 translate-y-5 transition-all duration-700"
+        className="max-w-250 mx-auto px-10 py-14 opacity-0 translate-y-5 transition-all duration-700"
       >
         {/* Standard modules grid */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-3">
@@ -212,7 +212,7 @@ export default function IndexPage() {
               <h3 className="text-[15px] font-semibold tracking-tight text-[#1a1a18] mb-1.5">
                 Verifications
               </h3>
-              <p className="text-[13px] text-[#8a8a80] leading-relaxed max-w-[640px]">
+              <p className="text-[13px] text-[#8a8a80] leading-relaxed max-w-160">
                 Centralized verification tracking for BUS and
                 CVS records. Admins can mark records as verified,
                 log the verifier's name, and audit the full verification trail
@@ -245,7 +245,7 @@ export default function IndexPage() {
         ref={addReveal}
         className="border-t border-b border-[#e8e8e0] bg-white opacity-0 translate-y-5 transition-all duration-700"
       >
-        <div className="max-w-[1000px] mx-auto px-10 grid grid-cols-2 md:grid-cols-4">
+        <div className="max-w-250 mx-auto px-10 grid grid-cols-2 md:grid-cols-4">
           {stats.map((s, i) => (
             <div
               key={s.label}
@@ -263,7 +263,7 @@ export default function IndexPage() {
       {/* IMPORT FEATURE */}
       <section
         ref={addReveal}
-        className="max-w-[1000px] mx-auto px-10 py-20 opacity-0 translate-y-5 transition-all duration-700"
+        className="max-w-250 mx-auto px-10 py-20 opacity-0 translate-y-5 transition-all duration-700"
       >
         <div className="grid grid-cols-1 md:grid-cols-[1fr_1.4fr] gap-16 items-center">
           {/* Left — text */}
@@ -420,7 +420,7 @@ export default function IndexPage() {
       {/* FEATURES */}
       <section
         ref={addReveal}
-        className="max-w-[1000px] mx-auto px-10 py-20 grid grid-cols-1 md:grid-cols-[1fr_1.6fr] gap-20 items-start opacity-0 translate-y-5 transition-all duration-700"
+        className="max-w-250 mx-auto px-10 py-20 grid grid-cols-1 md:grid-cols-[1fr_1.6fr] gap-20 items-start opacity-0 translate-y-5 transition-all duration-700"
       >
         <div>
           <h2 className="text-[32px] font-semibold tracking-[-0.03em] leading-[1.2] text-[#1a1a18] mb-3.5">
@@ -435,9 +435,9 @@ export default function IndexPage() {
           {features.map((f, i) => (
             <div
               key={f.num}
-              className={`flex gap-4 py-[22px] ${i < features.length - 1 ? "border-b border-[#e8e8e0]" : ""} ${i === 0 ? "pt-0" : ""}`}
+              className={`flex gap-4 py-5.5 ${i < features.length - 1 ? "border-b border-[#e8e8e0]" : ""} ${i === 0 ? "pt-0" : ""}`}
             >
-              <span className="font-mono text-[11px] text-[#e8e8e0] pt-1 min-w-[24px]">
+              <span className="font-mono text-[11px] text-[#e8e8e0] pt-1 min-w-6">
                 {f.num}
               </span>
               <div>
@@ -454,14 +454,14 @@ export default function IndexPage() {
       </section>
 
       {/* DIVIDER */}
-      <div className="max-w-[1000px] mx-auto h-px bg-[#e8e8e0]" />
+      <div className="max-w-250 mx-auto h-px bg-[#e8e8e0]" />
 
       {/* CTA */}
       <section
         ref={addReveal}
-        className="max-w-[1000px] mx-auto px-10 py-24 flex flex-col md:flex-row justify-between items-start md:items-center gap-10 opacity-0 translate-y-5 transition-all duration-700"
+        className="max-w-250 mx-auto px-10 py-24 flex flex-col md:flex-row justify-between items-start md:items-center gap-10 opacity-0 translate-y-5 transition-all duration-700"
       >
-        <h2 className="text-[clamp(28px,4vw,42px)] font-semibold tracking-[-0.03em] leading-[1.15] text-[#1a1a18] max-w-[400px]">
+        <h2 className="text-[clamp(28px,4vw,42px)] font-semibold tracking-[-0.03em] leading-[1.15] text-[#1a1a18] max-w-100">
           Ready to track your{" "}
           <em className="not-italic font-light text-[#8a8a80]">
             encoded records?
@@ -487,7 +487,7 @@ export default function IndexPage() {
       </section>
 
       {/* FOOTER */}
-      <footer className="border-t border-[#e8e8e0] px-10 py-7 max-w-[1000px] mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+      <footer className="border-t border-[#e8e8e0] px-10 py-7 max-w-250 mx-auto flex flex-col md:flex-zZrow justify-between items-center gap-4">
         <p className="text-[13px] text-[#8a8a80]">© 2026 NathRacker</p>
         <div className="flex gap-5">
           <a

@@ -66,11 +66,11 @@ export function CvsForm() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setButtonLoading(true);
-    const res  = await APIFETCH.post("/cvs/upload", formData)
+    const res = await APIFETCH.post("/cvs/upload", formData)
     if(res.data.upload){
       show(`${res.data.message}`, "success")
       setButtonLoading(false)
-    }else if(res.data.upload){
+    }else if(!res.data.upload){
        show(`${res.data.message}`, "error")
       setButtonLoading(false)
     }
@@ -177,6 +177,7 @@ export function CvsForm() {
                   <select name="remarks" value={formData.remarks} onChange={handleChange} required className={inputCls}>
                     <option value="">Select</option>
                     <option value="ENCODED">ENCODED</option>
+                    <option value="UPDATED">UPDATED</option>
                     <option value="ISSUE">ISSUE</option>
                   </select>
                 </div>
@@ -185,7 +186,7 @@ export function CvsForm() {
                   <label className={labelCls}>Period <Req /></label>
                   <input
                     type="text"
-                    name="text"
+                    name="period"
                     value={formData.period}
                     onChange={handleChange}
                     required
@@ -198,7 +199,7 @@ export function CvsForm() {
                   <label className={labelCls}>Issue <Opt /></label>
                   <input
                     type="text"
-                    name="text"
+                    name="issue"
                     value={formData.issue}
                     onChange={handleChange}
                     required

@@ -15,15 +15,6 @@ export default function MiscForm() {
   const { show } = useToastStore()
   const today = new Date().toISOString().slice(0, 10);
   const [buttonLoading, setButtonLoading] = useState(false);
-  const [toast, setToast] = useState<{
-    show: boolean;
-    status: ToastStatus;
-    message: string;
-  }>({
-    show: false,
-    status: "success",
-    message: "",
-  });
 
 
   const [formData, setFormData] = useState<MiscFormFields>({
@@ -34,7 +25,6 @@ export default function MiscForm() {
     documentType: "",
     remarks: "",
     issue: "",
-    encodedBy: "",
     subjectOfChange: "",
     drn: "",
     cl: "",
@@ -63,7 +53,6 @@ useEffect(() => {
     documentType: data.documentType ?? "",
     remarks: data.remarks ?? "",
     issue: data.issue ?? "",
-    encodedBy: data.encodedBy ?? "",
     subjectOfChange: data.subjectOfChange ?? "",
     drn: data.drn ?? "",
     cl: data.cl ?? "",
@@ -89,7 +78,7 @@ useEffect(() => {
       show(`${res.data.message}`, "success")
       queryClient.invalidateQueries({queryKey : ["recentMisc"]})
       setButtonLoading(false);
-    }else if(res.data.upload){
+    }else if(!res.data.upload){
       show(`${res.data.message}`, "error")
       setButtonLoading(false);
     }
@@ -105,7 +94,6 @@ useEffect(() => {
     documentType: "",
     remarks: "",
     issue: "",
-    encodedBy: "",
     subjectOfChange: "",
     drn: "",
     cl: "",

@@ -69,7 +69,7 @@ const { data: records = [], isLoading, refetch } = useQuery<T[]>({
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto overflow-y-auto" style={{ maxHeight }}>
+      <div className="overflow-x-auto overflow-y-auto" style={{ maxHeight, minHeight: '220px' }}>
         <table className="min-w-full text-xs">
           <thead className="sticky top-0 z-10 bg-[#fafaf8] border-b border-[#e8e8e0]">
             <tr>

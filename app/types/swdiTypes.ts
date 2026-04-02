@@ -5,7 +5,6 @@ export type SwdiFormFields = {
   grantee: string;
   swdiScore: string;
   swdiLevel: string;
-  encodedBy: string;
   remarks: string;
   issue?: string;
   cl?: string;

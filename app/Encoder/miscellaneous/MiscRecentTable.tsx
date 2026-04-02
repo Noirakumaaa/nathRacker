@@ -47,20 +47,8 @@ const buildColumns : ColumnDef<MiscRecord>[] = [
     cell: (r) => <span className="max-w-30 truncate block">{r.subjectOfChange || <span className="text-[#d4d4cc]">—</span>}</span>,
   },
   {
-    header: "Encoded By",
-    cell: (r) => <span className="whitespace-nowrap">{r.encodedBy || <span className="text-[#d4d4cc]">—</span>}</span>,
-  },
-  {
     header: "Remarks",
     cell: (r) => <EncodedBadge value={r.remarks} />,
-  },
-  {
-    header: "DRN",
-    cell: (r) => <span className="font-mono text-[11px] whitespace-nowrap">{r.drn || <span className="text-[#d4d4cc] font-sans">—</span>}</span>,
-  },
-  {
-    header: "CL",
-    cell: (r) => <span className="font-mono text-[11px] whitespace-nowrap">{r.cl || <span className="text-[#d4d4cc] font-sans">—</span>}</span>,
   },
   {
     header: "Date",
@@ -71,11 +59,7 @@ const buildColumns : ColumnDef<MiscRecord>[] = [
     ),
   },
   {
-    header: "Note",
-    cell: (r) => <span className="max-w-25 truncate block">{r.note || <span className="text-[#d4d4cc]">—</span>}</span>,
-  },
-  {
-    header: "",
+    header: "Action",
     cell: (r) => (
       <button
         onClick={() => handleEdit(r)}

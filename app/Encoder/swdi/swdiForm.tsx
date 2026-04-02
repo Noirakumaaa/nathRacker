@@ -28,7 +28,6 @@ export default function SWDIForm() {
     grantee: "",
     swdiLevel: "",
     swdiScore: "",
-    encodedBy: "",
     remarks: "",
     issue: "",
     cl: "",
@@ -48,6 +47,7 @@ export default function SWDIForm() {
 
   useEffect(() => {
     if (data) {
+      setSwdiScoreInput(String(data.swdiScore) ?? "");
       setFormData(() => ({
         hhId: data.hhId ?? "",
         lgu: data.lgu ?? "",
@@ -55,7 +55,6 @@ export default function SWDIForm() {
         grantee: data.grantee ?? "",
         swdiLevel: data.swdiLevel ?? "",
         swdiScore: String(data.swdiScore) ?? "",
-        encodedBy: data.encodedBy ?? "",
         remarks: data.remarks ?? "",
         issue: data.issue ?? "",
         cl: data.cl ?? "",
@@ -113,7 +112,6 @@ export default function SWDIForm() {
       grantee: "",
       swdiLevel: "",
       swdiScore: "0",
-      encodedBy: "",
       remarks: "",
       issue: "",
       cl: "",

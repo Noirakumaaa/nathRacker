@@ -1,7 +1,6 @@
 import React from "react";
 
 export type MiscFormFields = {
-  id?: string;
   lgu: string;
   barangay: string;
   hhId: string;
@@ -9,7 +8,6 @@ export type MiscFormFields = {
   documentType: string;
   remarks: string;
   issue: string;
-  encodedBy: string;
   subjectOfChange: string;
   drn: string;
   cl: string;

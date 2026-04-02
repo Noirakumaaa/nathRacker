@@ -166,6 +166,20 @@ export function LcnForm() {
                     required
                   />
                 </div>
+                                <div>
+                  <label className={labelCls}>
+                    Barangay <Req />{" "}
+                  </label>
+                  <input
+                    type="text"
+                    name="barangay"
+                    value={formData.barangay}
+                    onChange={handleChange}
+                    className={inputCls}
+                    placeholder="Enter Barangay"
+                    required
+                  />
+                </div>
                 <div>
                   <label className={labelCls}>
                     Grantee Name <Req />
@@ -180,20 +194,7 @@ export function LcnForm() {
                     required
                   />
                 </div>
-                <div>
-                  <label className={labelCls}>
-                    Barangay <Req />{" "}
-                  </label>
-                  <input
-                    type="text"
-                    name="barangay"
-                    value={formData.barangay}
-                    onChange={handleChange}
-                    className={inputCls}
-                    placeholder="Enter Barangay"
-                    required
-                  />
-                </div>
+
                 <div>
                   <label className={labelCls}>
                     Subject of Change <Req />
