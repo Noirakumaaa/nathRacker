@@ -10,7 +10,7 @@ export const DeleteModal = ({ open, onConfirm, onCancel }: DeleteModalProps) => 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm">
+      <div className="bg-(--color-surface) rounded-lg shadow-lg p-6 w-full max-w-sm">
         <h2 className="text-lg font-semibold text-gray-800">Delete Record</h2>
         <p className="text-sm text-gray-500 mt-2">
           Are you sure you want to delete this record? This action cannot be undone.

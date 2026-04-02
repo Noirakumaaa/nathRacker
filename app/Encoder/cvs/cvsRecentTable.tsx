@@ -18,12 +18,12 @@ export default function CvsRecentTable() {
       className: "pl-6 pr-4",
       cell: (r) => (
         <div className="flex items-center gap-1.5 group">
-          <span className="font-mono text-[11px] font-medium text-[#1a1a18] whitespace-nowrap">
+          <span className="font-mono text-[11px] font-medium text-(--color-ink) whitespace-nowrap">
             {r.idNumber}
           </span>
           <button
             onClick={() => navigator.clipboard.writeText((r.idNumber))}
-            className="opacity-0 group-hover:opacity-100 transition-opacity text-[#c4c4b8] hover:text-[#8a8a80] cursor-pointer bg-transparent border-none p-0"
+            className="opacity-0 group-hover:opacity-100 transition-opacity text-(--color-placeholder) hover:text-(--color-muted) cursor-pointer bg-transparent border-none p-0"
             title="Copy ID Number"
           >
             <Copy size={10} />
@@ -54,7 +54,7 @@ export default function CvsRecentTable() {
       headerClassName: "text-left",
       className: "max-w-[160px]",
       cell: (r) => (
-        <span className="text-[12px] font-medium text-[#1a1a18] truncate block whitespace-nowrap">
+        <span className="text-[12px] font-medium text-(--color-ink) truncate block whitespace-nowrap">
           {r.facilityName || (
             <span className="font-normal text-[#d4d4cc]">—</span>
           )}
@@ -75,7 +75,7 @@ export default function CvsRecentTable() {
       header: "Date",
       headerClassName: "text-left",
       cell: (r) => (
-        <span className="text-[11px] text-[#8a8a80] whitespace-nowrap tabular-nums">
+        <span className="text-[11px] text-(--color-muted) whitespace-nowrap tabular-nums">
           {new Date(r.date).toLocaleDateString("en-US", {
             month: "short",
             day: "numeric",
@@ -90,7 +90,7 @@ export default function CvsRecentTable() {
       cell: (r) => (
         <button
           onClick={() => handleEdit(r)}
-          className="inline-flex items-center gap-1 text-[11px] font-medium text-[#8a8a80] hover:text-[#1a1a18] transition-colors whitespace-nowrap cursor-pointer bg-transparent border-none opacity-0 group-hover:opacity-100"
+          className="inline-flex items-center gap-1 text-[11px] font-medium text-(--color-muted) hover:text-(--color-ink) transition-colors whitespace-nowrap cursor-pointer bg-transparent border-none opacity-0 group-hover:opacity-100"
         >
           Load <ArrowUpRight size={11} />
         </button>
@@ -104,11 +104,11 @@ export default function CvsRecentTable() {
       endpoint="/cvs/recent"
       columns={buildColumns}
       rowClassName={(_, i) =>
-        `group hover:bg-[#fafaf8] transition-colors duration-100 ${i % 2 === 0 ? "bg-white" : "bg-[#fdfdfc]"}`
+        `group hover:bg-(--color-bg) transition-colors duration-100 ${i % 2 === 0 ? "bg-(--color-surface)" : "bg-[#fdfdfc]"}`
       }
       headerLeft={(records) => (
         <div className="flex items-center gap-3">
-          <p className="text-[11px] font-semibold text-[#1a1a18] uppercase tracking-wider">
+          <p className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">
             Recent Updates
           </p>
           {records.length > 0 && (
@@ -120,7 +120,7 @@ export default function CvsRecentTable() {
       )}
       headerRight={(records) =>
         records.length > 0 ? (
-          <span className="text-[11px] text-[#c4c4b8] font-mono">
+          <span className="text-[11px] text-(--color-placeholder) font-mono">
             {new Date().toLocaleDateString("en-US", {
               month: "short",
               day: "numeric",
@@ -130,7 +130,7 @@ export default function CvsRecentTable() {
         ) : null
       }
       footer={(records) => (
-        <div className="px-6 py-3 border-t border-[#f0f0ec] bg-[#fafaf8]">
+        <div className="px-6 py-3 border-t border-[#f0f0ec] bg-(--color-bg)">
           <p className="text-[11px] text-[#b0b0a8]">
             Showing {records.length} most recent record
             {records.length !== 1 ? "s" : ""}

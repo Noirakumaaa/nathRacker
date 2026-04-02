@@ -46,7 +46,7 @@ const ROLE_LABEL: Record<string, string> = {
 const DOC_TYPES = ["BUS", "PCN", "SWDI", "CVS", "MISC", "VERIFIED"];
 
 const selectCls =
-  "text-[13px] text-[#1a1a18] px-3 py-1.5 rounded-lg border border-[#e8e8e0] bg-white hover:border-[#1a1a18] transition-colors outline-none cursor-pointer";
+  "text-[13px] text-(--color-ink) px-3 py-1.5 rounded-lg border border-(--color-border) bg-(--color-surface) hover:border-(--color-ink) transition-colors outline-none cursor-pointer";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function countEncoded(records: GlobalRecord[]) {
@@ -72,26 +72,26 @@ function SummaryBlock({
   sublabel?: string;
 }) {
   return (
-    <div className="bg-white border border-[#e8e8e0] rounded-xl overflow-hidden">
-      <div className="px-5 py-3 border-b border-[#e8e8e0]">
-        <p className="text-[11px] font-semibold text-[#1a1a18] uppercase tracking-wider">{label}</p>
-        {sublabel && <p className="text-[11px] text-[#8a8a80] mt-0.5">{sublabel}</p>}
+    <div className="bg-(--color-surface) border border-(--color-border) rounded-xl overflow-hidden">
+      <div className="px-5 py-3 border-b border-(--color-border)">
+        <p className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">{label}</p>
+        {sublabel && <p className="text-[11px] text-(--color-muted) mt-0.5">{sublabel}</p>}
       </div>
       <div className="grid grid-cols-3 divide-x divide-[#f0f0ec]">
         <div className="px-5 py-4 text-center">
-          <p className="text-[10px] font-medium text-[#8a8a80] uppercase tracking-wider mb-1">
+          <p className="text-[10px] font-medium text-(--color-muted) uppercase tracking-wider mb-1">
             Encoded
           </p>
-          <p className="text-[26px] font-semibold text-[#1a1a18]">{countEncoded(records)}</p>
+          <p className="text-[26px] font-semibold text-(--color-ink)">{countEncoded(records)}</p>
         </div>
         <div className="px-5 py-4 text-center">
-          <p className="text-[10px] font-medium text-[#8a8a80] uppercase tracking-wider mb-1">
+          <p className="text-[10px] font-medium text-(--color-muted) uppercase tracking-wider mb-1">
             Updated
           </p>
           <p className="text-[26px] font-semibold text-blue-600">{countUpdated(records)}</p>
         </div>
         <div className="px-5 py-4 text-center">
-          <p className="text-[10px] font-medium text-[#8a8a80] uppercase tracking-wider mb-1">
+          <p className="text-[10px] font-medium text-(--color-muted) uppercase tracking-wider mb-1">
             Issues
           </p>
           <p className="text-[26px] font-semibold text-amber-500">{countIssues(records)}</p>
@@ -202,20 +202,20 @@ export default function StaffDashboard({ govUsername }: { govUsername: string })
 
   if (!emp && employees.length > 0) {
     return (
-      <main className="p-6 bg-[#fafaf8] min-h-screen flex items-center justify-center">
-        <div className="bg-white border border-[#e8e8e0] rounded-xl p-8 max-w-md w-full flex flex-col items-center gap-3 text-center">
+      <main className="p-6 bg-(--color-bg) min-h-screen flex items-center justify-center">
+        <div className="bg-(--color-surface) border border-(--color-border) rounded-xl p-8 max-w-md w-full flex flex-col items-center gap-3 text-center">
           <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center">
             <AlertCircle size={18} className="text-red-400" />
           </div>
-          <p className="text-[15px] font-semibold text-[#1a1a18]">Staff Member Not Found</p>
-          <p className="text-[13px] text-[#8a8a80]">
+          <p className="text-[15px] font-semibold text-(--color-ink)">Staff Member Not Found</p>
+          <p className="text-[13px] text-(--color-muted)">
             No staff member with username{" "}
             <span className="font-mono">{govUsername}</span> was found.
           </p>
           <button
             type="button"
             onClick={() => navigate("/operations/staff")}
-            className="flex items-center gap-2 px-4 py-2 bg-[#1a1a18] text-white text-[13px] font-medium rounded-lg hover:bg-[#333] transition-colors cursor-pointer"
+            className="flex items-center gap-2 px-4 py-2 bg-(--color-ink) text-(--color-bg) text-[13px] font-medium rounded-lg hover:opacity-85 transition-colors cursor-pointer"
           >
             <ArrowLeft size={13} />
             Back to Staff
@@ -226,7 +226,7 @@ export default function StaffDashboard({ govUsername }: { govUsername: string })
   }
 
   return (
-    <main className="p-6 bg-[#fafaf8] min-h-screen font-sans antialiased">
+    <main className="p-6 bg-(--color-bg) min-h-screen font-sans antialiased">
       <div className="max-w-full mx-auto flex flex-col gap-5">
 
         {/* ── Header ───────────────────────────────────────────────────────── */}
@@ -234,53 +234,53 @@ export default function StaffDashboard({ govUsername }: { govUsername: string })
           {/* Breadcrumb */}
           <div className="flex items-center gap-2 mb-2">
             <button type="button" onClick={() => navigate("/operations/my-office")}
-              className="text-[11px] text-[#8a8a80] hover:text-[#1a1a18] transition-colors cursor-pointer bg-transparent border-none">
+              className="text-[11px] text-(--color-muted) hover:text-(--color-ink) transition-colors cursor-pointer bg-transparent border-none">
               My Office
             </button>
-            <span className="text-[#c4c4b8] text-[11px]">/</span>
+            <span className="text-(--color-placeholder) text-[11px]">/</span>
             <button type="button" onClick={() => navigate("/operations/staff")}
-              className="text-[11px] text-[#8a8a80] hover:text-[#1a1a18] transition-colors cursor-pointer bg-transparent border-none">
+              className="text-[11px] text-(--color-muted) hover:text-(--color-ink) transition-colors cursor-pointer bg-transparent border-none">
               Staff
             </button>
-            <span className="text-[#c4c4b8] text-[11px]">/</span>
-            <span className="text-[11px] text-[#1a1a18] font-medium">{govUsername}</span>
+            <span className="text-(--color-placeholder) text-[11px]">/</span>
+            <span className="text-[11px] text-(--color-ink) font-medium">{govUsername}</span>
           </div>
 
           {/* Back */}
           <button type="button" onClick={() => navigate("/operations/staff")}
-            className="flex items-center gap-1.5 text-[12px] text-[#8a8a80] hover:text-[#1a1a18] transition-colors cursor-pointer bg-transparent border-none mb-3">
+            className="flex items-center gap-1.5 text-[12px] text-(--color-muted) hover:text-(--color-ink) transition-colors cursor-pointer bg-transparent border-none mb-3">
             <ArrowLeft size={13} />
             Back to Staff
           </button>
 
           {/* Profile card */}
-          <div className="bg-white border border-[#e8e8e0] rounded-xl p-5 flex flex-col sm:flex-row sm:items-center gap-4">
-            <div className="w-14 h-14 rounded-full bg-[#1a1a18] flex items-center justify-center shrink-0">
+          <div className="bg-(--color-surface) border border-(--color-border) rounded-xl p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+            <div className="w-14 h-14 rounded-full bg-(--color-ink) flex items-center justify-center shrink-0">
               <span className="text-[20px] font-bold text-white">
                 {govUsername[0]?.toUpperCase()}
               </span>
             </div>
             <div className="flex-1 min-w-0">
-              <h1 className="text-[18px] font-semibold text-[#1a1a18]">
+              <h1 className="text-[18px] font-semibold text-(--color-ink)">
                 {fullName || govUsername}
               </h1>
-              <p className="text-[12px] text-[#8a8a80] font-mono mt-0.5">{govUsername}</p>
+              <p className="text-[12px] text-(--color-muted) font-mono mt-0.5">{govUsername}</p>
               {emp && (
-                <span className="inline-block mt-1.5 text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#f5f5f2] text-[#6a6a60]">
+                <span className="inline-block mt-1.5 text-[10px] font-medium px-2 py-0.5 rounded-full bg-(--color-subtle) text-[#6a6a60]">
                   {ROLE_LABEL[emp.role] ?? emp.role}
                 </span>
               )}
             </div>
             <div className="flex flex-col gap-1.5 items-end">
               {assignedLgu && (
-                <div className="flex items-center gap-1.5 text-[11px] text-[#8a8a80]">
-                  <Landmark size={10} className="text-[#c4c4b8]" />
+                <div className="flex items-center gap-1.5 text-[11px] text-(--color-muted)">
+                  <Landmark size={10} className="text-(--color-placeholder)" />
                   {assignedLgu.name}
                 </div>
               )}
               {assignedBarangay && (
-                <div className="flex items-center gap-1.5 text-[11px] text-[#8a8a80]">
-                  <MapPin size={10} className="text-[#c4c4b8]" />
+                <div className="flex items-center gap-1.5 text-[11px] text-(--color-muted)">
+                  <MapPin size={10} className="text-(--color-placeholder)" />
                   {assignedBarangay.name}
                 </div>
               )}
@@ -299,14 +299,14 @@ export default function StaffDashboard({ govUsername }: { govUsername: string })
         />
 
         {/* ── Monthly summary with picker ───────────────────────────────────── */}
-        <div className="bg-white border border-[#e8e8e0] rounded-xl overflow-hidden">
-          <div className="px-5 py-3.5 border-b border-[#e8e8e0] flex flex-wrap items-center justify-between gap-3">
+        <div className="bg-(--color-surface) border border-(--color-border) rounded-xl overflow-hidden">
+          <div className="px-5 py-3.5 border-b border-(--color-border) flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <CalendarDays size={14} className="text-[#8a8a80]" />
-              <p className="text-[11px] font-semibold text-[#1a1a18] uppercase tracking-wider">
+              <CalendarDays size={14} className="text-(--color-muted)" />
+              <p className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">
                 Monthly Summary
               </p>
-              <span className="text-[11px] text-[#8a8a80]">
+              <span className="text-[11px] text-(--color-muted)">
                 — {MONTHS[month - 1]} {year}
               </span>
             </div>
@@ -325,10 +325,10 @@ export default function StaffDashboard({ govUsername }: { govUsername: string })
           </div>
           <div className="grid grid-cols-3 divide-x divide-[#f0f0ec]">
             <div className="px-5 py-4 text-center">
-              <p className="text-[10px] font-medium text-[#8a8a80] uppercase tracking-wider mb-1">
+              <p className="text-[10px] font-medium text-(--color-muted) uppercase tracking-wider mb-1">
                 Encoded
               </p>
-              <p className="text-[26px] font-semibold text-[#1a1a18]">
+              <p className="text-[26px] font-semibold text-(--color-ink)">
                 {countEncoded(monthlyRecords)}
               </p>
               <p className="text-[10px] text-[#b8b8b0] mt-0.5">
@@ -336,7 +336,7 @@ export default function StaffDashboard({ govUsername }: { govUsername: string })
               </p>
             </div>
             <div className="px-5 py-4 text-center">
-              <p className="text-[10px] font-medium text-[#8a8a80] uppercase tracking-wider mb-1">
+              <p className="text-[10px] font-medium text-(--color-muted) uppercase tracking-wider mb-1">
                 Updated
               </p>
               <p className="text-[26px] font-semibold text-blue-600">
@@ -347,7 +347,7 @@ export default function StaffDashboard({ govUsername }: { govUsername: string })
               </p>
             </div>
             <div className="px-5 py-4 text-center">
-              <p className="text-[10px] font-medium text-[#8a8a80] uppercase tracking-wider mb-1">
+              <p className="text-[10px] font-medium text-(--color-muted) uppercase tracking-wider mb-1">
                 Issues
               </p>
               <p className="text-[26px] font-semibold text-amber-500">
@@ -361,13 +361,13 @@ export default function StaffDashboard({ govUsername }: { govUsername: string })
         </div>
 
         {/* ── Records by doc type (overall) ────────────────────────────────── */}
-        <div className="bg-white border border-[#e8e8e0] rounded-xl overflow-hidden">
-          <div className="px-5 py-3.5 border-b border-[#e8e8e0] flex items-center gap-2">
-            <FileText size={14} className="text-[#8a8a80]" />
-            <p className="text-[11px] font-semibold text-[#1a1a18] uppercase tracking-wider">
+        <div className="bg-(--color-surface) border border-(--color-border) rounded-xl overflow-hidden">
+          <div className="px-5 py-3.5 border-b border-(--color-border) flex items-center gap-2">
+            <FileText size={14} className="text-(--color-muted)" />
+            <p className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">
               Records by Document Type
             </p>
-            <span className="ml-auto text-[10px] font-mono text-[#8a8a80] bg-[#f5f5f2] px-2 py-0.5 rounded-full">
+            <span className="ml-auto text-[10px] font-mono text-(--color-muted) bg-(--color-subtle) px-2 py-0.5 rounded-full">
               {staffRecords.length} total
             </span>
           </div>
@@ -378,12 +378,12 @@ export default function StaffDashboard({ govUsername }: { govUsername: string })
               return (
                 <div
                   key={type}
-                  className="flex flex-col items-center gap-1.5 px-3 py-3 rounded-lg bg-[#fafaf8] border border-[#f0f0ec]"
+                  className="flex flex-col items-center gap-1.5 px-3 py-3 rounded-lg bg-(--color-bg) border border-[#f0f0ec]"
                 >
                   <span className={`font-mono text-[10px] font-semibold px-1.5 py-0.5 rounded tracking-wider ${moduleStyle[type] ?? "bg-gray-50 text-gray-600"}`}>
                     {type}
                   </span>
-                  <span className="text-[18px] font-semibold text-[#1a1a18]">{total}</span>
+                  <span className="text-[18px] font-semibold text-(--color-ink)">{total}</span>
                   <span className="text-[10px] text-[#b8b8b0]">
                     {monthly} this mo.
                   </span>
@@ -394,14 +394,14 @@ export default function StaffDashboard({ govUsername }: { govUsername: string })
         </div>
 
         {/* ── Records table for selected month ─────────────────────────────── */}
-        <div className="bg-white border border-[#e8e8e0] rounded-xl overflow-hidden">
-          <div className="px-5 py-3.5 border-b border-[#e8e8e0] flex items-center justify-between">
+        <div className="bg-(--color-surface) border border-(--color-border) rounded-xl overflow-hidden">
+          <div className="px-5 py-3.5 border-b border-(--color-border) flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <CalendarDays size={14} className="text-[#8a8a80]" />
-              <p className="text-[11px] font-semibold text-[#1a1a18] uppercase tracking-wider">
+              <CalendarDays size={14} className="text-(--color-muted)" />
+              <p className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">
                 {MONTHS[month - 1]} {year} Records
               </p>
-              <span className="text-[10px] font-mono text-[#8a8a80] bg-[#f5f5f2] px-2 py-0.5 rounded-full">
+              <span className="text-[10px] font-mono text-(--color-muted) bg-(--color-subtle) px-2 py-0.5 rounded-full">
                 {tableRecords.length}
               </span>
             </div>
@@ -409,7 +409,7 @@ export default function StaffDashboard({ govUsername }: { govUsername: string })
               type="button"
               onClick={() => refetch()}
               disabled={recordsLoading}
-              className="flex items-center gap-1.5 text-[11px] text-[#8a8a80] hover:text-[#1a1a18] transition-colors cursor-pointer bg-transparent border-none disabled:opacity-50"
+              className="flex items-center gap-1.5 text-[11px] text-(--color-muted) hover:text-(--color-ink) transition-colors cursor-pointer bg-transparent border-none disabled:opacity-50"
             >
               <RefreshCw size={11} className={recordsLoading ? "animate-spin" : ""} />
               Refresh
@@ -422,29 +422,29 @@ export default function StaffDashboard({ govUsername }: { govUsername: string })
               <span className="text-[12px]">Loading records…</span>
             </div>
           ) : tableRecords.length === 0 ? (
-            <div className="py-12 flex flex-col items-center gap-2 text-[#c4c4b8]">
+            <div className="py-12 flex flex-col items-center gap-2 text-(--color-placeholder)">
               <FileText size={20} />
               <p className="text-[13px]">No records for {MONTHS[month - 1]} {year}</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="min-w-full text-xs">
-                <thead className="bg-[#fafaf8] border-b border-[#e8e8e0]">
+                <thead className="bg-(--color-bg) border-b border-(--color-border)">
                   <tr>
                     {["ID Number", "Name", "Doc Type", "Status", "DRN", "Date"].map((h) => (
-                      <th key={h} className="px-4 py-3 text-center text-[10px] font-semibold text-[#8a8a80] uppercase tracking-widest whitespace-nowrap">
+                      <th key={h} className="px-4 py-3 text-center text-[10px] font-semibold text-(--color-muted) uppercase tracking-widest whitespace-nowrap">
                         {h}
                       </th>
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#f5f5f2]">
+                <tbody className="divide-y divide-(--color-subtle)">
                   {tableRecords.map((r, i) => (
-                    <tr key={r.id} className={`hover:bg-indigo-50/20 transition-colors ${i % 2 === 0 ? "bg-white" : "bg-[#fafaf8]"}`}>
-                      <td className="px-4 py-2.5 text-center font-mono text-[11px] text-[#1a1a18]">
+                    <tr key={r.id} className={`hover:bg-indigo-50/20 transition-colors ${i % 2 === 0 ? "bg-(--color-surface)" : "bg-(--color-bg)"}`}>
+                      <td className="px-4 py-2.5 text-center font-mono text-[11px] text-(--color-ink)">
                         {r.idNumber}
                       </td>
-                      <td className="px-4 py-2.5 text-center text-[12px] font-medium text-[#1a1a18] whitespace-nowrap">
+                      <td className="px-4 py-2.5 text-center text-[12px] font-medium text-(--color-ink) whitespace-nowrap">
                         {r.name}
                       </td>
                       <td className="px-4 py-2.5 text-center">
@@ -455,10 +455,10 @@ export default function StaffDashboard({ govUsername }: { govUsername: string })
                       <td className="px-4 py-2.5 text-center">
                         <StatusBadge remarks={r.remarks} />
                       </td>
-                      <td className="px-4 py-2.5 text-center text-[11px] text-[#8a8a80]">
+                      <td className="px-4 py-2.5 text-center text-[11px] text-(--color-muted)">
                         {r.drn || <span className="text-[#d4d4cc]">—</span>}
                       </td>
-                      <td className="px-4 py-2.5 text-center text-[11px] text-[#8a8a80] whitespace-nowrap tabular-nums">
+                      <td className="px-4 py-2.5 text-center text-[11px] text-(--color-muted) whitespace-nowrap tabular-nums">
                         {new Date(r.date).toLocaleDateString("en-US", {
                           month: "short",
                           day: "numeric",

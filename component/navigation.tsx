@@ -21,27 +21,27 @@ const TopNavbar = ({ onMenuToggle, isSidebarOpen }: TopNavbarProps) => {
 
   if (!user) {
     return (
-      <nav className="bg-[#fafaf8] border-b border-[#e8e8e0] fixed top-0 left-0 right-0 z-50 h-15 font-sans antialiased">
+      <nav className="bg-(--color-bg) border-b border-(--color-border) fixed top-0 left-0 right-0 z-50 h-15 font-sans antialiased">
         <div className="flex items-center justify-between h-full px-5">
           <div className="flex items-center gap-2.5">
             <img src="/nathracker_icon_v9.svg" alt="NathRacker" className="w-10 h-10" />
-            <span className="text-[16px] font-semibold tracking-tight text-[#1a1a18]">NathRacker</span>
+            <span className="text-[16px] font-semibold tracking-tight text-(--color-ink)">NathRacker</span>
           </div>
-          <div className="w-24 h-5 bg-[#f0f0ec] rounded animate-pulse" />
+          <div className="w-24 h-5 bg-(--color-subtle) rounded animate-pulse" />
         </div>
       </nav>
     );
   }
 
   return (
-    <nav className="bg-[#fafaf8] border-b border-[#e8e8e0] fixed top-0 left-0 right-0 z-50 h-15 font-sans antialiased">
+    <nav className="bg-(--color-bg) border-b border-(--color-border) fixed top-0 left-0 right-0 z-50 h-15 font-sans antialiased">
       <div className="flex items-center justify-between h-full px-5">
 
         {/* Left — hamburger (mobile) + logo */}
         <div className="flex items-center gap-3">
           <button
             onClick={onMenuToggle}
-            className="p-2 rounded-lg text-[#8a8a80] hover:bg-[#e8e8e0] hover:text-[#1a1a18] transition-colors lg:hidden cursor-pointer"
+            className="p-2 rounded-lg text-(--color-muted) hover:bg-(--color-border) hover:text-(--color-ink) transition-colors lg:hidden cursor-pointer"
           >
             {isSidebarOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
@@ -52,7 +52,7 @@ const TopNavbar = ({ onMenuToggle, isSidebarOpen }: TopNavbarProps) => {
             className="flex items-center gap-2.5 no-underline"
           >
             <img src="/nathracker_icon_v9.svg" alt="NathRacker" className="w-10 h-10" />
-            <span className="text-[16px] font-semibold tracking-tight text-[#1a1a18]">
+            <span className="text-[16px] font-semibold tracking-tight text-(--color-ink)">
               NathRacker
             </span>
           </a>
@@ -63,25 +63,25 @@ const TopNavbar = ({ onMenuToggle, isSidebarOpen }: TopNavbarProps) => {
           <div className="relative w-full">
             <Search
               size={13}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-[#c4c4b8]"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-(--color-placeholder)"
             />
             <input
               type="text"
               placeholder="Search… (under development)"
-              className="w-full pl-9 pr-4 py-2 text-[13px] border border-[#e8e8e0] rounded-lg bg-white text-[#1a1a18] placeholder-[#c4c4b8] focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent hover:border-[#c8c8c0] transition-colors"
+              className="w-full pl-9 pr-4 py-2 text-[13px] border border-(--color-border) rounded-lg bg-(--color-surface) text-(--color-ink) placeholder-(--color-placeholder) focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent hover:border-(--color-border-hover) transition-colors"
             />
           </div>
         </div>
 
         {/* Right — user */}
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2.5 pl-3 border-l border-[#e8e8e0]">
-            <div className="w-7 h-7 rounded-full bg-[#f5f5f2] border border-[#e8e8e0] flex items-center justify-center">
-              <span className="text-[11px] font-semibold text-[#8a8a80]">
+          <div className="flex items-center gap-2.5 pl-3 border-l border-(--color-border)">
+            <div className="w-7 h-7 rounded-full bg-(--color-subtle) border border-(--color-border) flex items-center justify-center">
+              <span className="text-[11px] font-semibold text-(--color-muted)">
                 {(user.govUsername?.[0] ?? "U").toUpperCase()}
               </span>
             </div>
-            <span className="hidden md:block text-[13px] font-medium text-[#1a1a18]">
+            <span className="hidden md:block text-[13px] font-medium text-(--color-ink)">
               {user.firstName} {user.lastName}
             </span>
           </div>

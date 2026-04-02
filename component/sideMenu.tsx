@@ -70,7 +70,7 @@ const AccountItems = [
 // ── Section label ─────────────────────────────────────────────
 function SectionLabel({ label }: { label: string }) {
   return (
-    <p className="text-[9.5px] font-semibold text-[#b8b8b0] uppercase tracking-widest px-3 pt-5 pb-1.5 select-none">
+    <p className="text-[9.5px] font-semibold text-(--color-placeholder) uppercase tracking-widest px-3 pt-5 pb-1.5 select-none">
       {label}
     </p>
   );
@@ -99,8 +99,8 @@ function NavItem({
         ${disabled ? "opacity-40 cursor-not-allowed" : ""}
         ${
           isActive
-            ? "bg-[#1a1a18] text-white"
-            : "text-[#6a6a60] hover:text-[#1a1a18] hover:bg-[#f0f0ec]"
+            ? "bg-(--color-ink) text-(--color-bg)"
+            : "text-(--color-muted) hover:text-(--color-ink) hover:bg-(--color-subtle)"
         }
       `}
     >
@@ -180,7 +180,7 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
       {/* Mobile overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-[#1a1a18]/25 backdrop-blur-[2px] z-30 lg:hidden"
+          className="fixed inset-0 bg-(--color-ink)/25 backdrop-blur-[2px] z-30 lg:hidden"
           onClick={onClose}
         />
       )}
@@ -188,17 +188,17 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
       {/* Sidebar */}
       <aside
         className={`
-          fixed top-0 left-0 h-screen w-55 bg-[#fafaf8] border-r border-[#e8e8e0]
+          fixed top-0 left-0 h-screen w-55 bg-(--color-bg) border-r border-(--color-border)
           z-40 flex flex-col transform transition-transform duration-300 ease-in-out
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
           lg:translate-x-0 lg:relative lg:z-0
         `}
       >
         {/* Logo */}
-        <div className="h-15 flex items-center px-5 border-b border-[#e8e8e0] shrink-0">
+        <div className="h-15 flex items-center px-5 border-b border-(--color-border) shrink-0">
           <a href="/" className="flex items-center gap-2.5 no-underline group">
             <img src="/nathracker_icon_v9.svg" alt="NathRacker" className="w-10 h-10" />
-            <span className="text-[15px] font-semibold tracking-tight text-[#1a1a18]">
+            <span className="text-[15px] font-semibold tracking-tight text-(--color-ink)">
               NathRacker
             </span>
           </a>
@@ -236,8 +236,8 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
             ))}
             {verificationMenuItems.some((i) => !i.enabled) && (
               <div className="flex items-center gap-1.5 px-3 py-1">
-                <Construction size={10} className="text-[#c4c4b8]" />
-                <span className="text-[10px] text-[#c4c4b8]">
+                <Construction size={10} className="text-(--color-placeholder)" />
+                <span className="text-[10px] text-(--color-placeholder)">
                   Some modules under development
                 </span>
               </div>
@@ -303,17 +303,17 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
         </div>
 
         {/* Footer — user card */}
-        <div className="border-t border-[#e8e8e0] p-2.5 shrink-0">
+        <div className="border-t border-(--color-border) p-2.5 shrink-0">
           {User && (
-            <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg bg-white border border-[#e8e8e0]">
-              <div className="w-7 h-7 rounded-full bg-[#1a1a18] flex items-center justify-center shrink-0">
-                <span className="text-[11px] font-bold text-white">{initials}</span>
+            <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg bg-(--color-surface) border border-(--color-border)">
+              <div className="w-7 h-7 rounded-full bg-(--color-ink) flex items-center justify-center shrink-0">
+                <span className="text-[11px] font-bold text-(--color-bg)">{initials}</span>
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-[12px] font-semibold text-[#1a1a18] truncate leading-tight">
+                <p className="text-[12px] font-semibold text-(--color-ink) truncate leading-tight">
                   {User.govUsername}
                 </p>
-                <p className="text-[10px] text-[#8a8a80] font-mono uppercase tracking-wide">
+                <p className="text-[10px] text-(--color-muted) font-mono uppercase tracking-wide">
                   {User.role ?? "ENCODER"}
                 </p>
               </div>

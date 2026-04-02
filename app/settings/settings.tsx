@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
+import { useThemeStore } from "lib/zustand/ThemeStore";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import APIFETCH from "lib/axios/axiosConfig";
 import { useToastStore } from "lib/zustand/ToastStore";
@@ -42,10 +43,10 @@ const COLORS = {
 
 // ── Shared primitives ─────────────────────────────────────────────────────────
 const inputCls =
-  "w-full px-3 py-2 text-[13px] border border-[#e8e8e0] rounded-lg text-[#1a1a18] placeholder-[#c4c4b8] bg-white focus:outline-none focus:ring-2 focus:ring-[#1a1a18] focus:border-transparent hover:border-[#c8c8c0] transition-colors";
+  "w-full px-3 py-2 text-[13px] border border-(--color-border) rounded-lg text-(--color-ink) placeholder-(--color-placeholder) bg-(--color-surface) focus:outline-none focus:ring-2 focus:ring-(--color-ink) focus:border-transparent hover:border-(--color-border-hover) transition-colors";
 
 const labelCls =
-  "block text-[10px] font-semibold text-[#8a8a80] mb-1.5 uppercase tracking-widest";
+  "block text-[10px] font-semibold text-(--color-muted) mb-1.5 uppercase tracking-widest";
 
 function Field({
   label,
@@ -82,8 +83,8 @@ function Toggle({
       onClick={onChange}
       className={`relative inline-flex w-10 h-5.5 rounded-full border transition-all duration-200 cursor-pointer shrink-0 ${
         checked
-          ? "bg-[#1a1a18] border-[#1a1a18]"
-          : "bg-[#e8e8e0] border-[#e8e8e0]"
+          ? "bg-(--color-ink) border-(--color-ink)"
+          : "bg-(--color-border) border-(--color-border)"
       }`}
     >
       <span
@@ -126,10 +127,10 @@ function SaveBtn({
         status === "saved"
           ? "bg-emerald-50 text-emerald-700 border-emerald-200"
           : status === "saving"
-            ? "bg-[#f5f5f2] text-[#8a8a80] border-[#e8e8e0] cursor-not-allowed"
+            ? "bg-(--color-subtle) text-(--color-muted) border-(--color-border) cursor-not-allowed"
             : status === "error"
               ? "bg-red-50 text-red-700 border-red-200"
-              : "bg-[#1a1a18] text-white border-[#1a1a18] hover:bg-[#333]"
+              : "bg-(--color-ink) text-(--color-bg) border-(--color-ink) hover:opacity-85"
       }`}
     >
       {status === "saving" ? (
@@ -167,17 +168,17 @@ function SectionTitle({
   subtitle?: string;
 }) {
   return (
-    <div className="pb-5 border-b border-[#e8e8e0] mb-6">
+    <div className="pb-5 border-b border-(--color-border) mb-6">
       <div className="flex items-center gap-3">
-        <div className="w-8 h-8 bg-[#f5f5f2] rounded-lg flex items-center justify-center">
-          <Icon className="w-4 h-4 text-[#1a1a18]" />
+        <div className="w-8 h-8 bg-(--color-subtle) rounded-lg flex items-center justify-center">
+          <Icon className="w-4 h-4 text-(--color-ink)" />
         </div>
         <div>
-          <h2 className="text-[14px] font-semibold text-[#1a1a18] tracking-tight">
+          <h2 className="text-[14px] font-semibold text-(--color-ink) tracking-tight">
             {title}
           </h2>
           {subtitle && (
-            <p className="text-[12px] text-[#8a8a80] mt-0.5">{subtitle}</p>
+            <p className="text-[12px] text-(--color-muted) mt-0.5">{subtitle}</p>
           )}
         </div>
       </div>
@@ -195,11 +196,11 @@ function RowDivider({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center justify-between py-4 border-b border-[#f5f5f2] last:border-none">
+    <div className="flex items-center justify-between py-4 border-b border-(--color-subtle) last:border-none">
       <div className="flex-1 pr-8">
-        <p className="text-[13px] font-medium text-[#1a1a18]">{label}</p>
+        <p className="text-[13px] font-medium text-(--color-ink)">{label}</p>
         {description && (
-          <p className="text-[12px] text-[#8a8a80] mt-0.5 leading-snug">
+          <p className="text-[12px] text-(--color-muted) mt-0.5 leading-snug">
             {description}
           </p>
         )}
@@ -323,7 +324,7 @@ function GeneralSettings() {
             <button
               type="button"
               onClick={() => setShowPass(!showPass)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-medium text-[#8a8a80] hover:text-[#1a1a18] transition-colors cursor-pointer"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-medium text-(--color-muted) hover:text-(--color-ink) transition-colors cursor-pointer"
             >
               {showPass ? "Hide" : "Show"}
             </button>
@@ -345,7 +346,7 @@ function GeneralSettings() {
               password: "",
             })
           }
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-medium text-[#8a8a80] border border-[#e8e8e0] bg-white hover:border-[#1a1a18] hover:text-[#1a1a18] transition-colors cursor-pointer"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-medium text-(--color-muted) border border-(--color-border) bg-(--color-surface) hover:border-(--color-ink) hover:text-(--color-ink) transition-colors cursor-pointer"
         >
           <RefreshCw className="w-3.5 h-3.5" />
           Reset
@@ -430,7 +431,7 @@ function NotificationSettings() {
 
 // ── 3. Appearance Settings ────────────────────────────────────────────────────
 function AppearanceSettings() {
-  const [theme, setTheme] = useState<"light" | "dark" | "system">("light");
+  const { theme, setTheme } = useThemeStore();
   const [density, setDensity] = useState<"comfortable" | "compact">(
     "comfortable",
   );
@@ -441,19 +442,19 @@ function AppearanceSettings() {
       id: "light" as const,
       label: "Light",
       icon: Sun,
-      preview: "bg-white border-[#e8e8e0]",
+      preview: "bg-(--color-surface) border-(--color-border)",
     },
     {
       id: "dark" as const,
       label: "Dark",
       icon: Moon,
-      preview: "bg-[#1a1a18] border-[#333]",
+      preview: "bg-(--color-ink) border-[#333]",
     },
     {
       id: "system" as const,
       label: "System",
       icon: Monitor,
-      preview: "bg-gradient-to-br from-white to-[#1a1a18] border-[#c8c8c0]",
+      preview: "bg-gradient-to-br from-white to-(--color-ink) border-(--color-border-hover)",
     },
   ];
 
@@ -475,20 +476,20 @@ function AppearanceSettings() {
               onClick={() => setTheme(id)}
               className={`group relative flex flex-col items-start gap-3 p-4 rounded-xl border-2 transition-all cursor-pointer text-left ${
                 theme === id
-                  ? "border-[#1a1a18] bg-[#fafaf8]"
-                  : "border-[#e8e8e0] hover:border-[#c8c8c0] bg-white"
+                  ? "border-(--color-ink) bg-(--color-bg)"
+                  : "border-(--color-border) hover:border-(--color-border-hover) bg-(--color-surface)"
               }`}
             >
               <div className={`w-full h-12 rounded-lg border ${preview}`} />
               <div className="flex items-center justify-between w-full">
                 <div className="flex items-center gap-2">
-                  <Icon className="w-3.5 h-3.5 text-[#8a8a80]" />
-                  <span className="text-[12px] font-medium text-[#1a1a18]">
+                  <Icon className="w-3.5 h-3.5 text-(--color-muted)" />
+                  <span className="text-[12px] font-medium text-(--color-ink)">
                     {label}
                   </span>
                 </div>
                 {theme === id && (
-                  <Check className="w-3.5 h-3.5 text-[#1a1a18]" />
+                  <Check className="w-3.5 h-3.5 text-(--color-ink)" />
                 )}
               </div>
             </button>
@@ -506,22 +507,31 @@ function AppearanceSettings() {
               onClick={() => setDensity(d)}
               className={`flex items-center justify-between px-4 py-3 rounded-xl border-2 transition-all cursor-pointer ${
                 density === d
-                  ? "border-[#1a1a18] bg-[#fafaf8]"
-                  : "border-[#e8e8e0] hover:border-[#c8c8c0] bg-white"
+                  ? "border-(--color-ink) bg-(--color-bg)"
+                  : "border-(--color-border) hover:border-(--color-border-hover) bg-(--color-surface)"
               }`}
             >
-              <span className="text-[13px] font-medium text-[#1a1a18] capitalize">
+              <span className="text-[13px] font-medium text-(--color-ink) capitalize">
                 {d}
               </span>
               {density === d && (
-                <Check className="w-3.5 h-3.5 text-[#1a1a18]" />
+                <Check className="w-3.5 h-3.5 text-(--color-ink)" />
               )}
             </button>
           ))}
         </div>
       </div>
 
-      <SaveBtn status={status} onClick={() => trigger()} />
+      <SaveBtn
+        status={status}
+        onClick={() =>
+          trigger(async () => {
+            await APIFETCH.put("/settings/theme", {
+              theme: theme === "dark" ? "DARK" : "LIGHT",
+            });
+          })
+        }
+      />
     </div>
   );
 }
@@ -533,11 +543,48 @@ function SecuritySettings() {
     loginAlerts: true,
     sessionTimeout: "30",
   });
+  const { show } = useToastStore()
   const { status, trigger } = useSaveStatus();
+
+
+  const { data: SecurityData } = useQuery({
+    queryKey : ["SecurityData"],
+    queryFn : async () =>{
+      const res = await APIFETCH.get("/settings/security")
+      return res.data
+    }
+  })
+
+  const msToKey: Record<number, string> = {
+    [15 * 60 * 1000]: "15",
+    [30 * 60 * 1000]: "30",
+    [60 * 60 * 1000]: "1",
+    [2 * 60 * 60 * 1000]: "2",
+    [4 * 60 * 60 * 1000]: "4",
+    [365 * 24 * 60 * 60 * 1000]: "never",
+  };
+
+  useEffect(() => {
+    if (!SecurityData) return;
+    setSec({
+      twoFactor: SecurityData.twoFactorAuth,
+      loginAlerts: SecurityData.loginAlert,
+      sessionTimeout: msToKey[SecurityData.sessionTime] ?? "30",
+    });
+  }, [SecurityData])
 
   const handleSave = () =>
     trigger(async () => {
-      await APIFETCH.post("/auth/sessionTimeout", { sessionTime: sec.sessionTimeout }).catch(() => {});
+      const res = await APIFETCH.put("/settings/security", {
+        sessionTime: sec.sessionTimeout === "never" ? "never" : Number(sec.sessionTimeout) as 15 | 30 | 1 | 2 | 4,
+        loginAlert: sec.loginAlerts,
+        twoFactorAuth: sec.twoFactor,
+      });
+      if(res.data.updated){
+        show(`${res.data.message}`, "success")
+      }else if (!res.data.updated){
+        show(`${res.data.message}`, "error")
+      }
     });
 
   return (
@@ -586,7 +633,7 @@ function SecuritySettings() {
         </RowDivider>
         <div className="py-4">
           <label className={labelCls}>Session Timeout</label>
-          <p className="text-[12px] text-[#8a8a80] mb-2">
+          <p className="text-[12px] text-(--color-muted) mb-2">
             Automatically log out after a period of inactivity
           </p>
           <select
@@ -598,9 +645,9 @@ function SecuritySettings() {
           >
             <option value="15">15 minutes</option>
             <option value="30">30 minutes</option>
-            <option value="60">1 hour</option>
-            <option value="120">2 hours</option>
-            <option value="240">4 hours</option>
+            <option value="1">1 hour</option>
+            <option value="2">2 hours</option>
+            <option value="4">4 hours</option>
             <option value="never">Never</option>
           </select>
         </div>
@@ -723,20 +770,20 @@ function BackupSettings() {
               onClick={() => setFreq(opt.value)}
               className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-xl border-2 transition-all cursor-pointer text-left ${
                 freq === opt.value
-                  ? "border-[#1a1a18] bg-[#fafaf8]"
-                  : "border-[#e8e8e0] hover:border-[#c8c8c0] bg-white"
+                  ? "border-(--color-ink) bg-(--color-bg)"
+                  : "border-(--color-border) hover:border-(--color-border-hover) bg-(--color-surface)"
               }`}
             >
               <div
-                className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${freq === opt.value ? "border-[#1a1a18]" : "border-[#c8c8c0]"}`}
+                className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${freq === opt.value ? "border-(--color-ink)" : "border-(--color-border-hover)"}`}
               >
                 {freq === opt.value && (
-                  <div className="w-2 h-2 rounded-full bg-[#1a1a18]" />
+                  <div className="w-2 h-2 rounded-full bg-(--color-ink)" />
                 )}
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-[13px] font-medium text-[#1a1a18]">
+                  <span className="text-[13px] font-medium text-(--color-ink)">
                     {opt.label}
                   </span>
                   {opt.badge && (
@@ -745,18 +792,18 @@ function BackupSettings() {
                     </span>
                   )}
                 </div>
-                <p className="text-[12px] text-[#8a8a80] mt-0.5">{opt.desc}</p>
+                <p className="text-[12px] text-(--color-muted) mt-0.5">{opt.desc}</p>
               </div>
             </button>
           ))}
         </div>
       </div>
 
-      <div className="p-4 bg-[#fafaf8] border border-[#e8e8e0] rounded-xl mb-5">
-        <p className="text-[12px] font-medium text-[#1a1a18] mb-1">
+      <div className="p-4 bg-(--color-bg) border border-(--color-border) rounded-xl mb-5">
+        <p className="text-[12px] font-medium text-(--color-ink) mb-1">
           Last backup
         </p>
-        <p className="text-[12px] text-[#8a8a80]">
+        <p className="text-[12px] text-(--color-muted)">
           March 28, 2026 — 2:04 AM · 3 records backed up
         </p>
       </div>
@@ -765,7 +812,7 @@ function BackupSettings() {
         <SaveBtn status={status} onClick={() => trigger()} />
         <button
           type="button"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-medium text-[#1a1a18] border border-[#e8e8e0] bg-white hover:border-[#1a1a18] transition-colors cursor-pointer"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-medium text-(--color-ink) border border-(--color-border) bg-(--color-surface) hover:border-(--color-ink) transition-colors cursor-pointer"
         >
           <Download className="w-3.5 h-3.5" />
           Download now
@@ -1127,7 +1174,7 @@ const typeBadgeColors: Record<string, string> = {
   string: "bg-blue-50 text-blue-600 border-blue-200",
   number: "bg-violet-50 text-violet-600 border-violet-200",
   date: "bg-orange-50 text-orange-600 border-orange-200",
-  "optional-string": "bg-[#f5f5f2] text-[#8a8a80] border-[#e8e8e0]",
+  "optional-string": "bg-(--color-subtle) text-(--color-muted) border-(--color-border)",
 };
 const typeLabel: Record<string, string> = {
   string: "text",
@@ -1214,7 +1261,7 @@ function ImportSettings() {
                 className={`font-mono text-[11px] font-semibold py-2.5 rounded-xl border tracking-widest transition-all cursor-pointer ${
                   active
                     ? moduleActiveColors[col]
-                    : "bg-white text-[#5a5a52] border-[#e8e8e0] hover:border-[#c8c8c0] hover:text-[#1a1a18]"
+                    : "bg-(--color-surface) text-[#5a5a52] border-(--color-border) hover:border-(--color-border-hover) hover:text-(--color-ink)"
                 }`}
               >
                 {m}
@@ -1242,7 +1289,7 @@ function ImportSettings() {
         {/* Required */}
         {requiredFields.length > 0 && (
           <div className="mb-2.5">
-            <p className="text-[9px] font-semibold text-[#8a8a80] uppercase tracking-widest mb-1.5">
+            <p className="text-[9px] font-semibold text-(--color-muted) uppercase tracking-widest mb-1.5">
               Required
             </p>
             <div className="flex flex-wrap gap-1.5">
@@ -1260,10 +1307,10 @@ function ImportSettings() {
                   </span>
                   {/* Tooltip */}
                   <div className="absolute bottom-full left-0 mb-2 z-10 hidden group-hover:block">
-                    <div className="bg-[#1a1a18] text-white text-[11px] rounded-lg px-3 py-2 whitespace-nowrap shadow-lg max-w-65 leading-snug">
+                    <div className="bg-(--color-ink) text-(--color-bg) text-[11px] rounded-lg px-3 py-2 whitespace-nowrap shadow-lg max-w-65 leading-snug">
                       {meta.hint}
                     </div>
-                    <div className="w-2 h-2 bg-[#1a1a18] rotate-45 ml-3 -mt-1" />
+                    <div className="w-2 h-2 bg-(--color-ink) rotate-45 ml-3 -mt-1" />
                   </div>
                 </div>
               ))}
@@ -1274,13 +1321,13 @@ function ImportSettings() {
         {/* Optional */}
         {optionalFields.length > 0 && (
           <div>
-            <p className="text-[9px] font-semibold text-[#8a8a80] uppercase tracking-widest mb-1.5">
+            <p className="text-[9px] font-semibold text-(--color-muted) uppercase tracking-widest mb-1.5">
               Optional
             </p>
             <div className="flex flex-wrap gap-1.5">
               {optionalFields.map(([f, meta]) => (
                 <div key={f} className="relative group">
-                  <span className="font-mono text-[11px] px-2.5 py-1 rounded-md border cursor-default select-none flex items-center gap-1.5 bg-white text-[#8a8a80] border-[#e8e8e0]">
+                  <span className="font-mono text-[11px] px-2.5 py-1 rounded-md border cursor-default select-none flex items-center gap-1.5 bg-(--color-surface) text-(--color-muted) border-(--color-border)">
                     {f}
                     <span
                       className={`text-[9px] font-semibold px-1 py-0.5 rounded border ${typeBadgeColors["optional-string"]}`}
@@ -1290,10 +1337,10 @@ function ImportSettings() {
                   </span>
                   {/* Tooltip */}
                   <div className="absolute bottom-full left-0 mb-2 z-10 hidden group-hover:block">
-                    <div className="bg-[#1a1a18] text-white text-[11px] rounded-lg px-3 py-2 whitespace-nowrap shadow-lg max-w-65 leading-snug">
+                    <div className="bg-(--color-ink) text-(--color-bg) text-[11px] rounded-lg px-3 py-2 whitespace-nowrap shadow-lg max-w-65 leading-snug">
                       {meta.hint}
                     </div>
-                    <div className="w-2 h-2 bg-[#1a1a18] rotate-45 ml-3 -mt-1" />
+                    <div className="w-2 h-2 bg-(--color-ink) rotate-45 ml-3 -mt-1" />
                   </div>
                 </div>
               ))}
@@ -1318,7 +1365,7 @@ function ImportSettings() {
         className={`border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center text-center transition-colors mb-5 ${
           isDragging
             ? "border-blue-400 bg-blue-50"
-            : "border-[#e8e8e0] hover:border-[#c8c8c0]"
+            : "border-(--color-border) hover:border-(--color-border-hover)"
         }`}
       >
         {file ? (
@@ -1327,33 +1374,33 @@ function ImportSettings() {
               <FileUp className="w-4 h-4 text-emerald-600" />
             </div>
             <div className="text-left">
-              <p className="text-[13px] font-medium text-[#1a1a18]">
+              <p className="text-[13px] font-medium text-(--color-ink)">
                 {file.name}
               </p>
-              <p className="text-[12px] text-[#8a8a80]">
+              <p className="text-[12px] text-(--color-muted)">
                 {(file.size / 1024).toFixed(1)} KB · {module}
               </p>
             </div>
             <button
               type="button"
               onClick={() => setFile(null)}
-              className="ml-2 text-[#c4c4b8] hover:text-[#8a8a80] cursor-pointer bg-transparent border-none"
+              className="ml-2 text-(--color-placeholder) hover:text-(--color-muted) cursor-pointer bg-transparent border-none"
             >
               <X size={14} />
             </button>
           </div>
         ) : (
           <>
-            <div className="w-11 h-11 bg-white border border-[#e8e8e0] rounded-xl flex items-center justify-center mb-3">
-              <Upload className="w-4 h-4 text-[#8a8a80]" />
+            <div className="w-11 h-11 bg-(--color-surface) border border-(--color-border) rounded-xl flex items-center justify-center mb-3">
+              <Upload className="w-4 h-4 text-(--color-muted)" />
             </div>
-            <p className="text-[13px] font-medium text-[#1a1a18] mb-1">
+            <p className="text-[13px] font-medium text-(--color-ink) mb-1">
               Drop your file here
             </p>
-            <p className="text-[12px] text-[#8a8a80] mb-3">
+            <p className="text-[12px] text-(--color-muted) mb-3">
               .csv or .xlsx — max 10 MB
             </p>
-            <label className="px-4 py-2 rounded-lg text-[12px] font-medium bg-white text-[#1a1a18] border border-[#e8e8e0] hover:border-[#1a1a18] transition-colors cursor-pointer">
+            <label className="px-4 py-2 rounded-lg text-[12px] font-medium bg-(--color-surface) text-(--color-ink) border border-(--color-border) hover:border-(--color-ink) transition-colors cursor-pointer">
               Browse file
               <input
                 type="file"
@@ -1373,7 +1420,7 @@ function ImportSettings() {
         type="button"
         onClick={handleImport}
         disabled={!file || status === "saving"}
-        className="w-full py-2.5 rounded-xl text-[13px] font-medium bg-[#1a1a18] text-white hover:bg-[#333] transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+        className="w-full py-2.5 rounded-xl text-[13px] font-medium bg-(--color-ink) text-(--color-bg) hover:opacity-85 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
       >
         {status === "saving"
           ? "Importing…"
@@ -1385,7 +1432,7 @@ function ImportSettings() {
       {/* Guide modal */}
       {showGuide && (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-150 max-h-[85vh] overflow-y-auto border border-[#e8e8e0]">
+          <div className="bg-(--color-surface) rounded-2xl shadow-2xl w-full max-w-150 max-h-[85vh] overflow-y-auto border border-(--color-border)">
             <div
               className={`px-6 py-5 border-b flex items-center justify-between ${schema.headerBg} ${schema.headerBorder} rounded-t-2xl`}
             >
@@ -1395,14 +1442,14 @@ function ImportSettings() {
                 >
                   Import Format — {module}
                 </h3>
-                <p className="text-[12px] text-[#8a8a80] mt-0.5">
+                <p className="text-[12px] text-(--color-muted) mt-0.5">
                   Verify your file matches this structure before proceeding
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setGuide(false)}
-                className="text-[#8a8a80] hover:text-[#1a1a18] cursor-pointer"
+                className="text-(--color-muted) hover:text-(--color-ink) cursor-pointer"
               >
                 <X size={16} />
               </button>
@@ -1411,11 +1458,11 @@ function ImportSettings() {
             <div className="px-6 py-5 space-y-5">
               {/* Header row */}
               <div>
-                <p className="text-[11px] font-semibold text-[#8a8a80] uppercase tracking-widest mb-2">
+                <p className="text-[11px] font-semibold text-(--color-muted) uppercase tracking-widest mb-2">
                   Required headers (exact, in order)
                 </p>
-                <div className="bg-[#f5f5f2] rounded-lg p-3 overflow-x-auto">
-                  <code className="text-[12px] font-mono text-[#1a1a18] whitespace-nowrap">
+                <div className="bg-(--color-subtle) rounded-lg p-3 overflow-x-auto">
+                  <code className="text-[12px] font-mono text-(--color-ink) whitespace-nowrap">
                     {Object.keys(schema.fields).join(", ")}
                   </code>
                 </div>
@@ -1423,25 +1470,25 @@ function ImportSettings() {
 
               {/* Required fields table */}
               <div>
-                <p className="text-[11px] font-semibold text-[#8a8a80] uppercase tracking-widest mb-2">
+                <p className="text-[11px] font-semibold text-(--color-muted) uppercase tracking-widest mb-2">
                   Required fields
                 </p>
-                <div className="border border-[#e8e8e0] rounded-xl overflow-hidden">
-                  <div className="grid grid-cols-[140px_60px_1fr] gap-0 px-4 py-2 bg-[#fafaf8] border-b border-[#e8e8e0]">
-                    <span className="text-[10px] font-semibold text-[#8a8a80] uppercase tracking-wider">
+                <div className="border border-(--color-border) rounded-xl overflow-hidden">
+                  <div className="grid grid-cols-[140px_60px_1fr] gap-0 px-4 py-2 bg-(--color-bg) border-b border-(--color-border)">
+                    <span className="text-[10px] font-semibold text-(--color-muted) uppercase tracking-wider">
                       Column
                     </span>
-                    <span className="text-[10px] font-semibold text-[#8a8a80] uppercase tracking-wider">
+                    <span className="text-[10px] font-semibold text-(--color-muted) uppercase tracking-wider">
                       Type
                     </span>
-                    <span className="text-[10px] font-semibold text-[#8a8a80] uppercase tracking-wider">
+                    <span className="text-[10px] font-semibold text-(--color-muted) uppercase tracking-wider">
                       Hint
                     </span>
                   </div>
                   {requiredFields.map(([f, meta]) => (
                     <div
                       key={f}
-                      className="grid grid-cols-[140px_60px_1fr] gap-0 px-4 py-2.5 border-b border-[#f5f5f2] last:border-none items-start"
+                      className="grid grid-cols-[140px_60px_1fr] gap-0 px-4 py-2.5 border-b border-(--color-subtle) last:border-none items-start"
                     >
                       <code
                         className={`text-[11px] font-mono font-semibold ${schema.pillText}`}
@@ -1464,27 +1511,27 @@ function ImportSettings() {
               {/* Optional fields table */}
               {optionalFields.length > 0 && (
                 <div>
-                  <p className="text-[11px] font-semibold text-[#8a8a80] uppercase tracking-widest mb-2">
+                  <p className="text-[11px] font-semibold text-(--color-muted) uppercase tracking-widest mb-2">
                     Optional fields
                   </p>
-                  <div className="border border-[#e8e8e0] rounded-xl overflow-hidden">
-                    <div className="grid grid-cols-[140px_60px_1fr] gap-0 px-4 py-2 bg-[#fafaf8] border-b border-[#e8e8e0]">
-                      <span className="text-[10px] font-semibold text-[#8a8a80] uppercase tracking-wider">
+                  <div className="border border-(--color-border) rounded-xl overflow-hidden">
+                    <div className="grid grid-cols-[140px_60px_1fr] gap-0 px-4 py-2 bg-(--color-bg) border-b border-(--color-border)">
+                      <span className="text-[10px] font-semibold text-(--color-muted) uppercase tracking-wider">
                         Column
                       </span>
-                      <span className="text-[10px] font-semibold text-[#8a8a80] uppercase tracking-wider">
+                      <span className="text-[10px] font-semibold text-(--color-muted) uppercase tracking-wider">
                         Type
                       </span>
-                      <span className="text-[10px] font-semibold text-[#8a8a80] uppercase tracking-wider">
+                      <span className="text-[10px] font-semibold text-(--color-muted) uppercase tracking-wider">
                         Hint
                       </span>
                     </div>
                     {optionalFields.map(([f, meta]) => (
                       <div
                         key={f}
-                        className="grid grid-cols-[140px_60px_1fr] gap-0 px-4 py-2.5 border-b border-[#f5f5f2] last:border-none items-start"
+                        className="grid grid-cols-[140px_60px_1fr] gap-0 px-4 py-2.5 border-b border-(--color-subtle) last:border-none items-start"
                       >
-                        <code className="text-[11px] font-mono text-[#8a8a80]">
+                        <code className="text-[11px] font-mono text-(--color-muted)">
                           {f}
                         </code>
                         <span
@@ -1492,7 +1539,7 @@ function ImportSettings() {
                         >
                           optional
                         </span>
-                        <span className="text-[12px] text-[#8a8a80] leading-snug">
+                        <span className="text-[12px] text-(--color-muted) leading-snug">
                           {meta.hint}
                         </span>
                       </div>
@@ -1518,18 +1565,18 @@ function ImportSettings() {
               </div>
             </div>
 
-            <div className="px-6 py-4 border-t border-[#e8e8e0] flex justify-end gap-2.5">
+            <div className="px-6 py-4 border-t border-(--color-border) flex justify-end gap-2.5">
               <button
                 type="button"
                 onClick={() => setGuide(false)}
-                className="px-4 py-2 text-[13px] font-medium text-[#8a8a80] border border-[#e8e8e0] rounded-lg hover:border-[#1a1a18] hover:text-[#1a1a18] transition-colors cursor-pointer"
+                className="px-4 py-2 text-[13px] font-medium text-(--color-muted) border border-(--color-border) rounded-lg hover:border-(--color-ink) hover:text-(--color-ink) transition-colors cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={proceedImport}
-                className="px-4 py-2 text-[13px] font-medium bg-[#1a1a18] text-white rounded-lg hover:bg-[#333] transition-colors cursor-pointer flex items-center gap-2"
+                className="px-4 py-2 text-[13px] font-medium bg-(--color-ink) text-(--color-bg) rounded-lg hover:opacity-85 transition-colors cursor-pointer flex items-center gap-2"
               >
                 <Check className="w-3.5 h-3.5" /> I understand, proceed
               </button>
@@ -1541,16 +1588,16 @@ function ImportSettings() {
       {/* Error modal */}
       {showErrors && (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm border border-[#e8e8e0]">
-            <div className="px-6 py-5 border-b border-[#e8e8e0] flex items-center gap-3">
+          <div className="bg-(--color-surface) rounded-2xl shadow-2xl w-full max-w-sm border border-(--color-border)">
+            <div className="px-6 py-5 border-b border-(--color-border) flex items-center gap-3">
               <div className="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center">
                 <AlertCircle className="w-4 h-4 text-red-500" />
               </div>
               <div>
-                <h4 className="text-[13px] font-semibold text-[#1a1a18]">
+                <h4 className="text-[13px] font-semibold text-(--color-ink)">
                   Import failed
                 </h4>
-                <p className="text-[12px] text-[#8a8a80]">
+                <p className="text-[12px] text-(--color-muted)">
                   {importErrors.length} error
                   {importErrors.length !== 1 ? "s" : ""} found
                 </p>
@@ -1560,15 +1607,15 @@ function ImportSettings() {
               {importErrors.map((err, i) => (
                 <li key={i} className="flex items-start gap-2">
                   <span className="text-red-400 mt-0.5">•</span>
-                  <span className="text-[12px] text-[#1a1a18]">{err}</span>
+                  <span className="text-[12px] text-(--color-ink)">{err}</span>
                 </li>
               ))}
             </ul>
-            <div className="px-6 py-4 border-t border-[#e8e8e0] flex justify-end">
+            <div className="px-6 py-4 border-t border-(--color-border) flex justify-end">
               <button
                 type="button"
                 onClick={() => setErrors(false)}
-                className="px-4 py-2 text-[13px] font-medium text-[#8a8a80] border border-[#e8e8e0] rounded-lg hover:border-[#1a1a18] hover:text-[#1a1a18] transition-colors cursor-pointer"
+                className="px-4 py-2 text-[13px] font-medium text-(--color-muted) border border-(--color-border) rounded-lg hover:border-(--color-ink) hover:text-(--color-ink) transition-colors cursor-pointer"
               >
                 Close
               </button>
@@ -1624,28 +1671,28 @@ export default function SettingsPage() {
   const ActiveComponent = TABS.find((t) => t.id === activeTab)!.component;
 
   return (
-    <main className="p-6 h-full max-h-screen overflow-y-auto bg-[#fafaf8] font-sans antialiased">
+    <main className="p-6 h-full max-h-screen overflow-y-auto bg-(--color-bg) font-sans antialiased">
       <div className="h-full max-w-full mx-auto flex flex-col gap-4">
         {/* Header */}
-        <div className="bg-white border border-[#e8e8e0] rounded-xl px-6 py-4 flex items-center gap-3 shrink-0">
-          <div className="w-8 h-8 rounded-lg bg-[#f5f5f2] flex items-center justify-center">
-            <Settings className="w-4 h-4 text-[#8a8a80]" />
+        <div className="bg-(--color-surface) border border-(--color-border) rounded-xl px-6 py-4 flex items-center gap-3 shrink-0">
+          <div className="w-8 h-8 rounded-lg bg-(--color-subtle) flex items-center justify-center">
+            <Settings className="w-4 h-4 text-(--color-muted)" />
           </div>
           <div className="flex items-center gap-2">
-            <h1 className="text-[15px] font-semibold tracking-tight text-[#1a1a18]">
+            <h1 className="text-[15px] font-semibold tracking-tight text-(--color-ink)">
               Settings
             </h1>
-            <ChevronRight className="w-3.5 h-3.5 text-[#c4c4b8]" />
-            <span className="text-[13px] text-[#8a8a80]">
+            <ChevronRight className="w-3.5 h-3.5 text-(--color-placeholder)" />
+            <span className="text-[13px] text-(--color-muted)">
               {TABS.find((t) => t.id === activeTab)!.label}
             </span>
           </div>
         </div>
 
         {/* Body */}
-        <div className="bg-white border border-[#e8e8e0] rounded-xl flex flex-1 overflow-hidden">
+        <div className="bg-(--color-surface) border border-(--color-border) rounded-xl flex flex-1 overflow-hidden">
           {/* Sidebar */}
-          <div className="w-52 border-r border-[#e8e8e0] shrink-0 bg-[#fafaf8] py-3 px-2.5">
+          <div className="w-52 border-r border-(--color-border) shrink-0 bg-(--color-bg) py-3 px-2.5">
             {TABS.map(({ id, label, icon: Icon }) => {
               const active = id === activeTab;
               return (
@@ -1654,8 +1701,8 @@ export default function SettingsPage() {
                   onClick={() => setActiveTab(id)}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-medium transition-colors cursor-pointer text-left mb-0.5 ${
                     active
-                      ? "bg-[#1a1a18] text-white"
-                      : "text-[#5a5a52] hover:text-[#1a1a18] hover:bg-white"
+                      ? "bg-(--color-ink) text-(--color-bg)"
+                      : "text-[#5a5a52] hover:text-(--color-ink) hover:bg-(--color-surface)"
                   }`}
                 >
                   <Icon className="w-3.5 h-3.5 shrink-0" />

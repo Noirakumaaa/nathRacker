@@ -134,15 +134,15 @@ export default function EmployeesTab() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f5f2] px-4 py-8 sm:px-6 lg:px-10">
+    <div className="min-h-screen bg-(--color-subtle) px-4 py-8 sm:px-6 lg:px-10">
 
       {/* Header */}
       <div className="mb-6 flex items-end justify-between">
         <div>
-          <p className="text-[11px] font-medium text-[#8a8a80] uppercase tracking-widest mb-1">Admin Management</p>
-          <h1 className="text-2xl font-semibold text-[#1a1a18] tracking-tight">Employees</h1>
+          <p className="text-[11px] font-medium text-(--color-muted) uppercase tracking-widest mb-1">Admin Management</p>
+          <h1 className="text-2xl font-semibold text-(--color-ink) tracking-tight">Employees</h1>
         </div>
-        <p className="text-[12px] text-[#8a8a80]">{employees.length} total</p>
+        <p className="text-[12px] text-(--color-muted)">{employees.length} total</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
@@ -153,7 +153,7 @@ export default function EmployeesTab() {
           {/* Search + Filter toggle */}
           <div className="flex gap-2">
             <div className="relative flex-1">
-              <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8a8a80]" />
+              <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-(--color-muted)" />
               <input
                 value={search}
                 onChange={e => setSearch(e.target.value)}
@@ -166,14 +166,14 @@ export default function EmployeesTab() {
               onClick={() => setShowFilters(v => !v)}
               className={`h-10 px-3 rounded-lg border text-[12px] font-medium flex items-center gap-1.5 transition-colors cursor-pointer ${
                 showFilters || hasActiveFilters
-                  ? "bg-[#1a1a18] text-white border-[#1a1a18]"
-                  : "bg-white text-[#8a8a80] border-[#e8e8e0] hover:border-[#1a1a18] hover:text-[#1a1a18]"
+                  ? "bg-(--color-ink) text-(--color-bg) border-(--color-ink)"
+                  : "bg-(--color-surface) text-(--color-muted) border-(--color-border) hover:border-(--color-ink) hover:text-(--color-ink)"
               }`}
             >
               <Filter size={12} />
               Filter
               {hasActiveFilters && (
-                <span className="w-4 h-4 rounded-full bg-white/20 text-white text-[9px] font-bold flex items-center justify-center">
+                <span className="w-4 h-4 rounded-full bg-(--color-surface)/20 text-white text-[9px] font-bold flex items-center justify-center">
                   {[filterOffice, filterLgu, filterBarangay].filter(f => f !== "").length}
                 </span>
               )}
@@ -182,11 +182,11 @@ export default function EmployeesTab() {
 
           {/* Filter panel */}
           {showFilters && (
-            <div className="bg-white rounded-xl border border-[#e8e8e0] p-4 space-y-3">
+            <div className="bg-(--color-surface) rounded-xl border border-(--color-border) p-4 space-y-3">
               <div className="flex items-center justify-between mb-1">
-                <p className="text-[11px] font-semibold text-[#1a1a18] uppercase tracking-wider">Filter by Area</p>
+                <p className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">Filter by Area</p>
                 {hasActiveFilters && (
-                  <button type="button" onClick={clearFilters} className="text-[10px] text-[#8a8a80] hover:text-[#1a1a18] flex items-center gap-1 transition-colors cursor-pointer">
+                  <button type="button" onClick={clearFilters} className="text-[10px] text-(--color-muted) hover:text-(--color-ink) flex items-center gap-1 transition-colors cursor-pointer">
                     <X size={10} /> Clear all
                   </button>
                 )}
@@ -228,13 +228,13 @@ export default function EmployeesTab() {
           )}
 
           {/* List */}
-          <div className="bg-white rounded-xl border border-[#e8e8e0] overflow-hidden">
-            <div className="px-4 py-3 border-b border-[#e8e8e0] flex items-center justify-between">
-              <p className="text-[11px] font-semibold text-[#8a8a80] uppercase tracking-wider">
+          <div className="bg-(--color-surface) rounded-xl border border-(--color-border) overflow-hidden">
+            <div className="px-4 py-3 border-b border-(--color-border) flex items-center justify-between">
+              <p className="text-[11px] font-semibold text-(--color-muted) uppercase tracking-wider">
                 {filteredEmployees.length} {filteredEmployees.length === 1 ? "Employee" : "Employees"}
               </p>
               {(search || hasActiveFilters) && (
-                <button type="button" onClick={() => { setSearch(""); clearFilters(); }} className="text-[10px] text-[#8a8a80] hover:text-[#1a1a18] flex items-center gap-1 transition-colors cursor-pointer">
+                <button type="button" onClick={() => { setSearch(""); clearFilters(); }} className="text-[10px] text-(--color-muted) hover:text-(--color-ink) flex items-center gap-1 transition-colors cursor-pointer">
                   <X size={10} /> Clear
                 </button>
               )}
@@ -243,12 +243,12 @@ export default function EmployeesTab() {
             <div className="divide-y divide-[#f0f0ec] max-h-140 overflow-y-auto">
               {isLoading && (
                 <div className="py-12 flex flex-col items-center gap-2">
-                  <div className="w-5 h-5 border-2 border-[#1a1a18] border-t-transparent rounded-full animate-spin" />
-                  <p className="text-[11px] text-[#8a8a80]">Loading employees...</p>
+                  <div className="w-5 h-5 border-2 border-(--color-ink) border-t-transparent rounded-full animate-spin" />
+                  <p className="text-[11px] text-(--color-muted)">Loading employees...</p>
                 </div>
               )}
               {!isLoading && filteredEmployees.length === 0 && (
-                <div className="py-12 flex flex-col items-center gap-2 text-[#8a8a80]">
+                <div className="py-12 flex flex-col items-center gap-2 text-(--color-muted)">
                   <User size={24} className="opacity-30" />
                   <p className="text-[12px]">{search || hasActiveFilters ? "No results found." : "No employees yet."}</p>
                 </div>
@@ -261,34 +261,34 @@ export default function EmployeesTab() {
                     type="button"
                     onClick={() => selectEmployee(emp)}
                     className={`w-full text-left px-4 py-3 flex items-center gap-3 transition-colors cursor-pointer ${
-                      isSelected ? "bg-[#1a1a18]" : "hover:bg-[#f8f8f4]"
+                      isSelected ? "bg-(--color-ink)" : "hover:bg-[#f8f8f4]"
                     }`}
                   >
                     {/* Avatar */}
                     <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 text-[11px] font-bold ${
-                      isSelected ? "bg-white/20 text-white" : "bg-[#f0f0ec] text-[#1a1a18]"
+                      isSelected ? "bg-(--color-surface)/20 text-white" : "bg-[#f0f0ec] text-(--color-ink)"
                     }`}>
                       {initials(emp)}
                     </div>
 
                     {/* Info */}
                     <div className="flex-1 min-w-0">
-                      <p className={`text-[13px] font-semibold truncate ${isSelected ? "text-white" : "text-[#1a1a18]"}`}>
+                      <p className={`text-[13px] font-semibold truncate ${isSelected ? "text-white" : "text-(--color-ink)"}`}>
                         {emp.userInfo?.firstName} {emp.userInfo?.lastName}
                       </p>
-                      <p className={`text-[11px] truncate ${isSelected ? "text-white/60" : "text-[#8a8a80]"}`}>
+                      <p className={`text-[11px] truncate ${isSelected ? "text-white/60" : "text-(--color-muted)"}`}>
                         {emp.govUsername}
                       </p>
                     </div>
 
                     {/* Role badge */}
                     <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide shrink-0 ${
-                      isSelected ? "bg-white/15 text-white" : roleBadge(emp.role)
+                      isSelected ? "bg-(--color-surface)/15 text-white" : roleBadge(emp.role)
                     }`}>
                       {emp.role}
                     </span>
 
-                    <ChevronRight size={12} className={`shrink-0 ${isSelected ? "text-white/40" : "text-[#c4c4b8]"}`} />
+                    <ChevronRight size={12} className={`shrink-0 ${isSelected ? "text-white/40" : "text-(--color-placeholder)"}`} />
                   </button>
                 );
               })}
@@ -299,35 +299,35 @@ export default function EmployeesTab() {
         {/* ── Right: Edit Panel ── */}
         <div className="lg:col-span-3">
           {!selected ? (
-            <div className="bg-white rounded-xl border border-[#e8e8e0] h-full min-h-64 flex flex-col items-center justify-center gap-3 text-[#8a8a80]">
+            <div className="bg-(--color-surface) rounded-xl border border-(--color-border) h-full min-h-64 flex flex-col items-center justify-center gap-3 text-(--color-muted)">
               <div className="w-12 h-12 rounded-full bg-[#f0f0ec] flex items-center justify-center">
                 <User size={20} className="opacity-40" />
               </div>
               <div className="text-center">
-                <p className="text-[13px] font-medium text-[#1a1a18]">No employee selected</p>
+                <p className="text-[13px] font-medium text-(--color-ink)">No employee selected</p>
                 <p className="text-[11px] mt-0.5">Select an employee from the list to edit their information.</p>
               </div>
             </div>
           ) : (
-            <div className="bg-white rounded-xl border border-[#e8e8e0] overflow-hidden">
+            <div className="bg-(--color-surface) rounded-xl border border-(--color-border) overflow-hidden">
 
               {/* Edit header */}
-              <div className="px-6 py-4 border-b border-[#e8e8e0] flex items-center justify-between">
+              <div className="px-6 py-4 border-b border-(--color-border) flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-[#1a1a18] flex items-center justify-center text-[12px] font-bold text-white shrink-0">
+                  <div className="w-9 h-9 rounded-full bg-(--color-ink) flex items-center justify-center text-[12px] font-bold text-white shrink-0">
                     {initials(selected)}
                   </div>
                   <div>
-                    <p className="text-[13px] font-semibold text-[#1a1a18]">
+                    <p className="text-[13px] font-semibold text-(--color-ink)">
                       {selected.userInfo?.firstName} {selected.userInfo?.lastName}
                     </p>
-                    <p className="text-[11px] text-[#8a8a80]">{selected.email}</p>
+                    <p className="text-[11px] text-(--color-muted)">{selected.email}</p>
                   </div>
                 </div>
                 <button
                   type="button"
                   onClick={() => setSelected(null)}
-                  className="w-7 h-7 rounded-lg border border-[#e8e8e0] flex items-center justify-center text-[#8a8a80] hover:text-[#1a1a18] hover:border-[#1a1a18] transition-colors cursor-pointer"
+                  className="w-7 h-7 rounded-lg border border-(--color-border) flex items-center justify-center text-(--color-muted) hover:text-(--color-ink) hover:border-(--color-ink) transition-colors cursor-pointer"
                 >
                   <X size={13} />
                 </button>

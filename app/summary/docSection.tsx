@@ -9,13 +9,13 @@ export function DocSection({ type, summary }: { type: DocType; summary: DocTypeS
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="rounded-lg border border-[#e8e8e0] overflow-hidden">
+    <div className="rounded-lg border border-(--color-border) overflow-hidden">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center justify-between px-5 py-3 bg-white hover:bg-[#f8f8f4] transition-colors text-left"
+        className="w-full flex items-center justify-between px-5 py-3 bg-(--color-surface) hover:bg-[#f8f8f4] transition-colors text-left"
       >
-        <span className="flex items-center gap-2 text-[13px] font-medium text-[#1a1a18]">
+        <span className="flex items-center gap-2 text-[13px] font-medium text-(--color-ink)">
           <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: DOC_DOT[type] }} />
           {type}
         </span>
@@ -33,15 +33,15 @@ export function DocSection({ type, summary }: { type: DocType; summary: DocTypeS
           </div>
           <ChevronRight
             size={13}
-            className={`text-[#8a8a80] transition-transform flex-shrink-0 ${open ? "rotate-90" : ""}`}
+            className={`text-(--color-muted) transition-transform flex-shrink-0 ${open ? "rotate-90" : ""}`}
           />
         </div>
       </button>
 
       {open && (
-        <div className="border-t border-[#e8e8e0] bg-white">
+        <div className="border-t border-(--color-border) bg-(--color-surface)">
           {summary.entries.length === 0 ? (
-            <p className="text-center text-[13px] text-[#8a8a80] py-6">No records this month</p>
+            <p className="text-center text-[13px] text-(--color-muted) py-6">No records this month</p>
           ) : (
             summary.entries.map((e) => <EntryRow key={e.id} entry={e} />)
           )}

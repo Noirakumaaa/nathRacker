@@ -43,17 +43,17 @@ function OverviewCard({
   sub?: string;
 }) {
   return (
-    <div className="bg-white border border-[#e8e8e0] rounded-xl p-4 flex items-start gap-3">
+    <div className="bg-(--color-surface) border border-(--color-border) rounded-xl p-4 flex items-start gap-3">
       <div
         className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${iconBg}`}
       >
         <Icon size={16} className="opacity-70" />
       </div>
       <div>
-        <p className="text-[11px] font-medium text-[#8a8a80] uppercase tracking-wider">
+        <p className="text-[11px] font-medium text-(--color-muted) uppercase tracking-wider">
           {label}
         </p>
-        <p className="text-[22px] font-semibold text-[#1a1a18] leading-tight mt-0.5">
+        <p className="text-[22px] font-semibold text-(--color-ink) leading-tight mt-0.5">
           {value}
         </p>
         {sub && <p className="text-[11px] text-[#b8b8b0] mt-0.5">{sub}</p>}
@@ -65,7 +65,7 @@ function OverviewCard({
 // ── Document type count badge ─────────────────────────────────────────────────
 function DocTypeBadge({ type, count }: { type: string; count: number }) {
   return (
-    <div className="flex items-center justify-between px-3 py-2.5 rounded-lg bg-[#fafaf8] border border-[#f0f0ec]">
+    <div className="flex items-center justify-between px-3 py-2.5 rounded-lg bg-(--color-bg) border border-[#f0f0ec]">
       <span
         className={`font-mono text-[10px] font-semibold px-1.5 py-0.5 rounded tracking-wider ${
           moduleStyle[type] ?? "bg-gray-50 text-gray-600"
@@ -73,7 +73,7 @@ function DocTypeBadge({ type, count }: { type: string; count: number }) {
       >
         {type}
       </span>
-      <span className="text-[15px] font-semibold text-[#1a1a18]">{count}</span>
+      <span className="text-[15px] font-semibold text-(--color-ink)">{count}</span>
     </div>
   );
 }
@@ -91,23 +91,23 @@ function LguCard({
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="bg-white border border-[#e8e8e0] rounded-xl overflow-hidden">
+    <div className="bg-(--color-surface) border border-(--color-border) rounded-xl overflow-hidden">
       {/* LGU header */}
-      <div className="px-4 py-3 border-b border-[#e8e8e0] flex items-center justify-between">
+      <div className="px-4 py-3 border-b border-(--color-border) flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <div className="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center shrink-0">
             <Landmark size={13} className="text-indigo-600" />
           </div>
           <div>
-            <p className="text-[13px] font-semibold text-[#1a1a18]">{lgu.name}</p>
-            <p className="text-[10px] text-[#8a8a80]">LGU ID #{lgu.id}</p>
+            <p className="text-[13px] font-semibold text-(--color-ink)">{lgu.name}</p>
+            <p className="text-[10px] text-(--color-muted)">LGU ID #{lgu.id}</p>
           </div>
         </div>
         <div className="flex items-center gap-1.5">
-          <span className="text-[10px] text-[#8a8a80] font-mono bg-[#f5f5f2] px-2 py-0.5 rounded-full whitespace-nowrap">
+          <span className="text-[10px] text-(--color-muted) font-mono bg-(--color-subtle) px-2 py-0.5 rounded-full whitespace-nowrap">
             {barangays.length} brgy
           </span>
-          <span className="text-[10px] text-[#8a8a80] font-mono bg-[#f5f5f2] px-2 py-0.5 rounded-full whitespace-nowrap">
+          <span className="text-[10px] text-(--color-muted) font-mono bg-(--color-subtle) px-2 py-0.5 rounded-full whitespace-nowrap">
             {encoders.length} enc
           </span>
         </div>
@@ -120,7 +120,7 @@ function LguCard({
           {encoders.map((e) => (
             <span
               key={e.id}
-              className="text-[10px] font-mono bg-[#f5f5f2] text-[#6a6a60] px-2 py-0.5 rounded-full"
+              className="text-[10px] font-mono bg-(--color-subtle) text-[#6a6a60] px-2 py-0.5 rounded-full"
             >
               {e.govUsername}
             </span>
@@ -132,9 +132,9 @@ function LguCard({
       <button
         type="button"
         onClick={() => setExpanded(!expanded)}
-        className="w-full px-4 py-2.5 flex items-center justify-between text-left hover:bg-[#fafaf8] transition-colors cursor-pointer"
+        className="w-full px-4 py-2.5 flex items-center justify-between text-left hover:bg-(--color-bg) transition-colors cursor-pointer"
       >
-        <span className="text-[11px] font-medium text-[#8a8a80] uppercase tracking-wider flex items-center gap-1.5">
+        <span className="text-[11px] font-medium text-(--color-muted) uppercase tracking-wider flex items-center gap-1.5">
           <MapPin size={11} />
           Barangays ({barangays.length})
         </span>
@@ -148,16 +148,16 @@ function LguCard({
       {expanded && (
         <div className="px-4 pb-3 grid grid-cols-2 gap-1.5">
           {barangays.length === 0 ? (
-            <p className="col-span-2 text-[12px] text-[#c4c4b8] text-center py-2">
+            <p className="col-span-2 text-[12px] text-(--color-placeholder) text-center py-2">
               No barangays registered
             </p>
           ) : (
             barangays.map((b) => (
               <div
                 key={b.id}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-[#fafaf8] border border-[#f0f0ec]"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-(--color-bg) border border-[#f0f0ec]"
               >
-                <MapPin size={10} className="text-[#c4c4b8] shrink-0" />
+                <MapPin size={10} className="text-(--color-placeholder) shrink-0" />
                 <span className="text-[11px] text-[#4a4a40] truncate">{b.name}</span>
               </div>
             ))
@@ -221,21 +221,21 @@ export default function OperationsDashboard({ userData }: { userData: me }) {
   );
 
   return (
-    <main className="p-6 bg-[#fafaf8] min-h-screen font-sans antialiased">
+    <main className="p-6 bg-(--color-bg) min-h-screen font-sans antialiased">
       <div className="max-w-full mx-auto flex flex-col gap-5">
 
         {/* ── Page header ──────────────────────────────────────────────────── */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <p className="text-[11px] font-medium text-[#8a8a80] uppercase tracking-wider">
+            <p className="text-[11px] font-medium text-(--color-muted) uppercase tracking-wider">
               Operations Head
             </p>
-            <h1 className="text-[22px] font-semibold text-[#1a1a18] tracking-tight mt-0.5">
+            <h1 className="text-[22px] font-semibold text-(--color-ink) tracking-tight mt-0.5">
               Operations Dashboard
             </h1>
-            <p className="text-[12px] text-[#8a8a80] mt-0.5">
+            <p className="text-[12px] text-(--color-muted) mt-0.5">
               Welcome back,{" "}
-              <span className="font-medium text-[#1a1a18]">
+              <span className="font-medium text-(--color-ink)">
                 {userData.firstName || userData.govUsername}
               </span>
             </p>
@@ -250,7 +250,7 @@ export default function OperationsDashboard({ userData }: { userData: me }) {
                   e.target.value === "all" ? "all" : Number(e.target.value),
                 )
               }
-              className="text-[13px] text-[#1a1a18] px-3 py-1.5 rounded-lg border border-[#e8e8e0] bg-white hover:border-[#1a1a18] transition-colors outline-none cursor-pointer self-start sm:self-auto"
+              className="text-[13px] text-(--color-ink) px-3 py-1.5 rounded-lg border border-(--color-border) bg-(--color-surface) hover:border-(--color-ink) transition-colors outline-none cursor-pointer self-start sm:self-auto"
             >
               <option value="all">All Offices</option>
               {offices.map((o) => (
@@ -295,10 +295,10 @@ export default function OperationsDashboard({ userData }: { userData: me }) {
         </div>
 
         {/* ── Document type totals ──────────────────────────────────────────── */}
-        <div className="bg-white border border-[#e8e8e0] rounded-xl overflow-hidden">
-          <div className="px-5 py-3.5 border-b border-[#e8e8e0] flex items-center gap-2">
-            <BarChart3 size={14} className="text-[#8a8a80]" />
-            <p className="text-[11px] font-semibold text-[#1a1a18] uppercase tracking-wider">
+        <div className="bg-(--color-surface) border border-(--color-border) rounded-xl overflow-hidden">
+          <div className="px-5 py-3.5 border-b border-(--color-border) flex items-center gap-2">
+            <BarChart3 size={14} className="text-(--color-muted)" />
+            <p className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">
               Encoded Records by Document Type
             </p>
           </div>
@@ -312,16 +312,16 @@ export default function OperationsDashboard({ userData }: { userData: me }) {
         {/* ── LGU & Barangay section ────────────────────────────────────────── */}
         <div>
           <div className="flex items-center justify-between mb-3">
-            <p className="text-[11px] font-semibold text-[#1a1a18] uppercase tracking-wider">
+            <p className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">
               LGUs &amp; Barangays
             </p>
-            <span className="text-[11px] font-mono text-[#8a8a80] bg-[#f5f5f2] px-2.5 py-1 rounded-full">
+            <span className="text-[11px] font-mono text-(--color-muted) bg-(--color-subtle) px-2.5 py-1 rounded-full">
               {filteredLgus.length} LGU{filteredLgus.length !== 1 ? "s" : ""}
             </span>
           </div>
 
           {filteredLgus.length === 0 ? (
-            <div className="bg-white border border-[#e8e8e0] rounded-xl py-12 flex flex-col items-center gap-2 text-[#c4c4b8]">
+            <div className="bg-(--color-surface) border border-(--color-border) rounded-xl py-12 flex flex-col items-center gap-2 text-(--color-placeholder)">
               <Landmark size={22} />
               <p className="text-[13px]">No LGUs found</p>
             </div>
@@ -341,14 +341,14 @@ export default function OperationsDashboard({ userData }: { userData: me }) {
 
         {/* ── Operations offices overview ───────────────────────────────────── */}
         {offices.length > 0 && (
-          <div className="bg-white border border-[#e8e8e0] rounded-xl overflow-hidden">
-            <div className="px-5 py-3.5 border-b border-[#e8e8e0] flex items-center gap-2">
-              <Building2 size={14} className="text-[#8a8a80]" />
-              <p className="text-[11px] font-semibold text-[#1a1a18] uppercase tracking-wider">
+          <div className="bg-(--color-surface) border border-(--color-border) rounded-xl overflow-hidden">
+            <div className="px-5 py-3.5 border-b border-(--color-border) flex items-center gap-2">
+              <Building2 size={14} className="text-(--color-muted)" />
+              <p className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">
                 Operations Offices
               </p>
             </div>
-            <div className="divide-y divide-[#f5f5f2]">
+            <div className="divide-y divide-(--color-subtle)">
               {offices.map((office) => {
                 const officeLgus = allLgus.filter(
                   (l) => l.operationsOfficeNumId === office.id,
@@ -366,21 +366,21 @@ export default function OperationsDashboard({ userData }: { userData: me }) {
                     className="px-5 py-3 flex items-center justify-between"
                   >
                     <div className="flex items-center gap-2.5">
-                      <div className="w-7 h-7 rounded-lg bg-[#f5f5f2] flex items-center justify-center">
-                        <Building2 size={13} className="text-[#8a8a80]" />
+                      <div className="w-7 h-7 rounded-lg bg-(--color-subtle) flex items-center justify-center">
+                        <Building2 size={13} className="text-(--color-muted)" />
                       </div>
-                      <p className="text-[13px] font-medium text-[#1a1a18]">
+                      <p className="text-[13px] font-medium text-(--color-ink)">
                         {office.name}
                       </p>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] text-[#8a8a80] font-mono bg-[#f5f5f2] px-2 py-0.5 rounded-full whitespace-nowrap">
+                      <span className="text-[10px] text-(--color-muted) font-mono bg-(--color-subtle) px-2 py-0.5 rounded-full whitespace-nowrap">
                         {officeLgus.length} LGU{officeLgus.length !== 1 ? "s" : ""}
                       </span>
-                      <span className="text-[10px] text-[#8a8a80] font-mono bg-[#f5f5f2] px-2 py-0.5 rounded-full whitespace-nowrap">
+                      <span className="text-[10px] text-(--color-muted) font-mono bg-(--color-subtle) px-2 py-0.5 rounded-full whitespace-nowrap">
                         {officeBarangays} brgy
                       </span>
-                      <span className="text-[10px] text-[#8a8a80] font-mono bg-[#f5f5f2] px-2 py-0.5 rounded-full whitespace-nowrap">
+                      <span className="text-[10px] text-(--color-muted) font-mono bg-(--color-subtle) px-2 py-0.5 rounded-full whitespace-nowrap">
                         {officeEncoders.length} enc
                       </span>
                     </div>

@@ -18,7 +18,7 @@ export function StatCards({
         return (
           <div
             key={s.tag}
-            className="bg-white border border-[#e8e8e0] rounded-xl p-5 hover:shadow-[0_4px_20px_rgba(0,0,0,0.06)] transition-shadow"
+            className="bg-(--color-surface) border border-(--color-border) rounded-xl p-5 hover:shadow-[0_4px_20px_rgba(0,0,0,0.06)] transition-shadow"
           >
             <div className="flex items-start justify-between mb-4">
               <div
@@ -33,16 +33,16 @@ export function StatCards({
               </span>
             </div>
             <div className="mb-3">
-              <p className="text-[30px] font-semibold tracking-[-0.04em] text-[#1a1a18] leading-none">
+              <p className="text-[30px] font-semibold tracking-[-0.04em] text-(--color-ink) leading-none">
                 {isLoading ? <span className="inline-block w-12 h-7 bg-[#f0f0ec] rounded animate-pulse" /> : s.value.toLocaleString()}
               </p>
-              <p className="text-[12px] text-[#8a8a80] mt-1">{s.label}</p>
+              <p className="text-[12px] text-(--color-muted) mt-1">{s.label}</p>
             </div>
             <MiniBar
               values={sparklines[s.tag] ?? [0, 0, 0, 0, 0, 0, 0]}
               color={sparkColor[s.tag]}
             />
-            <p className="text-[11px] text-[#c4c4b8] mt-2">{s.sub}</p>
+            <p className="text-[11px] text-(--color-placeholder) mt-2">{s.sub}</p>
           </div>
         );
       })}

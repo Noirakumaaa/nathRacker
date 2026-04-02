@@ -111,7 +111,7 @@ export default function Dashboard({ userData }: { userData: me }) {
     .slice(0, 10);
 
   return (
-    <main className="p-6 bg-[#fafaf8] min-h-screen font-sans antialiased">
+    <main className="p-6 bg-(--color-bg) min-h-screen font-sans antialiased">
       <div className="max-w-full mx-auto flex flex-col gap-5">
         <DashboardHeader userData={userData} />
         <StatCards stats={stats} sparklines={sparklines} isLoading={countsLoading} />

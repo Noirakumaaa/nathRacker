@@ -9,7 +9,7 @@ export function Req() {
 
 export function Opt() {
   return (
-    <span className="ml-1.5 inline-flex items-center gap-1 text-[10px] font-semibold text-[#8a8a80] bg-[#f5f5f2] border border-[#e8e8e0] px-1.5 py-0.5 rounded uppercase tracking-wide leading-none">
+    <span className="ml-1.5 inline-flex items-center gap-1 text-[10px] font-semibold text-(--color-muted) bg-(--color-subtle) border border-(--color-border) px-1.5 py-0.5 rounded uppercase tracking-wide leading-none">
       Optional
     </span>
   );

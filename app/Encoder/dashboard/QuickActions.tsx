@@ -34,14 +34,14 @@ export function QuickActions() {
       label: "View All Records",
       href: "/records",
       tag: "ALL",
-      tagClass: "bg-[#f5f5f2] text-[#8a8a80]",
+      tagClass: "bg-(--color-subtle) text-(--color-muted)",
       icon: Layers,
     },
   ];
 
   return (
-    <div className="bg-white border border-[#e8e8e0] rounded-xl p-6">
-      <p className="text-[11px] font-semibold text-[#1a1a18] uppercase tracking-wider mb-4">
+    <div className="bg-(--color-surface) border border-(--color-border) rounded-xl p-6">
+      <p className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider mb-4">
         Quick Actions
       </p>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -51,20 +51,20 @@ export function QuickActions() {
             <a
               key={a.href}
               href={a.href}
-              className="group flex items-center justify-between p-4 border border-[#e8e8e0] rounded-xl hover:border-[#1a1a18] hover:bg-[#fafaf8] transition-all no-underline"
+              className="group flex items-center justify-between p-4 border border-(--color-border) rounded-xl hover:border-(--color-ink) hover:bg-(--color-bg) transition-all no-underline"
             >
               <div className="flex items-center gap-3">
                 <Icon
                   size={14}
-                  className="text-[#8a8a80] group-hover:text-[#1a1a18] transition-colors"
+                  className="text-(--color-muted) group-hover:text-(--color-ink) transition-colors"
                 />
-                <span className="text-[13px] font-medium text-[#1a1a18]">
+                <span className="text-[13px] font-medium text-(--color-ink)">
                   {a.label}
                 </span>
               </div>
               <ArrowUpRight
                 size={13}
-                className="text-[#c4c4b8] group-hover:text-[#1a1a18] transition-colors"
+                className="text-(--color-placeholder) group-hover:text-(--color-ink) transition-colors"
               />
             </a>
           );

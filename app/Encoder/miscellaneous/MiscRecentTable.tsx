@@ -19,10 +19,10 @@ const buildColumns : ColumnDef<MiscRecord>[] = [
     header: "HH ID",
     cell: (r) => (
       <div className="flex items-center justify-center gap-1.5 group">
-        <span className="font-mono text-[11px] text-[#1a1a18] whitespace-nowrap">{r.hhId}</span>
+        <span className="font-mono text-[11px] text-(--color-ink) whitespace-nowrap">{r.hhId}</span>
         <button
           onClick={() => navigator.clipboard.writeText(r.hhId)}
-          className="opacity-0 group-hover:opacity-100 transition-opacity text-[#c4c4b8] hover:text-[#8a8a80] cursor-pointer bg-transparent border-none"
+          className="opacity-0 group-hover:opacity-100 transition-opacity text-(--color-placeholder) hover:text-(--color-muted) cursor-pointer bg-transparent border-none"
           title="Copy HH ID"
         >
           <Copy size={11} />
@@ -32,7 +32,7 @@ const buildColumns : ColumnDef<MiscRecord>[] = [
   },
   {
     header: "Grantee Name",
-    cell: (r) => <span className="font-medium text-[#1a1a18] whitespace-nowrap">{r.granteeName}</span>,
+    cell: (r) => <span className="font-medium text-(--color-ink) whitespace-nowrap">{r.granteeName}</span>,
   },
   {
     header: "Doc Type",

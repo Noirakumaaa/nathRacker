@@ -23,7 +23,7 @@ const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
   };
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden bg-gray-50">
+    <div className="h-screen flex flex-col overflow-hidden bg-(--color-bg)">
       {/* Fixed Top Navigation */}
       <TopNavbar onMenuToggle={toggleSidebar} isSidebarOpen={isSidebarOpen} />
 
@@ -40,8 +40,8 @@ const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
           {isNavigating ? (
             <div className="flex items-center justify-center h-full">
               <div className="flex flex-col items-center gap-3">
-                <Loader2 size={24} className="animate-spin text-[#1a1a18]" />
-                <p className="text-[13px] text-[#8a8a80]">Loading...</p>
+                <Loader2 size={24} className="animate-spin text-(--color-ink)" />
+                <p className="text-[13px] text-(--color-muted)">Loading...</p>
               </div>
             </div>
           ) : children}

@@ -76,20 +76,20 @@ export function Login() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#fafaf8] text-[#1a1a18] font-sans antialiased flex flex-col">
+    <div className="min-h-screen bg-(--color-bg) text-(--color-ink) font-sans antialiased flex flex-col">
 
       {/* NAV */}
-      <nav className="sticky top-0 z-50 bg-[#fafaf8]/90 backdrop-blur-md border-b border-[#e8e8e0] h-14 sm:h-15 flex items-center justify-between px-5 sm:px-10">
+      <nav className="sticky top-0 z-50 bg-(--color-bg)/90 backdrop-blur-md border-b border-(--color-border) h-14 sm:h-15 flex items-center justify-between px-5 sm:px-10">
         <a
           href="/"
-          className="flex items-center gap-2.5 text-[16px] sm:text-[17px] font-semibold tracking-tight no-underline text-[#1a1a18]"
+          className="flex items-center gap-2.5 text-[16px] sm:text-[17px] font-semibold tracking-tight no-underline text-(--color-ink)"
         >
           <img src="/nathracker_icon_v9.svg" alt="NathRacker" className="w-10 h-10" />
           NathRacker
         </a>
         <a
           href="/"
-          className="flex items-center gap-1.5 text-[13px] text-[#8a8a80] hover:text-[#1a1a18] no-underline transition-colors"
+          className="flex items-center gap-1.5 text-[13px] text-(--color-muted) hover:text-(--color-ink) no-underline transition-colors"
         >
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -102,17 +102,17 @@ export function Login() {
       <div className="flex-1 flex flex-col lg:flex-row">
 
         {/* LEFT PANEL — visible lg+ */}
-        <div className="hidden lg:flex lg:w-[52%] xl:w-[55%] border-r border-[#e8e8e0] flex-col justify-between px-14 xl:px-20 py-16 animate-[fadeUp_0.5s_ease_both]">
+        <div className="hidden lg:flex lg:w-[52%] xl:w-[55%] border-r border-(--color-border) flex-col justify-between px-14 xl:px-20 py-16 animate-[fadeUp_0.5s_ease_both]">
           <div>
             <div className="inline-flex items-center gap-2 text-[12px] font-medium text-blue-600 bg-blue-50 px-3 py-1.5 rounded-full mb-10">
               <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse" />
               Record Management System
             </div>
-            <h2 className="text-[clamp(28px,3vw,40px)] font-semibold tracking-[-0.04em] leading-[1.1] text-[#1a1a18] mb-4">
+            <h2 className="text-[clamp(28px,3vw,40px)] font-semibold tracking-[-0.04em] leading-[1.1] text-(--color-ink) mb-4">
               Track and manage<br />
-              <em className="not-italic font-light text-[#8a8a80]">any record, your way.</em>
+              <em className="not-italic font-light text-(--color-muted)">any record, your way.</em>
             </h2>
-            <p className="text-[15px] text-[#8a8a80] leading-[1.7] max-w-sm mb-10">
+            <p className="text-[15px] text-(--color-muted) leading-[1.7] max-w-sm mb-10">
               A flexible platform for managing records across your organization — organized, searchable, and always up to date.
             </p>
 
@@ -121,14 +121,14 @@ export function Login() {
               {highlights.map((h) => (
                 <div
                   key={h.title}
-                  className="flex items-start gap-4 bg-white border border-[#e8e8e0] rounded-xl px-4 py-3.5 hover:-translate-y-px hover:shadow-[0_4px_20px_rgba(0,0,0,0.05)] transition-all duration-200"
+                  className="flex items-start gap-4 bg-(--color-surface) border border-(--color-border) rounded-xl px-4 py-3.5 hover:-translate-y-px hover:shadow-[0_4px_20px_rgba(0,0,0,0.05)] transition-all duration-200"
                 >
-                  <div className="w-7 h-7 rounded-lg bg-[#f5f5f2] flex items-center justify-center shrink-0 mt-0.5">
+                  <div className="w-7 h-7 rounded-lg bg-(--color-subtle) flex items-center justify-center shrink-0 mt-0.5">
                     {h.icon}
                   </div>
                   <div>
-                    <p className="text-[13px] font-semibold text-[#1a1a18] tracking-tight">{h.title}</p>
-                    <p className="text-[12px] text-[#8a8a80] leading-relaxed">{h.desc}</p>
+                    <p className="text-[13px] font-semibold text-(--color-ink) tracking-tight">{h.title}</p>
+                    <p className="text-[12px] text-(--color-muted) leading-relaxed">{h.desc}</p>
                   </div>
                 </div>
               ))}
@@ -137,7 +137,7 @@ export function Login() {
 
           <div className="flex items-center gap-1.5 mt-10">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="text-[12px] text-[#8a8a80]">Secure login</span>
+            <span className="text-[12px] text-(--color-muted)">Secure login</span>
           </div>
         </div>
 
@@ -155,28 +155,28 @@ export function Login() {
 
             {/* Heading */}
             <div className="text-center mb-8 lg:text-left">
-              <h1 className="text-[clamp(26px,7vw,36px)] sm:text-[32px] font-semibold tracking-[-0.04em] leading-[1.1] text-[#1a1a18] mb-2">
+              <h1 className="text-[clamp(26px,7vw,36px)] sm:text-[32px] font-semibold tracking-[-0.04em] leading-[1.1] text-(--color-ink) mb-2">
                 Welcome back
               </h1>
-              <p className="text-[14px] sm:text-[15px] text-[#8a8a80] leading-relaxed">
+              <p className="text-[14px] sm:text-[15px] text-(--color-muted) leading-relaxed">
                 Sign in to continue to your{' '}
                 <em className="not-italic font-light">your records.</em>
               </p>
             </div>
 
             {/* Card — bordered on sm+, flat on mobile */}
-            <div className="bg-white sm:border sm:border-[#e8e8e0] sm:rounded-2xl sm:p-7 lg:p-8">
+            <div className="bg-(--color-surface) sm:border sm:border-(--color-border) sm:rounded-2xl sm:p-7 lg:p-8">
               <form className="space-y-4 sm:space-y-5" onSubmit={handleSubmit}>
 
                 <div className="space-y-1.5">
-                  <label className="block text-[13px] font-medium text-[#1a1a18]">
+                  <label className="block text-[13px] font-medium text-(--color-ink)">
                     Email address or Gov. Username
                   </label>
                   <input
                     type="text"
                     name="email"
                     disabled={isLoading}
-                    className="block w-full px-4 py-3 border border-[#e8e8e0] rounded-xl text-[14px] text-[#1a1a18] placeholder-[#c4c4b8] bg-[#fafaf8] focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent hover:border-[#c8c8c0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="block w-full px-4 py-3 border border-(--color-border) rounded-xl text-[14px] text-(--color-ink) placeholder-(--color-placeholder) bg-(--color-bg) focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent hover:border-(--color-border-hover) transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     placeholder="email@example.com or govusername"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -186,7 +186,7 @@ export function Login() {
 
                 <div className="space-y-1.5">
                   <div className="flex justify-between items-center">
-                    <label className="block text-[13px] font-medium text-[#1a1a18]">
+                    <label className="block text-[13px] font-medium text-(--color-ink)">
                       Password
                     </label>
                     <a
@@ -201,7 +201,7 @@ export function Login() {
                       type={showPassword ? 'text' : 'password'}
                       name="password"
                       disabled={isLoading}
-                      className="block w-full px-4 pr-16 py-3 border border-[#e8e8e0] rounded-xl text-[14px] text-[#1a1a18] placeholder-[#c4c4b8] bg-[#fafaf8] focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent hover:border-[#c8c8c0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="block w-full px-4 pr-16 py-3 border border-(--color-border) rounded-xl text-[14px] text-(--color-ink) placeholder-(--color-placeholder) bg-(--color-bg) focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent hover:border-(--color-border-hover) transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       placeholder="Enter your password"
                       value={formData.password}
                       onChange={(e) => setFormData({ ...formData, password: e.target.value })}
@@ -211,7 +211,7 @@ export function Login() {
                       type="button"
                       tabIndex={-1}
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute inset-y-0 right-0 pr-4 flex items-center text-[12px] font-medium text-[#8a8a80] hover:text-[#1a1a18] transition-colors bg-transparent border-none cursor-pointer"
+                      className="absolute inset-y-0 right-0 pr-4 flex items-center text-[12px] font-medium text-(--color-muted) hover:text-(--color-ink) transition-colors bg-transparent border-none cursor-pointer"
                     >
                       {showPassword ? 'Hide' : 'Show'}
                     </button>
@@ -228,7 +228,7 @@ export function Login() {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-3 px-4 rounded-[10px] text-[15px] font-medium text-white bg-[#1a1a18] hover:bg-[#333] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1a1a18] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2"
+                  className="w-full py-3 px-4 rounded-[10px] text-[15px] font-medium text-(--color-bg) bg-(--color-ink) hover:opacity-85 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-(--color-ink) transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2"
                 >
                   {isLoading ? (
                     <>
@@ -246,7 +246,7 @@ export function Login() {
             <div className="lg:hidden mt-8 flex flex-col items-center gap-4">
               <div className="flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
-                <span className="text-[12px] text-[#8a8a80]">Secure login</span>
+                <span className="text-[12px] text-(--color-muted)">Secure login</span>
               </div>
             </div>
 
@@ -255,11 +255,11 @@ export function Login() {
       </div>
 
       {/* FOOTER */}
-      <footer className="border-t border-[#e8e8e0] px-5 sm:px-10 py-5 sm:py-7 flex justify-between items-center gap-4">
-        <p className="text-[13px] text-[#8a8a80]">© 2026 NathRacker</p>
+      <footer className="border-t border-(--color-border) px-5 sm:px-10 py-5 sm:py-7 flex justify-between items-center gap-4">
+        <p className="text-[13px] text-(--color-muted)">© 2026 NathRacker</p>
         <div className="flex gap-5">
-          <a href="/login" className="text-[13px] text-[#8a8a80] hover:text-[#1a1a18] transition-colors no-underline">Login</a>
-          <a href="/register" className="text-[13px] text-[#8a8a80] hover:text-[#1a1a18] transition-colors no-underline">Register</a>
+          <a href="/login" className="text-[13px] text-(--color-muted) hover:text-(--color-ink) transition-colors no-underline">Login</a>
+          <a href="/register" className="text-[13px] text-(--color-muted) hover:text-(--color-ink) transition-colors no-underline">Register</a>
         </div>
       </footer>
 

@@ -7,7 +7,7 @@ export function EncodedBadge({ value }: { value: string }) {
         ? "bg-red-50 text-red-500"
         : value === "UPDATED"
           ? "bg-blue-50 text-blue-600"
-          : "bg-[#f5f5f2] text-[#8a8a80]";
+          : "bg-(--color-subtle) text-(--color-muted)";
   return (
     <span
       className={`inline-block px-2.5 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap ${cls}`}

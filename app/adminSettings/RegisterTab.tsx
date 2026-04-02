@@ -84,12 +84,12 @@ export default function RegisterTab() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f5f2] px-4 py-8 sm:px-6 lg:px-10">
+    <div className="min-h-screen bg-(--color-subtle) px-4 py-8 sm:px-6 lg:px-10">
       <div className="mb-6">
-        <p className="text-[11px] font-medium text-[#8a8a80] uppercase tracking-widest mb-1">Admin Management</p>
-        <h1 className="text-2xl font-semibold text-[#1a1a18] tracking-tight">Register Account</h1>
+        <p className="text-[11px] font-medium text-(--color-muted) uppercase tracking-widest mb-1">Admin Management</p>
+        <h1 className="text-2xl font-semibold text-(--color-ink) tracking-tight">Register Account</h1>
       </div>
-    <form onSubmit={submit} className="bg-white rounded-xl border border-[#e8e8e0] overflow-hidden">
+    <form onSubmit={submit} className="bg-(--color-surface) rounded-xl border border-(--color-border) overflow-hidden">
       <PanelHeader label="Register New Account" />
       <div className="p-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -138,7 +138,7 @@ export default function RegisterTab() {
                     className={inputCls + " pr-12"} placeholder="Enter Password"
                   />
                   <button type="button" onClick={() => setShowPw(v => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-medium text-[#8a8a80] hover:text-[#1a1a18] uppercase tracking-wide transition-colors">
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-medium text-(--color-muted) hover:text-(--color-ink) uppercase tracking-wide transition-colors">
                     {showPw ? "Hide" : "Show"}
                   </button>
                 </div>
@@ -152,7 +152,7 @@ export default function RegisterTab() {
                     className={inputCls + " pr-12"} placeholder="Re-enter Password"
                   />
                   <button type="button" onClick={() => setShowConfirmPw(v => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-medium text-[#8a8a80] hover:text-[#1a1a18] uppercase tracking-wide transition-colors">
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-medium text-(--color-muted) hover:text-(--color-ink) uppercase tracking-wide transition-colors">
                     {showConfirmPw ? "Hide" : "Show"}
                   </button>
                 </div>
@@ -200,13 +200,13 @@ export default function RegisterTab() {
                 </select>
               </div>
 
-              <div className="rounded-lg border border-[#e8e8e0] bg-[#f8f8f4] p-3">
-                <p className="text-[10px] font-semibold text-[#8a8a80] uppercase tracking-wider mb-1.5">Role Reference</p>
+              <div className="rounded-lg border border-(--color-border) bg-[#f8f8f4] p-3">
+                <p className="text-[10px] font-semibold text-(--color-muted) uppercase tracking-wider mb-1.5">Role Reference</p>
                 <div className="space-y-1">
                   {[["ENCODER", "Can input and manage records"], ["ADMIN", "Full system access"]].map(([r, d]) => (
                     <div key={r} className="flex items-start gap-2">
-                      <span className="mt-0.5 w-1.5 h-1.5 rounded-full bg-[#1a1a18] shrink-0" />
-                      <p className="text-[11px] text-[#1a1a18]"><span className="font-semibold">{r}</span> — {d}</p>
+                      <span className="mt-0.5 w-1.5 h-1.5 rounded-full bg-(--color-ink) shrink-0" />
+                      <p className="text-[11px] text-(--color-ink)"><span className="font-semibold">{r}</span> — {d}</p>
                     </div>
                   ))}
                 </div>

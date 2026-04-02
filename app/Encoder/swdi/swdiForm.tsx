@@ -126,13 +126,13 @@ export default function SWDIForm() {
     <>
       <form
         onSubmit={handleSubmit}
-        className="bg-white rounded-xl border border-[#e8e8e0] overflow-hidden"
+        className="bg-(--color-surface) rounded-xl border border-(--color-border) overflow-hidden"
       >
-        <div className="px-6 py-4 border-b border-[#e8e8e0] flex items-center justify-between">
-          <p className="text-[11px] font-medium text-[#8a8a80] uppercase tracking-wider">
+        <div className="px-6 py-4 border-b border-(--color-border) flex items-center justify-between">
+          <p className="text-[11px] font-medium text-(--color-muted) uppercase tracking-wider">
             Fill in the form below
           </p>
-          <span className="text-[11px] text-[#c4c4b8] font-mono">
+          <span className="text-[11px] text-(--color-placeholder) font-mono">
             * required
           </span>
         </div>
@@ -141,8 +141,8 @@ export default function SWDIForm() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Column 1 — Household Information */}
             <div className="space-y-4">
-              <div className="pb-2 border-b border-[#e8e8e0]">
-                <h3 className="text-[11px] font-semibold text-[#1a1a18] uppercase tracking-wider">
+              <div className="pb-2 border-b border-(--color-border)">
+                <h3 className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">
                   Household Information
                 </h3>
               </div>
@@ -210,8 +210,8 @@ export default function SWDIForm() {
 
             {/* Column 2 — Assessment Details */}
             <div className="space-y-4">
-              <div className="pb-2 border-b border-[#e8e8e0]">
-                <h3 className="text-[11px] font-semibold text-[#1a1a18] uppercase tracking-wider">
+              <div className="pb-2 border-b border-(--color-border)">
+                <h3 className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">
                   Assessment Details
                 </h3>
               </div>
@@ -278,7 +278,7 @@ export default function SWDIForm() {
                     value={formData.swdiLevel}
                     onChange={handleInputChange}
                     className={
-                      inputCls + " bg-[#fafaf8] cursor-default text-[#8a8a80]"
+                      inputCls + " bg-(--color-bg) cursor-default text-(--color-muted)"
                     }
                     placeholder="Auto-calculated"
                     required
@@ -295,7 +295,7 @@ export default function SWDIForm() {
                     required
                     disabled
                     value={formData.date}
-                    className={inputCls + " bg-[#fafaf8] cursor-default"}
+                    className={inputCls + " bg-(--color-bg) cursor-default"}
                   />
                 </div>
               </div>
@@ -303,8 +303,8 @@ export default function SWDIForm() {
 
             {/* Column 3 — Issues & Actions */}
             <div className="space-y-4">
-              <div className="pb-2 border-b border-[#e8e8e0]">
-                <h3 className="text-[11px] font-semibold text-[#1a1a18] uppercase tracking-wider">
+              <div className="pb-2 border-b border-(--color-border)">
+                <h3 className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">
                   Issues & Actions
                 </h3>
               </div>
@@ -365,7 +365,7 @@ export default function SWDIForm() {
                   <button
                     type="submit"
                     disabled={buttonLoading}
-                    className="flex-1 h-10 bg-[#1a1a18] text-white text-[13px] font-medium rounded-lg hover:bg-[#333] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    className="flex-1 h-10 bg-(--color-ink) text-(--color-bg) text-[13px] font-medium rounded-lg hover:opacity-85 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                   >
                     {buttonLoading ? "Submitting…" : "Submit →"}
                   </button>
@@ -373,7 +373,7 @@ export default function SWDIForm() {
                     type="button"
                     onClick={handleReset}
                     disabled={buttonLoading}
-                    className="flex-1 h-10 bg-transparent text-[#1a1a18] text-[13px] font-medium rounded-lg border border-[#e8e8e0] hover:border-[#1a1a18] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    className="flex-1 h-10 bg-transparent text-(--color-ink) text-[13px] font-medium rounded-lg border border-(--color-border) hover:border-(--color-ink) transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                   >
                     Reset
                   </button>

@@ -110,11 +110,11 @@ export default function BusForm() {
     <>
       <form
         onSubmit={handleSubmit}
-        className="bg-white rounded-xl border border-[#e8e8e0] overflow-hidden"
+        className="bg-(--color-surface) rounded-xl border border-(--color-border) overflow-hidden"
       >
         {/* Header with legend */}
-        <div className="px-6 py-4 border-b border-[#e8e8e0] flex items-center justify-between">
-          <p className="text-[11px] font-medium text-[#8a8a80] uppercase tracking-wider">
+        <div className="px-6 py-4 border-b border-(--color-border) flex items-center justify-between">
+          <p className="text-[11px] font-medium text-(--color-muted) uppercase tracking-wider">
             Fill in the form below
           </p>
           <div className="flex items-center gap-2">
@@ -122,8 +122,8 @@ export default function BusForm() {
               <span className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block shrink-0" />
               Required
             </span>
-            <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-[#8a8a80] bg-[#f5f5f2] border border-[#e8e8e0] px-2 py-1 rounded-md uppercase tracking-wide">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#c4c4b8] inline-block shrink-0" />
+            <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-(--color-muted) bg-(--color-subtle) border border-(--color-border) px-2 py-1 rounded-md uppercase tracking-wide">
+              <span className="w-1.5 h-1.5 rounded-full bg-(--color-placeholder) inline-block shrink-0" />
               Optional
             </span>
           </div>
@@ -133,8 +133,8 @@ export default function BusForm() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Column 1 — Basic Information */}
             <div className="space-y-4">
-              <div className="pb-2 border-b border-[#e8e8e0]">
-                <h3 className="text-[11px] font-semibold text-[#1a1a18] uppercase tracking-wider">
+              <div className="pb-2 border-b border-(--color-border)">
+                <h3 className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">
                   Basic Information
                 </h3>
               </div>
@@ -219,8 +219,8 @@ export default function BusForm() {
 
             {/* Column 2 — Update Details */}
             <div className="space-y-4">
-              <div className="pb-2 border-b border-[#e8e8e0]">
-                <h3 className="text-[11px] font-semibold text-[#1a1a18] uppercase tracking-wider">
+              <div className="pb-2 border-b border-(--color-border)">
+                <h3 className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">
                   Update Details
                 </h3>
               </div>
@@ -312,8 +312,8 @@ export default function BusForm() {
 
             {/* Column 3 — Additional Info */}
             <div className="space-y-4">
-              <div className="pb-2 border-b border-[#e8e8e0]">
-                <h3 className="text-[11px] font-semibold text-[#1a1a18] uppercase tracking-wider">
+              <div className="pb-2 border-b border-(--color-border)">
+                <h3 className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">
                   Additional Info
                 </h3>
               </div>
@@ -366,7 +366,7 @@ export default function BusForm() {
                   <button
                     type="submit"
                     disabled={buttonLoading}
-                    className="flex-1 h-10 bg-[#1a1a18] text-white text-[13px] font-medium rounded-lg hover:bg-[#333] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    className="flex-1 h-10 bg-(--color-ink) text-(--color-bg) text-[13px] font-medium rounded-lg hover:opacity-85 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                   >
                     {buttonLoading ? "Submitting…" : "Submit →"}
                   </button>
@@ -374,7 +374,7 @@ export default function BusForm() {
                     type="button"
                     onClick={handleReset}
                     disabled={buttonLoading}
-                    className="flex-1 h-10 bg-transparent text-[#1a1a18] text-[13px] font-medium rounded-lg border border-[#e8e8e0] hover:border-[#1a1a18] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    className="flex-1 h-10 bg-transparent text-(--color-ink) text-[13px] font-medium rounded-lg border border-(--color-border) hover:border-(--color-ink) transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                   >
                     Reset
                   </button>

@@ -253,7 +253,7 @@ const handleDeleteConfirm = async () => {
   };
 
   return (
-    <div className="p-6 bg-[#fafaf8] min-h-screen font-sans antialiased">
+    <div className="p-6 bg-(--color-bg) min-h-screen font-sans antialiased">
       <DeleteModal
         open={deleteModal.open}
         onConfirm={handleDeleteConfirm}
@@ -281,7 +281,7 @@ const handleDeleteConfirm = async () => {
         onClose={() => setSelectedCVSItem(null)}
       />
 
-      <div className="bg-white border border-[#e8e8e0] rounded-xl px-6 py-4 flex items-center gap-3 shrink-0">
+      <div className="bg-(--color-surface) border border-(--color-border) rounded-xl px-6 py-4 flex items-center gap-3 shrink-0">
         <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center">
           <Layers className="w-4 h-4 text-sky-600" />
         </div>
@@ -289,22 +289,22 @@ const handleDeleteConfirm = async () => {
           <span className="font-mono text-[10px] font-medium px-2 py-1 rounded-md bg-amber-50 text-sky-600 tracking-wider">
             GR
           </span>
-          <h1 className="text-[15px] font-semibold tracking-tight text-[#1a1a18]">
+          <h1 className="text-[15px] font-semibold tracking-tight text-(--color-ink)">
             Global Records
           </h1>
-          <span className="text-[13px] text-[#8a8a80]">
+          <span className="text-[13px] text-(--color-muted)">
             — Other Encoded Records
           </span>
         </div>
       </div>
       {/* ── Action bar ─────────────────────────────────────────────────────── */}
-      <div className="bg-white border border-[#e8e8e0] rounded-xl p-4 mb-4 mt-4">
+      <div className="bg-(--color-surface) border border-(--color-border) rounded-xl p-4 mb-4 mt-4">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <div className="flex items-center gap-2">
             <button
               onClick={() => refetch()}
               disabled={isLoading}
-              className="inline-flex items-center gap-2 px-3.5 py-2 text-[13px] font-medium bg-[#1a1a18] text-white rounded-lg hover:bg-[#333] transition-colors disabled:opacity-50 cursor-pointer"
+              className="inline-flex items-center gap-2 px-3.5 py-2 text-[13px] font-medium bg-(--color-ink) text-(--color-bg) rounded-lg hover:opacity-85 transition-colors disabled:opacity-50 cursor-pointer"
             >
               <RefreshCw
                 size={13}
@@ -317,8 +317,8 @@ const handleDeleteConfirm = async () => {
               onClick={() => setShowFilters(!showFilters)}
               className={`inline-flex items-center gap-2 px-3.5 py-2 text-[13px] font-medium rounded-lg border transition-colors cursor-pointer ${
                 showFilters
-                  ? "bg-[#1a1a18] text-white border-[#1a1a18]"
-                  : "bg-white text-[#1a1a18] border-[#e8e8e0] hover:border-[#1a1a18]"
+                  ? "bg-(--color-ink) text-(--color-bg) border-(--color-ink)"
+                  : "bg-(--color-surface) text-(--color-ink) border-(--color-border) hover:border-(--color-ink)"
               }`}
             >
               <SlidersHorizontal size={13} />
@@ -333,21 +333,21 @@ const handleDeleteConfirm = async () => {
             {activeFilterCount > 0 && (
               <button
                 onClick={clearFilters}
-                className="text-[12px] text-[#8a8a80] hover:text-[#1a1a18] transition-colors cursor-pointer bg-transparent border-none"
+                className="text-[12px] text-(--color-muted) hover:text-(--color-ink) transition-colors cursor-pointer bg-transparent border-none"
               >
                 Clear all
               </button>
             )}
           </div>
 
-          <span className="text-[12px] font-mono text-[#8a8a80] bg-[#f5f5f2] px-3 py-1.5 rounded-full">
+          <span className="text-[12px] font-mono text-(--color-muted) bg-(--color-subtle) px-3 py-1.5 rounded-full">
             {filteredData.length} record{filteredData.length !== 1 ? "s" : ""}
           </span>
         </div>
 
         {/* Filter panel */}
         {showFilters && (
-          <div className="mt-4 pt-4 border-t border-[#e8e8e0]">
+          <div className="mt-4 pt-4 border-t border-(--color-border)">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <div>
                 <label className={labelCls}>Search</label>
@@ -429,48 +429,48 @@ const handleDeleteConfirm = async () => {
       </div>
 
       {/* ── Table ──────────────────────────────────────────────────────────── */}
-      <div className="bg-white border border-[#e8e8e0] rounded-xl overflow-hidden">
+      <div className="bg-(--color-surface) border border-(--color-border) rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full text-xs">
             {/* Head */}
-            <thead className="bg-[#fafaf8] border-b border-[#e8e8e0]">
+            <thead className="bg-(--color-bg) border-b border-(--color-border)">
               <tr>
-                <th className="px-4 py-3 text-center text-[10px] font-semibold text-[#8a8a80] uppercase tracking-widest whitespace-nowrap">
+                <th className="px-4 py-3 text-center text-[10px] font-semibold text-(--color-muted) uppercase tracking-widest whitespace-nowrap">
                   ID NUMBER
                 </th>
-                <th className="px-4 py-3 text-center text-[10px] font-semibold text-[#8a8a80] uppercase tracking-widest whitespace-nowrap">
+                <th className="px-4 py-3 text-center text-[10px] font-semibold text-(--color-muted) uppercase tracking-widest whitespace-nowrap">
                   Name
                 </th>
-                <th className="px-4 py-3 text-center text-[10px] font-semibold text-[#8a8a80] uppercase tracking-widest whitespace-nowrap">
+                <th className="px-4 py-3 text-center text-[10px] font-semibold text-(--color-muted) uppercase tracking-widest whitespace-nowrap">
                   Doc Type
                 </th>
-                <th className="px-4 py-3 text-center text-[10px] font-semibold text-[#8a8a80] uppercase tracking-widest whitespace-nowrap">
+                <th className="px-4 py-3 text-center text-[10px] font-semibold text-(--color-muted) uppercase tracking-widest whitespace-nowrap">
                   Subject of Change
                 </th>
-                <th className="px-4 py-3 text-center text-[10px] font-semibold text-[#8a8a80] uppercase tracking-widest whitespace-nowrap">
+                <th className="px-4 py-3 text-center text-[10px] font-semibold text-(--color-muted) uppercase tracking-widest whitespace-nowrap">
                   DRN
                 </th>
-                <th className="px-4 py-3 text-center text-[10px] font-semibold text-[#8a8a80] uppercase tracking-widest whitespace-nowrap">
+                <th className="px-4 py-3 text-center text-[10px] font-semibold text-(--color-muted) uppercase tracking-widest whitespace-nowrap">
                   Status
                 </th>
-                <th className="px-4 py-3 text-center text-[10px] font-semibold text-[#8a8a80] uppercase tracking-widest whitespace-nowrap">
+                <th className="px-4 py-3 text-center text-[10px] font-semibold text-(--color-muted) uppercase tracking-widest whitespace-nowrap">
                   Username
                 </th>
-                <th className="px-4 py-3 text-center text-[10px] font-semibold text-[#8a8a80] uppercase tracking-widest whitespace-nowrap">
+                <th className="px-4 py-3 text-center text-[10px] font-semibold text-(--color-muted) uppercase tracking-widest whitespace-nowrap">
                   Date
                 </th>
-                <th className="px-4 py-3 text-center text-[10px] font-semibold text-[#8a8a80] uppercase tracking-widest whitespace-nowrap">
+                <th className="px-4 py-3 text-center text-[10px] font-semibold text-(--color-muted) uppercase tracking-widest whitespace-nowrap">
                   Actions
                 </th>
               </tr>
             </thead>
 
             {/* Body */}
-            <tbody className="divide-y divide-[#f5f5f2]">
+            <tbody className="divide-y divide-(--color-subtle)">
               {isLoading ? (
                 <tr>
                   <td colSpan={9} className="py-14 text-center">
-                    <div className="flex flex-col items-center gap-2 text-[#c4c4b8]">
+                    <div className="flex flex-col items-center gap-2 text-(--color-placeholder)">
                       <Loader2 size={18} className="animate-spin" />
                       <span className="text-[12px]">Loading records…</span>
                     </div>
@@ -481,10 +481,10 @@ const handleDeleteConfirm = async () => {
                   <td colSpan={9} className="py-16 text-center">
                     <div className="flex flex-col items-center gap-2">
                       <InboxIcon size={22} className="text-[#d4d4cc]" />
-                      <p className="text-[13px] font-medium text-[#1a1a18]">
+                      <p className="text-[13px] font-medium text-(--color-ink)">
                         No records found
                       </p>
-                      <p className="text-[12px] text-[#8a8a80]">
+                      <p className="text-[12px] text-(--color-muted)">
                         Try adjusting your filters or refresh
                       </p>
                     </div>
@@ -494,19 +494,19 @@ const handleDeleteConfirm = async () => {
                 paginatedData.map((item, i) => (
                   <tr
                     key={item.id}
-                    className={`hover:bg-indigo-50/20 transition-colors duration-100 ${i % 2 === 0 ? "bg-white" : "bg-[#fafaf8]"}`}
+                    className={`hover:bg-indigo-50/20 transition-colors duration-100 ${i % 2 === 0 ? "bg-(--color-surface)" : "bg-(--color-bg)"}`}
                   >
                     {/* HH ID */}
                     <td className="px-4 py-2.5 text-center">
                       <div className="flex items-center justify-center gap-1.5 group">
-                        <span className="font-mono text-[11px] text-[#1a1a18]">
+                        <span className="font-mono text-[11px] text-(--color-ink)">
                           {item.idNumber}
                         </span>
                         <button
                           onClick={() =>
                             navigator.clipboard.writeText(item.idNumber)
                           }
-                          className="opacity-0 group-hover:opacity-100 transition-opacity text-[#c4c4b8] hover:text-[#8a8a80] cursor-pointer bg-transparent border-none"
+                          className="opacity-0 group-hover:opacity-100 transition-opacity text-(--color-placeholder) hover:text-(--color-muted) cursor-pointer bg-transparent border-none"
                           title="Copy HH ID"
                         >
                           <Copy size={11} />
@@ -515,7 +515,7 @@ const handleDeleteConfirm = async () => {
                     </td>
 
                     {/* Name */}
-                    <td className="px-4 py-2.5 text-center text-[12px] font-medium text-[#1a1a18] whitespace-nowrap">
+                    <td className="px-4 py-2.5 text-center text-[12px] font-medium text-(--color-ink) whitespace-nowrap">
                       {item.name}
                     </td>
 
@@ -527,14 +527,14 @@ const handleDeleteConfirm = async () => {
                     </td>
 
                     {/* Subject of Change */}
-                    <td className="px-4 py-2.5 text-center text-[12px] text-[#8a8a80] max-w-35 truncate">
+                    <td className="px-4 py-2.5 text-center text-[12px] text-(--color-muted) max-w-35 truncate">
                       {item.subjectOfChange || (
                         <span className="text-[#d4d4cc]">—</span>
                       )}
                     </td>
 
                     {/* DRN */}
-                    <td className="px-4 py-2.5 text-center text-[12px] text-[#8a8a80] whitespace-nowrap">
+                    <td className="px-4 py-2.5 text-center text-[12px] text-(--color-muted) whitespace-nowrap">
                       {item.drn || <span className="text-[#d4d4cc]">—</span>}
                     </td>
 
@@ -544,12 +544,12 @@ const handleDeleteConfirm = async () => {
                     </td>
 
                     {/* Username */}
-                    <td className="px-4 py-2.5 text-center text-[12px] text-[#8a8a80] whitespace-nowrap">
+                    <td className="px-4 py-2.5 text-center text-[12px] text-(--color-muted) whitespace-nowrap">
                       {item.govUsername}
                     </td>
 
                     {/* Date */}
-                    <td className="px-4 py-2.5 text-center text-[11px] text-[#8a8a80] whitespace-nowrap tabular-nums">
+                    <td className="px-4 py-2.5 text-center text-[11px] text-(--color-muted) whitespace-nowrap tabular-nums">
                       {new Date(item.date).toLocaleDateString("en-US", {
                         month: "short",
                         day: "numeric",
@@ -562,7 +562,7 @@ const handleDeleteConfirm = async () => {
                       <div className="flex items-center justify-center gap-1.5">
                         <button
                           onClick={() => handleView(item)}
-                          className="inline-flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-medium text-[#1a1a18] bg-white border border-[#e8e8e0] rounded-lg hover:border-[#1a1a18] transition-colors cursor-pointer"
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-medium text-(--color-ink) bg-(--color-surface) border border-(--color-border) rounded-lg hover:border-(--color-ink) transition-colors cursor-pointer"
                         >
                           <Eye size={11} /> View
                         </button>
@@ -591,18 +591,18 @@ const handleDeleteConfirm = async () => {
 
         {/* ── Pagination ──────────────────────────────────────────────────── */}
         {totalPages > 1 && (
-          <div className="px-6 py-3.5 border-t border-[#e8e8e0] flex items-center justify-between bg-white">
-            <p className="text-[12px] text-[#8a8a80]">
+          <div className="px-6 py-3.5 border-t border-(--color-border) flex items-center justify-between bg-(--color-surface)">
+            <p className="text-[12px] text-(--color-muted)">
               Showing{" "}
-              <span className="font-medium text-[#1a1a18]">
+              <span className="font-medium text-(--color-ink)">
                 {(currentPage - 1) * itemsPerPage + 1}
               </span>{" "}
               –{" "}
-              <span className="font-medium text-[#1a1a18]">
+              <span className="font-medium text-(--color-ink)">
                 {Math.min(currentPage * itemsPerPage, filteredData.length)}
               </span>{" "}
               of{" "}
-              <span className="font-medium text-[#1a1a18]">
+              <span className="font-medium text-(--color-ink)">
                 {filteredData.length}
               </span>
             </p>
@@ -611,7 +611,7 @@ const handleDeleteConfirm = async () => {
               <button
                 onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                 disabled={currentPage === 1}
-                className="w-8 h-8 flex items-center justify-center rounded-lg border border-[#e8e8e0] text-[#8a8a80] hover:border-[#1a1a18] hover:text-[#1a1a18] disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer bg-white text-[12px]"
+                className="w-8 h-8 flex items-center justify-center rounded-lg border border-(--color-border) text-(--color-muted) hover:border-(--color-ink) hover:text-(--color-ink) disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer bg-(--color-surface) text-[12px]"
               >
                 ‹
               </button>
@@ -627,7 +627,7 @@ const handleDeleteConfirm = async () => {
                   return (
                     <span
                       key={p}
-                      className="w-8 h-8 flex items-center justify-center text-[#c4c4b8] text-[12px]"
+                      className="w-8 h-8 flex items-center justify-center text-(--color-placeholder) text-[12px]"
                     >
                       …
                     </span>
@@ -639,8 +639,8 @@ const handleDeleteConfirm = async () => {
                     onClick={() => setCurrentPage(p)}
                     className={`w-8 h-8 flex items-center justify-center rounded-lg text-[12px] font-medium border transition-colors cursor-pointer ${
                       currentPage === p
-                        ? "bg-[#1a1a18] text-white border-[#1a1a18]"
-                        : "bg-white text-[#8a8a80] border-[#e8e8e0] hover:border-[#1a1a18] hover:text-[#1a1a18]"
+                        ? "bg-(--color-ink) text-(--color-bg) border-(--color-ink)"
+                        : "bg-(--color-surface) text-(--color-muted) border-(--color-border) hover:border-(--color-ink) hover:text-(--color-ink)"
                     }`}
                   >
                     {p}
@@ -653,7 +653,7 @@ const handleDeleteConfirm = async () => {
                   setCurrentPage(Math.min(totalPages, currentPage + 1))
                 }
                 disabled={currentPage === totalPages}
-                className="w-8 h-8 flex items-center justify-center rounded-lg border border-[#e8e8e0] text-[#8a8a80] hover:border-[#1a1a18] hover:text-[#1a1a18] disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer bg-white text-[12px]"
+                className="w-8 h-8 flex items-center justify-center rounded-lg border border-(--color-border) text-(--color-muted) hover:border-(--color-ink) hover:text-(--color-ink) disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer bg-(--color-surface) text-[12px]"
               >
                 ›
               </button>

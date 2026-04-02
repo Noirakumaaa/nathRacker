@@ -15,8 +15,8 @@ function DetailRow({
 }) {
   return (
     <div className="grid grid-cols-2 gap-4 py-2.5 border-b border-[#f0f0ec] last:border-0">
-      <span className="text-[11px] font-medium text-[#8a8a80] uppercase tracking-wider">{label}</span>
-      <span className="text-[13px] font-medium text-[#1a1a18] text-right break-words">
+      <span className="text-[11px] font-medium text-(--color-muted) uppercase tracking-wider">{label}</span>
+      <span className="text-[13px] font-medium text-(--color-ink) text-right break-words">
         {value ?? <span className="text-[#d4d4cc] italic font-normal">—</span>}
       </span>
     </div>
@@ -25,8 +25,8 @@ function DetailRow({
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-[11px] font-semibold text-[#8a8a80] uppercase tracking-wider mb-3 flex items-center gap-2">
-      <span className="w-3 h-px bg-[#e8e8e0] inline-block" />
+    <p className="text-[11px] font-semibold text-(--color-muted) uppercase tracking-wider mb-3 flex items-center gap-2">
+      <span className="w-3 h-px bg-(--color-border) inline-block" />
       {children}
     </p>
   );
@@ -60,30 +60,30 @@ export function PcnViewModal({ item, onClose }: PcnViewModalProps) {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-[#1a1a18]/50 backdrop-blur-sm"
+        className="absolute inset-0 bg-(--color-ink)/50 backdrop-blur-sm"
         onClick={onClose}
       />
 
       {/* Modal */}
-      <div className="relative bg-white rounded-2xl w-full max-w-2xl z-10 flex flex-col max-h-[90vh] overflow-hidden border border-[#e8e8e0] shadow-[0_24px_60px_rgba(0,0,0,0.15)]">
+      <div className="relative bg-(--color-surface) rounded-2xl w-full max-w-2xl z-10 flex flex-col max-h-[90vh] overflow-hidden border border-(--color-border) shadow-[0_24px_60px_rgba(0,0,0,0.15)]">
 
         {/* Top accent line */}
         <div className="h-px w-full bg-gradient-to-r from-violet-400 via-purple-400 to-transparent" />
 
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e8e8e0]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-(--color-border)">
           <div className="flex items-center gap-3">
             <span className="font-mono text-[10px] font-medium px-2 py-1 rounded-md bg-violet-50 text-violet-600 tracking-wider">
               PCN
             </span>
             <div>
-              <h2 className="text-[15px] font-semibold tracking-tight text-[#1a1a18]">Record Details</h2>
-              <p className="text-[12px] text-[#8a8a80] mt-0.5 font-mono">{item.hhId}</p>
+              <h2 className="text-[15px] font-semibold tracking-tight text-(--color-ink)">Record Details</h2>
+              <p className="text-[12px] text-(--color-muted) mt-0.5 font-mono">{item.hhId}</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-lg border border-[#e8e8e0] text-[#8a8a80] hover:border-[#1a1a18] hover:text-[#1a1a18] transition-colors cursor-pointer bg-white"
+            className="w-8 h-8 flex items-center justify-center rounded-lg border border-(--color-border) text-(--color-muted) hover:border-(--color-ink) hover:text-(--color-ink) transition-colors cursor-pointer bg-(--color-surface)"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -97,7 +97,7 @@ export function PcnViewModal({ item, onClose }: PcnViewModalProps) {
           {/* Identification */}
           <section>
             <SectionLabel>Identification</SectionLabel>
-            <div className="bg-[#fafaf8] rounded-xl px-4 py-1">
+            <div className="bg-(--color-bg) rounded-xl px-4 py-1">
               <DetailRow label="HH ID" value={item.hhId} />
               <DetailRow label="DRN" value={item.drn} />
               <DetailRow label="CL" value={item.cl} />
@@ -111,7 +111,7 @@ export function PcnViewModal({ item, onClose }: PcnViewModalProps) {
           {/* Grantee Information */}
           <section>
             <SectionLabel>Grantee Information</SectionLabel>
-            <div className="bg-[#fafaf8] rounded-xl px-4 py-1">
+            <div className="bg-(--color-bg) rounded-xl px-4 py-1">
               <DetailRow label="Name" value={item.granteeName} />
               <DetailRow label="Subject of Change" value={item.subjectOfChange} />
             </div>
@@ -120,7 +120,7 @@ export function PcnViewModal({ item, onClose }: PcnViewModalProps) {
           {/* Status & Encoding */}
           <section>
             <SectionLabel>Status & Encoding</SectionLabel>
-            <div className="bg-[#fafaf8] rounded-xl px-4 py-1">
+            <div className="bg-(--color-bg) rounded-xl px-4 py-1">
               <DetailRow label="Remarks" value={statusBadge} />
               <DetailRow label="Issue" value={item.issue} />
               <DetailRow label="Encoded By" value={item.encodedBy} />
@@ -140,10 +140,10 @@ export function PcnViewModal({ item, onClose }: PcnViewModalProps) {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-[#e8e8e0] flex justify-end bg-[#fafaf8] rounded-b-2xl">
+        <div className="px-6 py-4 border-t border-(--color-border) flex justify-end bg-(--color-bg) rounded-b-2xl">
           <button
             onClick={onClose}
-            className="px-5 py-2 text-[13px] font-medium text-[#1a1a18] bg-white border border-[#e8e8e0] rounded-lg hover:border-[#1a1a18] transition-colors cursor-pointer"
+            className="px-5 py-2 text-[13px] font-medium text-(--color-ink) bg-(--color-surface) border border-(--color-border) rounded-lg hover:border-(--color-ink) transition-colors cursor-pointer"
           >
             Close
           </button>

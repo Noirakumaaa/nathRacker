@@ -15,7 +15,7 @@ export default function BusRecentTable() {
     {
       header: "LGU",
       cell: (r) => (
-        <span className="text-[13px] font-semibold text-[#1a1a18] whitespace-nowrap">
+        <span className="text-[13px] font-semibold text-(--color-ink) whitespace-nowrap">
           {r.lgu}
         </span>
       ),
@@ -24,12 +24,12 @@ export default function BusRecentTable() {
       header: "HH ID",
       cell: (r) => (
         <div className="flex items-center justify-center gap-1.5 group">
-          <span className="font-mono text-[11px] text-[#1a1a18] whitespace-nowrap">
+          <span className="font-mono text-[11px] text-(--color-ink) whitespace-nowrap">
             {r.hhId}
           </span>
           <button
             onClick={() => navigator.clipboard.writeText(r.hhId)}
-            className="opacity-0 group-hover:opacity-100 transition-opacity text-[#c4c4b8] hover:text-[#8a8a80] cursor-pointer bg-transparent border-none"
+            className="opacity-0 group-hover:opacity-100 transition-opacity text-(--color-placeholder) hover:text-(--color-muted) cursor-pointer bg-transparent border-none"
             title="Copy HH ID"
           >
             <Copy size={11} />
@@ -40,7 +40,7 @@ export default function BusRecentTable() {
     {
       header: "Grantee Name",
       cell: (r) => (
-        <span className="text-[12px] font-medium text-[#1a1a18] whitespace-nowrap">
+        <span className="text-[12px] font-medium text-(--color-ink) whitespace-nowrap">
           {r.granteeName}
         </span>
       ),
@@ -48,7 +48,7 @@ export default function BusRecentTable() {
     {
       header: "Type of Update",
       cell: (r) => (
-        <span className="text-[12px] text-[#8a8a80] whitespace-nowrap">
+        <span className="text-[12px] text-(--color-muted) whitespace-nowrap">
           {r.typeOfUpdate || <span className="text-[#d4d4cc]">—</span>}
         </span>
       ),
@@ -57,7 +57,7 @@ export default function BusRecentTable() {
       header: "Subject Of Change",
       cell: (r) => (
         <span
-          className="text-[#8a8a80] truncate block text-center"
+          className="text-(--color-muted) truncate block text-center"
           title={r.subjectOfChange}
         >
           {r.updateInfo || <span className="text-[#d4d4cc]">—</span>}
@@ -83,7 +83,7 @@ export default function BusRecentTable() {
     {
       header: "Date",
       cell: (r) => (
-        <span className="text-[11px] text-[#8a8a80] whitespace-nowrap tabular-nums">
+        <span className="text-[11px] text-(--color-muted) whitespace-nowrap tabular-nums">
           {new Date(r.date).toLocaleDateString("en-US", {
             month: "short",
             day: "numeric",

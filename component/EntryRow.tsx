@@ -13,14 +13,14 @@ export function EntryRow({ entry }: { entry: SummaryEntry }) {
     entry.type === "issue" ? "ISSUE" : entry.type === "update" ? "UPDATED" : "ENCODED";
 
   return (
-    <div className="grid grid-cols-[72px_1fr_auto] gap-3 items-start px-5 py-2.5 border-b border-[#e8e8e0] last:border-0">
-      <span className="text-[11px] text-[#8a8a80] pt-0.5 font-mono">{fmtDate(entry.date)}</span>
+    <div className="grid grid-cols-[72px_1fr_auto] gap-3 items-start px-5 py-2.5 border-b border-(--color-border) last:border-0">
+      <span className="text-[11px] text-(--color-muted) pt-0.5 font-mono">{fmtDate(entry.date)}</span>
       <div>
-        <p className="text-[13px] text-[#1a1a18] leading-snug">{entry.remarks}</p>
+        <p className="text-[13px] text-(--color-ink) leading-snug">{entry.remarks}</p>
         {entry.type === "issue" && entry.issue && (
-          <p className="text-[11px] text-[#8a8a80] mt-0.5">Issue: {entry.issue}</p>
+          <p className="text-[11px] text-(--color-muted) mt-0.5">Issue: {entry.issue}</p>
         )}
-        <p className="text-[11px] text-[#c4c4b8] mt-0.5">{entry.hhId} · {entry.name}</p>
+        <p className="text-[11px] text-(--color-placeholder) mt-0.5">{entry.hhId} · {entry.name}</p>
       </div>
       <span className={`text-[10px] font-medium px-2 py-0.5 rounded-md whitespace-nowrap ${badge}`}>
         {label}

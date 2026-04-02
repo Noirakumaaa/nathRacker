@@ -19,7 +19,7 @@ const UnauthorizedPage = () => {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
       <div className="max-w-md w-full">
         {/* Main Card */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
+        <div className="bg-(--color-surface) rounded-xl shadow-sm border border-gray-200 p-8 text-center">
           {/* Icon */}
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <Shield className="w-8 h-8 text-red-600" />
@@ -52,7 +52,7 @@ const UnauthorizedPage = () => {
             
             <button
               onClick={handleGoHome}
-              className="w-full flex items-center justify-center px-4 py-3 bg-white text-gray-700 border border-gray-200 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+              className="w-full flex items-center justify-center px-4 py-3 bg-(--color-surface) text-gray-700 border border-gray-200 rounded-lg font-medium hover:bg-gray-50 transition-colors"
             >
               <Home className="w-4 h-4 mr-2" />
               Go to Dashboard
@@ -60,7 +60,7 @@ const UnauthorizedPage = () => {
             
             <button
               onClick={handleContactSupport}
-              className="w-full flex items-center justify-center px-4 py-3 bg-white text-gray-700 border border-gray-200 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+              className="w-full flex items-center justify-center px-4 py-3 bg-(--color-surface) text-gray-700 border border-gray-200 rounded-lg font-medium hover:bg-gray-50 transition-colors"
             >
               <Mail className="w-4 h-4 mr-2" />
               Contact Support

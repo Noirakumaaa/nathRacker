@@ -83,8 +83,8 @@ export default function BusVerificationDetail({ bdm }: { bdm: string }) {
   // ── Loading ────────────────────────────────────────────────────────────────
   if (isLoading) {
     return (
-      <main className="p-6 bg-[#fafaf8] min-h-screen flex items-center justify-center">
-        <div className="flex items-center gap-2 text-[#8a8a80]">
+      <main className="p-6 bg-(--color-bg) min-h-screen flex items-center justify-center">
+        <div className="flex items-center gap-2 text-(--color-muted)">
           <Loader2 size={16} className="animate-spin" />
           <span className="text-[13px]">Loading records…</span>
         </div>
@@ -94,7 +94,7 @@ export default function BusVerificationDetail({ bdm }: { bdm: string }) {
 
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
-    <main className="p-6 bg-[#fafaf8] min-h-screen font-sans antialiased">
+    <main className="p-6 bg-(--color-bg) min-h-screen font-sans antialiased">
       <div className="max-w-3xl mx-auto flex flex-col gap-5">
 
         {/* Header */}
@@ -102,7 +102,7 @@ export default function BusVerificationDetail({ bdm }: { bdm: string }) {
           <button
             type="button"
             onClick={() => navigate("/verification/bus")}
-            className="flex items-center gap-1 text-[12px] text-[#8a8a80] hover:text-[#1a1a18] transition-colors cursor-pointer bg-transparent border-none mb-2"
+            className="flex items-center gap-1 text-[12px] text-(--color-muted) hover:text-(--color-ink) transition-colors cursor-pointer bg-transparent border-none mb-2"
           >
             <ChevronLeft size={13} />
             BUS Verification
@@ -110,7 +110,7 @@ export default function BusVerificationDetail({ bdm }: { bdm: string }) {
           <p className="text-[11px] text-[#b8b8b0] uppercase tracking-wider font-semibold mb-0.5">
             BDM Number
           </p>
-          <h1 className="text-[24px] font-bold text-[#1a1a18] font-mono tracking-tight">
+          <h1 className="text-[24px] font-bold text-(--color-ink) font-mono tracking-tight">
             {bdm}
           </h1>
         </div>
@@ -132,24 +132,24 @@ export default function BusVerificationDetail({ bdm }: { bdm: string }) {
 
         {/* Records */}
         {tabRecords.length === 0 ? (
-          <div className="bg-white border border-[#e8e8e0] rounded-xl py-16 flex flex-col items-center gap-2">
+          <div className="bg-(--color-surface) border border-(--color-border) rounded-xl py-16 flex flex-col items-center gap-2">
             {activeTab === "pending" ? (
               <>
                 <CheckCircle size={28} className="text-emerald-400" />
                 <p className="text-[14px] font-semibold text-emerald-500">All records reviewed!</p>
-                <p className="text-[12px] text-[#c4c4b8]">Nothing left to verify for this BDM</p>
+                <p className="text-[12px] text-(--color-placeholder)">Nothing left to verify for this BDM</p>
               </>
             ) : (
               <>
-                <AlertCircle size={26} className="text-[#c4c4b8]" />
-                <p className="text-[13px] text-[#c4c4b8]">No records in this category</p>
+                <AlertCircle size={26} className="text-(--color-placeholder)" />
+                <p className="text-[13px] text-(--color-placeholder)">No records in this category</p>
               </>
             )}
           </div>
         ) : (
           <div className="flex flex-col gap-3">
             {activeTab === "pending" && (
-              <p className="text-[12px] text-[#8a8a80] px-1">
+              <p className="text-[12px] text-(--color-muted) px-1">
                 {counts.pending} record{counts.pending !== 1 ? "s" : ""} need review — mark each as{" "}
                 <strong>Verified</strong> or <strong>Flag Issue</strong>
               </p>

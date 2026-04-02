@@ -23,12 +23,12 @@ export function LcnRecentTable() {
       header: "HH ID",
       cell: (r) => (
         <div className="flex items-center justify-center gap-1.5 group">
-          <span className="font-mono text-[11px] text-[#1a1a18] whitespace-nowrap">
+          <span className="font-mono text-[11px] text-(--color-ink) whitespace-nowrap">
             {r.hhId}
           </span>
           <button
             onClick={() => navigator.clipboard.writeText(r.hhId)}
-            className="opacity-0 group-hover:opacity-100 transition-opacity text-[#c4c4b8] hover:text-[#8a8a80] cursor-pointer bg-transparent border-none"
+            className="opacity-0 group-hover:opacity-100 transition-opacity text-(--color-placeholder) hover:text-(--color-muted) cursor-pointer bg-transparent border-none"
             title="Copy HH ID"
           >
             <Copy size={11} />
@@ -39,7 +39,7 @@ export function LcnRecentTable() {
     {
       header: "Grantee",
       cell: (r) => (
-        <span className="text-[12px] font-medium text-[#1a1a18] whitespace-nowrap">
+        <span className="text-[12px] font-medium text-(--color-ink) whitespace-nowrap">
           {r.granteeName || <span className="text-[#d4d4cc]">—</span>}
         </span>
       ),
@@ -47,7 +47,7 @@ export function LcnRecentTable() {
     {
       header: "LGU",
       cell: (r) => (
-        <span className="text-[12px] text-[#8a8a80] whitespace-nowrap">
+        <span className="text-[12px] text-(--color-muted) whitespace-nowrap">
           {r.lgu || <span className="text-[#d4d4cc]">—</span>}
         </span>
       ),
@@ -55,7 +55,7 @@ export function LcnRecentTable() {
     {
       header: "Barangay",
       cell: (r) => (
-        <span className="text-[12px] text-[#8a8a80] whitespace-nowrap">
+        <span className="text-[12px] text-(--color-muted) whitespace-nowrap">
           {r.barangay || <span className="text-[#d4d4cc]">—</span>}
         </span>
       ),
@@ -64,7 +64,7 @@ export function LcnRecentTable() {
       header: "Subject",
       className: "max-w-[120px] truncate",
       cell: (r) => (
-        <span className="text-[12px] text-[#8a8a80]">
+        <span className="text-[12px] text-(--color-muted)">
           {r.subjectOfChange || <span className="text-[#d4d4cc]">—</span>}
         </span>
       ),
@@ -80,7 +80,7 @@ export function LcnRecentTable() {
     {
       header: "TR",
       cell: (r) => (
-        <span className="font-mono text-[11px] text-[#8a8a80] whitespace-nowrap">
+        <span className="font-mono text-[11px] text-(--color-muted) whitespace-nowrap">
           {r.lrn || <span className="text-[#d4d4cc] font-sans">—</span>}
         </span>
       ),
@@ -92,7 +92,7 @@ export function LcnRecentTable() {
     {
       header: "DRN",
       cell: (r) => (
-        <span className="font-mono text-[11px] text-[#8a8a80] whitespace-nowrap">
+        <span className="font-mono text-[11px] text-(--color-muted) whitespace-nowrap">
           {r.drn || <span className="text-[#d4d4cc] font-sans">—</span>}
         </span>
       ),
@@ -100,7 +100,7 @@ export function LcnRecentTable() {
     {
       header: "CL",
       cell: (r) => (
-        <span className="font-mono text-[11px] text-[#8a8a80] whitespace-nowrap">
+        <span className="font-mono text-[11px] text-(--color-muted) whitespace-nowrap">
           {r.cl || <span className="text-[#d4d4cc] font-sans">—</span>}
         </span>
       ),
@@ -108,7 +108,7 @@ export function LcnRecentTable() {
     {
       header: "Date",
       cell: (r) => (
-        <span className="text-[11px] text-[#8a8a80] whitespace-nowrap tabular-nums">
+        <span className="text-[11px] text-(--color-muted) whitespace-nowrap tabular-nums">
           {new Date(r.date).toLocaleDateString("en-US", {
             month: "short",
             day: "numeric",
@@ -121,7 +121,7 @@ export function LcnRecentTable() {
       header: "Note",
       className: "max-w-[100px] truncate",
       cell: (r) => (
-        <span className="text-[12px] text-[#8a8a80]">
+        <span className="text-[12px] text-(--color-muted)">
           {r.note || <span className="text-[#d4d4cc]">—</span>}
         </span>
       ),
@@ -146,7 +146,7 @@ export function LcnRecentTable() {
       columns={buildColumns}
       title="Recent Updates"
       rowClassName={(_, i) =>
-        `hover:bg-rose-50/20 transition-colors duration-100 ${i % 2 === 0 ? "bg-white" : "bg-[#fafaf8]"}`
+        `hover:bg-rose-50/20 transition-colors duration-100 ${i % 2 === 0 ? "bg-(--color-surface)" : "bg-(--color-bg)"}`
       }
     />
   );

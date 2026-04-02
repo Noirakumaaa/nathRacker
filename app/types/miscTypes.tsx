@@ -26,10 +26,10 @@ export type MiscRecord = MiscFormFields & {
 export type ToastStatus = "success" | "error";
 
 export const inputCls =
-  "w-full px-3 py-2 text-[13px] border border-[#e8e8e0] rounded-lg text-[#1a1a18] placeholder-[#c4c4b8] bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent hover:border-[#c8c8c0] transition-colors";
+  "w-full px-3 py-2 text-[13px] border border-(--color-border) rounded-lg text-(--color-ink) placeholder-(--color-placeholder) bg-(--color-surface) focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent hover:border-(--color-border-hover) transition-colors";
 
 export const labelCls =
-  "block text-[11px] font-medium text-[#8a8a80] mb-1.5 uppercase tracking-wider";
+  "block text-[11px] font-medium text-(--color-muted) mb-1.5 uppercase tracking-wider";
 
 export const toastAccent: Record<ToastStatus, string> = {
   success: "#22c55e",

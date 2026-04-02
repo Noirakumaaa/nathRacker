@@ -55,26 +55,26 @@ function StaffCard({
     <button
       type="button"
       onClick={onClick}
-      className="w-full bg-white border border-[#e8e8e0] rounded-xl p-4 text-left hover:border-[#1a1a18] hover:shadow-sm transition-all duration-150 cursor-pointer group"
+      className="w-full bg-(--color-surface) border border-(--color-border) rounded-xl p-4 text-left hover:border-(--color-ink) hover:shadow-sm transition-all duration-150 cursor-pointer group"
     >
       {/* Avatar + name */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-[#f5f5f2] flex items-center justify-center shrink-0 group-hover:bg-[#1a1a18] transition-colors">
+          <div className="w-10 h-10 rounded-full bg-(--color-subtle) flex items-center justify-center shrink-0 group-hover:bg-(--color-ink) transition-colors">
             <span className="text-[14px] font-bold text-[#6a6a60] group-hover:text-white transition-colors">
               {emp.govUsername[0]?.toUpperCase()}
             </span>
           </div>
           <div className="min-w-0">
-            <p className="text-[13px] font-semibold text-[#1a1a18] truncate">
+            <p className="text-[13px] font-semibold text-(--color-ink) truncate">
               {fullName || emp.govUsername}
             </p>
-            <p className="text-[10px] text-[#8a8a80] font-mono">{emp.govUsername}</p>
+            <p className="text-[10px] text-(--color-muted) font-mono">{emp.govUsername}</p>
           </div>
         </div>
         <ArrowUpRight
           size={14}
-          className="text-[#c4c4b8] group-hover:text-[#1a1a18] transition-colors shrink-0 mt-0.5"
+          className="text-(--color-placeholder) group-hover:text-(--color-ink) transition-colors shrink-0 mt-0.5"
         />
       </div>
 
@@ -82,7 +82,7 @@ function StaffCard({
       <div className="mt-3 flex items-center gap-2 flex-wrap">
         <span
           className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${
-            ROLE_COLOR[emp.role] ?? "bg-[#f5f5f2] text-[#6a6a60]"
+            ROLE_COLOR[emp.role] ?? "bg-(--color-subtle) text-[#6a6a60]"
           }`}
         >
           {ROLE_LABEL[emp.role] ?? emp.role}
@@ -92,23 +92,23 @@ function StaffCard({
       {/* Area assignment */}
       <div className="mt-2.5 space-y-1">
         {lgu ? (
-          <div className="flex items-center gap-1.5 text-[11px] text-[#8a8a80]">
-            <Landmark size={10} className="text-[#c4c4b8] shrink-0" />
+          <div className="flex items-center gap-1.5 text-[11px] text-(--color-muted)">
+            <Landmark size={10} className="text-(--color-placeholder) shrink-0" />
             <span className="truncate">{lgu.name}</span>
           </div>
         ) : (
-          <div className="flex items-center gap-1.5 text-[11px] text-[#c4c4b8]">
+          <div className="flex items-center gap-1.5 text-[11px] text-(--color-placeholder)">
             <Landmark size={10} className="shrink-0" />
             <span>No LGU assigned</span>
           </div>
         )}
         {barangay ? (
-          <div className="flex items-center gap-1.5 text-[11px] text-[#8a8a80]">
-            <MapPin size={10} className="text-[#c4c4b8] shrink-0" />
+          <div className="flex items-center gap-1.5 text-[11px] text-(--color-muted)">
+            <MapPin size={10} className="text-(--color-placeholder) shrink-0" />
             <span className="truncate">{barangay.name}</span>
           </div>
         ) : (
-          <div className="flex items-center gap-1.5 text-[11px] text-[#c4c4b8]">
+          <div className="flex items-center gap-1.5 text-[11px] text-(--color-placeholder)">
             <MapPin size={10} className="shrink-0" />
             <span>No barangay assigned</span>
           </div>
@@ -181,8 +181,8 @@ export default function StaffPage({ userData }: { userData: me }) {
 
   if (isLoading) {
     return (
-      <main className="p-6 bg-[#fafaf8] min-h-screen flex items-center justify-center">
-        <div className="flex items-center gap-2 text-[#8a8a80]">
+      <main className="p-6 bg-(--color-bg) min-h-screen flex items-center justify-center">
+        <div className="flex items-center gap-2 text-(--color-muted)">
           <Loader2 size={16} className="animate-spin" />
           <span className="text-[13px]">Loading staff…</span>
         </div>
@@ -192,13 +192,13 @@ export default function StaffPage({ userData }: { userData: me }) {
 
   if (myOfficeId === null) {
     return (
-      <main className="p-6 bg-[#fafaf8] min-h-screen flex items-center justify-center">
-        <div className="bg-white border border-[#e8e8e0] rounded-xl p-8 max-w-md w-full flex flex-col items-center gap-3 text-center">
+      <main className="p-6 bg-(--color-bg) min-h-screen flex items-center justify-center">
+        <div className="bg-(--color-surface) border border-(--color-border) rounded-xl p-8 max-w-md w-full flex flex-col items-center gap-3 text-center">
           <div className="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center">
             <AlertCircle size={18} className="text-amber-500" />
           </div>
-          <p className="text-[15px] font-semibold text-[#1a1a18]">No Office Assigned</p>
-          <p className="text-[13px] text-[#8a8a80]">
+          <p className="text-[15px] font-semibold text-(--color-ink)">No Office Assigned</p>
+          <p className="text-[13px] text-(--color-muted)">
             You are not assigned to an operations office yet.
           </p>
         </div>
@@ -207,7 +207,7 @@ export default function StaffPage({ userData }: { userData: me }) {
   }
 
   return (
-    <main className="p-6 bg-[#fafaf8] min-h-screen font-sans antialiased">
+    <main className="p-6 bg-(--color-bg) min-h-screen font-sans antialiased">
       <div className="max-w-full mx-auto flex flex-col gap-5">
 
         {/* ── Header ───────────────────────────────────────────────────────── */}
@@ -217,24 +217,24 @@ export default function StaffPage({ userData }: { userData: me }) {
               <button
                 type="button"
                 onClick={() => navigate("/operations/my-office")}
-                className="text-[11px] text-[#8a8a80] hover:text-[#1a1a18] transition-colors cursor-pointer bg-transparent border-none"
+                className="text-[11px] text-(--color-muted) hover:text-(--color-ink) transition-colors cursor-pointer bg-transparent border-none"
               >
                 My Office
               </button>
-              <span className="text-[#c4c4b8] text-[11px]">/</span>
-              <span className="text-[11px] text-[#1a1a18] font-medium">Staff</span>
+              <span className="text-(--color-placeholder) text-[11px]">/</span>
+              <span className="text-[11px] text-(--color-ink) font-medium">Staff</span>
             </div>
-            <h1 className="text-[22px] font-semibold text-[#1a1a18] tracking-tight">
+            <h1 className="text-[22px] font-semibold text-(--color-ink) tracking-tight">
               Staff
             </h1>
             {myOffice && (
-              <p className="text-[12px] text-[#8a8a80] mt-0.5">{myOffice.name}</p>
+              <p className="text-[12px] text-(--color-muted) mt-0.5">{myOffice.name}</p>
             )}
           </div>
-          <div className="flex items-center gap-2 bg-white border border-[#e8e8e0] rounded-xl px-4 py-2.5">
-            <Users size={14} className="text-[#8a8a80]" />
-            <span className="text-[13px] font-semibold text-[#1a1a18]">{myStaff.length}</span>
-            <span className="text-[12px] text-[#8a8a80]">members</span>
+          <div className="flex items-center gap-2 bg-(--color-surface) border border-(--color-border) rounded-xl px-4 py-2.5">
+            <Users size={14} className="text-(--color-muted)" />
+            <span className="text-[13px] font-semibold text-(--color-ink)">{myStaff.length}</span>
+            <span className="text-[12px] text-(--color-muted)">members</span>
           </div>
         </div>
 
@@ -246,7 +246,7 @@ export default function StaffPage({ userData }: { userData: me }) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by name, username, or role…"
-            className="w-full pl-9 pr-9 py-2.5 text-[13px] border border-[#e8e8e0] rounded-xl text-[#1a1a18] placeholder-[#c4c4b8] bg-white focus:outline-none focus:ring-2 focus:ring-[#1a1a18] focus:border-transparent hover:border-[#c8c8c0] transition-colors"
+            className="w-full pl-9 pr-9 py-2.5 text-[13px] border border-(--color-border) rounded-xl text-(--color-ink) placeholder-(--color-placeholder) bg-(--color-surface) focus:outline-none focus:ring-2 focus:ring-(--color-ink) focus:border-transparent hover:border-(--color-border-hover) transition-colors"
           />
           {search && (
             <button
@@ -261,18 +261,18 @@ export default function StaffPage({ userData }: { userData: me }) {
 
         {/* ── Staff grid ───────────────────────────────────────────────────── */}
         {myStaff.length === 0 ? (
-          <div className="bg-white border border-[#e8e8e0] rounded-xl py-16 flex flex-col items-center gap-2 text-[#c4c4b8]">
+          <div className="bg-(--color-surface) border border-(--color-border) rounded-xl py-16 flex flex-col items-center gap-2 text-(--color-placeholder)">
             <Users size={24} />
             <p className="text-[13px]">No staff assigned to this office</p>
           </div>
         ) : filteredStaff.length === 0 ? (
-          <div className="bg-white border border-[#e8e8e0] rounded-xl py-16 flex flex-col items-center gap-2 text-[#c4c4b8]">
+          <div className="bg-(--color-surface) border border-(--color-border) rounded-xl py-16 flex flex-col items-center gap-2 text-(--color-placeholder)">
             <Search size={22} />
             <p className="text-[13px]">No staff match &ldquo;{search}&rdquo;</p>
             <button
               type="button"
               onClick={() => setSearch("")}
-              className="text-[12px] text-[#8a8a80] hover:text-[#1a1a18] transition-colors cursor-pointer bg-transparent border-none"
+              className="text-[12px] text-(--color-muted) hover:text-(--color-ink) transition-colors cursor-pointer bg-transparent border-none"
             >
               Clear search
             </button>
@@ -280,7 +280,7 @@ export default function StaffPage({ userData }: { userData: me }) {
         ) : (
           <>
             {search && (
-              <p className="text-[12px] text-[#8a8a80]">
+              <p className="text-[12px] text-(--color-muted)">
                 {filteredStaff.length} result{filteredStaff.length !== 1 ? "s" : ""} for &ldquo;{search}&rdquo;
               </p>
             )}

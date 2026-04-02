@@ -127,13 +127,13 @@ export default function IndexPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafaf8] text-[#1a1a18] font-sans antialiased">
+    <div className="min-h-screen bg-(--color-bg) text-(--color-ink) font-sans antialiased">
 
       {/* NAV */}
-      <nav className="sticky top-0 z-50 bg-[#fafaf8]/90 backdrop-blur-md border-b border-[#e8e8e0] h-15 flex items-center justify-between px-6 sm:px-10">
+      <nav className="sticky top-0 z-50 bg-(--color-bg)/90 backdrop-blur-md border-b border-(--color-border) h-15 flex items-center justify-between px-6 sm:px-10">
         <a
           href="#"
-          className="flex items-center gap-2.5 text-[17px] font-semibold tracking-tight no-underline text-[#1a1a18]"
+          className="flex items-center gap-2.5 text-[17px] font-semibold tracking-tight no-underline text-(--color-ink)"
         >
           <img src="/nathracker_icon_v9.svg" alt="NathRacker" className="w-10 h-10" />
           NathRacker
@@ -141,13 +141,13 @@ export default function IndexPage() {
         <div className="flex items-center gap-1.5">
           <button
             onClick={() => (window.location.href = "/login")}
-            className="px-4 py-2 rounded-lg text-sm font-medium text-[#8a8a80] hover:bg-[#e8e8e0] hover:text-[#1a1a18] transition-colors cursor-pointer"
+            className="px-4 py-2 rounded-lg text-sm font-medium text-(--color-muted) hover:bg-(--color-border) hover:text-(--color-ink) transition-colors cursor-pointer"
           >
             Log in
           </button>
           <button
             onClick={() => (window.location.href = "/register")}
-            className="px-4 py-2 rounded-lg text-sm font-medium bg-[#1a1a18] text-white hover:bg-[#333] transition-colors cursor-pointer"
+            className="px-4 py-2 rounded-lg text-sm font-medium bg-(--color-ink) text-(--color-bg) hover:opacity-85 transition-colors cursor-pointer"
           >
             Get started
           </button>
@@ -160,28 +160,28 @@ export default function IndexPage() {
           <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse" />
           Record Management System
         </div>
-        <h1 className="text-[clamp(36px,7vw,64px)] font-semibold tracking-[-0.04em] leading-[1.08] text-[#1a1a18] mb-6">
+        <h1 className="text-[clamp(36px,7vw,64px)] font-semibold tracking-[-0.04em] leading-[1.08] text-(--color-ink) mb-6">
           Track and manage
           <br />
           your records,{" "}
-          <em className="not-italic font-light text-[#8a8a80]">
+          <em className="not-italic font-light text-(--color-muted)">
             all in one place.
           </em>
         </h1>
-        <p className="text-[18px] text-[#8a8a80] leading-[1.65] max-w-120 mx-auto mb-10 font-normal">
+        <p className="text-[18px] text-(--color-muted) leading-[1.65] max-w-120 mx-auto mb-10 font-normal">
           NathRacker gives your team a single platform to log, search, verify,
           and manage records — organized, auditable, and always up to date.
         </p>
         <div className="flex gap-2.5 justify-center flex-wrap">
           <button
             onClick={() => (window.location.href = "/register")}
-            className="px-7 py-3 rounded-[10px] text-[15px] font-medium bg-[#1a1a18] text-white hover:bg-[#333] transition-colors cursor-pointer"
+            className="px-7 py-3 rounded-[10px] text-[15px] font-medium bg-(--color-ink) text-(--color-bg) hover:opacity-85 transition-colors cursor-pointer"
           >
             Get started →
           </button>
           <button
             onClick={() => (window.location.href = "/login")}
-            className="px-7 py-3 rounded-[10px] text-[15px] font-medium bg-transparent text-[#1a1a18] border border-[#e8e8e0] hover:border-[#1a1a18] transition-colors cursor-pointer"
+            className="px-7 py-3 rounded-[10px] text-[15px] font-medium bg-transparent text-(--color-ink) border border-(--color-border) hover:border-(--color-ink) transition-colors cursor-pointer"
           >
             Sign in
           </button>
@@ -197,15 +197,15 @@ export default function IndexPage() {
           {capabilities.map((c) => (
             <div
               key={c.title}
-              className="bg-white border border-[#e8e8e0] rounded-xl p-6 hover:-translate-y-0.5 hover:shadow-[0_8px_30px_rgba(0,0,0,0.07)] transition-all duration-200"
+              className="bg-(--color-surface) border border-(--color-border) rounded-xl p-6 hover:-translate-y-0.5 hover:shadow-[0_8px_30px_rgba(0,0,0,0.07)] transition-all duration-200"
             >
               <div className={`w-9 h-9 ${c.iconBg} rounded-xl flex items-center justify-center mb-4`}>
                 {c.icon}
               </div>
-              <h3 className="text-[15px] font-semibold tracking-tight text-[#1a1a18] mb-1.5">
+              <h3 className="text-[15px] font-semibold tracking-tight text-(--color-ink) mb-1.5">
                 {c.title}
               </h3>
-              <p className="text-[13px] text-[#8a8a80] leading-relaxed">
+              <p className="text-[13px] text-(--color-muted) leading-relaxed">
                 {c.desc}
               </p>
             </div>
@@ -216,18 +216,18 @@ export default function IndexPage() {
       {/* STATS */}
       <div
         ref={addReveal}
-        className="border-t border-b border-[#e8e8e0] bg-white opacity-0 translate-y-5 transition-all duration-700"
+        className="border-t border-b border-(--color-border) bg-(--color-surface) opacity-0 translate-y-5 transition-all duration-700"
       >
         <div className="max-w-250 mx-auto px-6 sm:px-10 grid grid-cols-2 md:grid-cols-4">
           {stats.map((s, i) => (
             <div
               key={s.label}
-              className={`py-10 ${i === 0 ? "pl-0" : "pl-8"} ${i < stats.length - 1 ? "border-r border-[#e8e8e0]" : ""}`}
+              className={`py-10 ${i === 0 ? "pl-0" : "pl-8"} ${i < stats.length - 1 ? "border-r border-(--color-border)" : ""}`}
             >
-              <div className="text-[36px] font-semibold tracking-[-0.04em] text-[#1a1a18] leading-none mb-1.5">
+              <div className="text-[36px] font-semibold tracking-[-0.04em] text-(--color-ink) leading-none mb-1.5">
                 {s.num}
               </div>
-              <div className="text-[13px] text-[#8a8a80]">{s.label}</div>
+              <div className="text-[13px] text-(--color-muted)">{s.label}</div>
             </div>
           ))}
         </div>
@@ -241,20 +241,20 @@ export default function IndexPage() {
         <div className="grid grid-cols-1 md:grid-cols-[1fr_1.4fr] gap-16 items-center">
           {/* Left — text */}
           <div>
-            <h2 className="text-[32px] font-semibold tracking-[-0.03em] leading-[1.2] text-[#1a1a18] mb-4">
+            <h2 className="text-[32px] font-semibold tracking-[-0.03em] leading-[1.2] text-(--color-ink) mb-4">
               Import your existing
               <br />
-              <em className="not-italic font-light text-[#8a8a80]">
+              <em className="not-italic font-light text-(--color-muted)">
                 records instantly.
               </em>
             </h2>
-            <p className="text-[15px] text-[#8a8a80] leading-[1.7] mb-6">
+            <p className="text-[15px] text-(--color-muted) leading-[1.7] mb-6">
               Already have data in a spreadsheet? Upload a{" "}
-              <span className="font-mono text-[13px] bg-[#f0f0ec] text-[#1a1a18] px-1.5 py-0.5 rounded">
+              <span className="font-mono text-[13px] bg-[#f0f0ec] text-(--color-ink) px-1.5 py-0.5 rounded">
                 .csv
               </span>{" "}
               or{" "}
-              <span className="font-mono text-[13px] bg-[#f0f0ec] text-[#1a1a18] px-1.5 py-0.5 rounded">
+              <span className="font-mono text-[13px] bg-[#f0f0ec] text-(--color-ink) px-1.5 py-0.5 rounded">
                 .xlsx
               </span>{" "}
               file and bring your records straight into NathRacker — no
@@ -268,20 +268,20 @@ export default function IndexPage() {
                 "Preview all rows before confirming",
               ].map((item) => (
                 <div key={item} className="flex items-center gap-2.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#1a1a18] shrink-0" />
-                  <span className="text-[13.5px] text-[#8a8a80]">{item}</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-(--color-ink) shrink-0" />
+                  <span className="text-[13.5px] text-(--color-muted)">{item}</span>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Right — upload card mockup */}
-          <div className="bg-white border border-[#e8e8e0] rounded-2xl p-8">
+          <div className="bg-(--color-surface) border border-(--color-border) rounded-2xl p-8">
             {/* Drop zone */}
-            <div className="border-2 border-dashed border-[#e8e8e0] rounded-xl p-8 flex flex-col items-center justify-center text-center hover:border-[#c8c8c0] transition-colors mb-5">
-              <div className="w-10 h-10 bg-[#f5f5f2] rounded-xl flex items-center justify-center mb-3">
+            <div className="border-2 border-dashed border-(--color-border) rounded-xl p-8 flex flex-col items-center justify-center text-center hover:border-(--color-border-hover) transition-colors mb-5">
+              <div className="w-10 h-10 bg-(--color-subtle) rounded-xl flex items-center justify-center mb-3">
                 <svg
-                  className="w-5 h-5 text-[#8a8a80]"
+                  className="w-5 h-5 text-(--color-muted)"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -294,24 +294,24 @@ export default function IndexPage() {
                   />
                 </svg>
               </div>
-              <p className="text-[13px] font-medium text-[#1a1a18] mb-1">
+              <p className="text-[13px] font-medium text-(--color-ink) mb-1">
                 Drop your file here
               </p>
-              <p className="text-[12px] text-[#8a8a80] mb-3">
+              <p className="text-[12px] text-(--color-muted) mb-3">
                 .csv or .xlsx — max 10MB
               </p>
-              <button className="px-4 py-2 rounded-lg text-[12px] font-medium bg-[#f5f5f2] text-[#1a1a18] hover:bg-[#e8e8e0] transition-colors cursor-pointer border border-[#e8e8e0]">
+              <button className="px-4 py-2 rounded-lg text-[12px] font-medium bg-(--color-subtle) text-(--color-ink) hover:bg-(--color-border) transition-colors cursor-pointer border border-(--color-border)">
                 Browse file
               </button>
             </div>
 
             {/* Preview rows (static mockup) */}
-            <div className="border border-[#e8e8e0] rounded-xl overflow-hidden">
-              <div className="grid grid-cols-3 gap-2 px-4 py-2.5 bg-[#f5f5f2] border-b border-[#e8e8e0]">
+            <div className="border border-(--color-border) rounded-xl overflow-hidden">
+              <div className="grid grid-cols-3 gap-2 px-4 py-2.5 bg-(--color-subtle) border-b border-(--color-border)">
                 {["Record ID", "Name", "Status"].map((h) => (
                   <span
                     key={h}
-                    className="text-[11px] font-medium text-[#8a8a80] uppercase tracking-wider"
+                    className="text-[11px] font-medium text-(--color-muted) uppercase tracking-wider"
                   >
                     {h}
                   </span>
@@ -324,12 +324,12 @@ export default function IndexPage() {
               ].map(([id, name, status]) => (
                 <div
                   key={id}
-                  className="grid grid-cols-3 gap-2 px-4 py-2.5 border-b border-[#e8e8e0] last:border-none"
+                  className="grid grid-cols-3 gap-2 px-4 py-2.5 border-b border-(--color-border) last:border-none"
                 >
-                  <span className="text-[12px] font-mono text-[#1a1a18]">
+                  <span className="text-[12px] font-mono text-(--color-ink)">
                     {id}
                   </span>
-                  <span className="text-[12px] text-[#1a1a18]">{name}</span>
+                  <span className="text-[12px] text-(--color-ink)">{name}</span>
                   <span
                     className={`text-[11px] font-medium ${status === "Ready" ? "text-emerald-600" : "text-amber-600"}`}
                   >
@@ -340,7 +340,7 @@ export default function IndexPage() {
             </div>
 
             {/* Confirm button */}
-            <button className="w-full mt-4 py-2.5 rounded-lg text-[13px] font-medium bg-[#1a1a18] text-white hover:bg-[#333] transition-colors cursor-pointer">
+            <button className="w-full mt-4 py-2.5 rounded-lg text-[13px] font-medium bg-(--color-ink) text-(--color-bg) hover:opacity-85 transition-colors cursor-pointer">
               Confirm import →
             </button>
           </div>
@@ -353,10 +353,10 @@ export default function IndexPage() {
         className="max-w-250 mx-auto px-6 sm:px-10 py-20 grid grid-cols-1 md:grid-cols-[1fr_1.6fr] gap-20 items-start opacity-0 translate-y-5 transition-all duration-700"
       >
         <div>
-          <h2 className="text-[32px] font-semibold tracking-[-0.03em] leading-[1.2] text-[#1a1a18] mb-3.5">
+          <h2 className="text-[32px] font-semibold tracking-[-0.03em] leading-[1.2] text-(--color-ink) mb-3.5">
             Everything you need to stay on top of your records.
           </h2>
-          <p className="text-[15px] text-[#8a8a80] leading-[1.7]">
+          <p className="text-[15px] text-(--color-muted) leading-[1.7]">
             Designed around how teams actually work — fast entry, clear
             filters, and full visibility for everyone who needs it.
           </p>
@@ -365,16 +365,16 @@ export default function IndexPage() {
           {features.map((f, i) => (
             <div
               key={f.num}
-              className={`flex gap-4 py-5.5 ${i < features.length - 1 ? "border-b border-[#e8e8e0]" : ""} ${i === 0 ? "pt-0" : ""}`}
+              className={`flex gap-4 py-5.5 ${i < features.length - 1 ? "border-b border-(--color-border)" : ""} ${i === 0 ? "pt-0" : ""}`}
             >
-              <span className="font-mono text-[11px] text-[#e8e8e0] pt-1 min-w-6">
+              <span className="font-mono text-[11px] text-(--color-border) pt-1 min-w-6">
                 {f.num}
               </span>
               <div>
-                <h4 className="text-[15px] font-semibold text-[#1a1a18] mb-1 tracking-tight">
+                <h4 className="text-[15px] font-semibold text-(--color-ink) mb-1 tracking-tight">
                   {f.title}
                 </h4>
-                <p className="text-[13.5px] text-[#8a8a80] leading-relaxed">
+                <p className="text-[13.5px] text-(--color-muted) leading-relaxed">
                   {f.desc}
                 </p>
               </div>
@@ -384,32 +384,32 @@ export default function IndexPage() {
       </section>
 
       {/* DIVIDER */}
-      <div className="max-w-250 mx-auto h-px bg-[#e8e8e0]" />
+      <div className="max-w-250 mx-auto h-px bg-(--color-border)" />
 
       {/* CTA */}
       <section
         ref={addReveal}
         className="max-w-250 mx-auto px-6 sm:px-10 py-24 flex flex-col md:flex-row justify-between items-start md:items-center gap-10 opacity-0 translate-y-5 transition-all duration-700"
       >
-        <h2 className="text-[clamp(28px,4vw,42px)] font-semibold tracking-[-0.03em] leading-[1.15] text-[#1a1a18] max-w-100">
+        <h2 className="text-[clamp(28px,4vw,42px)] font-semibold tracking-[-0.03em] leading-[1.15] text-(--color-ink) max-w-100">
           Ready to take control of{" "}
-          <em className="not-italic font-light text-[#8a8a80]">
+          <em className="not-italic font-light text-(--color-muted)">
             your records?
           </em>
         </h2>
         <div className="flex flex-col gap-2.5 items-start shrink-0">
-          <p className="text-[14px] text-[#8a8a80]">
+          <p className="text-[14px] text-(--color-muted)">
             Free to use. No setup required.
           </p>
           <button
             onClick={() => (window.location.href = "/register")}
-            className="px-7 py-3 rounded-lg text-[15px] font-medium bg-[#1a1a18] text-white hover:bg-[#333] transition-colors cursor-pointer"
+            className="px-7 py-3 rounded-lg text-[15px] font-medium bg-(--color-ink) text-(--color-bg) hover:opacity-85 transition-colors cursor-pointer"
           >
             Create an account →
           </button>
           <button
             onClick={() => (window.location.href = "/login")}
-            className="text-[14px] text-[#8a8a80] hover:text-[#1a1a18] transition-colors cursor-pointer bg-transparent border-none p-0"
+            className="text-[14px] text-(--color-muted) hover:text-(--color-ink) transition-colors cursor-pointer bg-transparent border-none p-0"
           >
             Already have one? Sign in
           </button>
@@ -417,21 +417,21 @@ export default function IndexPage() {
       </section>
 
       {/* FOOTER */}
-      <footer className="border-t border-[#e8e8e0] px-6 sm:px-10 py-7 max-w-250 mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+      <footer className="border-t border-(--color-border) px-6 sm:px-10 py-7 max-w-250 mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
         <div className="flex items-center gap-2.5">
           <img src="/nathracker_icon_v9.svg" alt="NathRacker" className="w-7 h-7" />
-          <p className="text-[13px] text-[#8a8a80]">© 2026 NathRacker</p>
+          <p className="text-[13px] text-(--color-muted)">© 2026 NathRacker</p>
         </div>
         <div className="flex gap-5">
           <a
             href="/login"
-            className="text-[13px] text-[#8a8a80] hover:text-[#1a1a18] transition-colors no-underline"
+            className="text-[13px] text-(--color-muted) hover:text-(--color-ink) transition-colors no-underline"
           >
             Login
           </a>
           <a
             href="/register"
-            className="text-[13px] text-[#8a8a80] hover:text-[#1a1a18] transition-colors no-underline"
+            className="text-[13px] text-(--color-muted) hover:text-(--color-ink) transition-colors no-underline"
           >
             Register
           </a>

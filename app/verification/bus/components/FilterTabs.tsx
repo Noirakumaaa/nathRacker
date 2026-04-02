@@ -11,7 +11,7 @@ type Props = {
 
 export function FilterTabs({ tabs, active, counts, onChange }: Props) {
   return (
-    <div className="flex items-center gap-1 bg-white border border-[#e8e8e0] rounded-xl p-1 w-fit">
+    <div className="flex items-center gap-1 bg-(--color-surface) border border-(--color-border) rounded-xl p-1 w-fit">
       {tabs.map((tab) => (
         <button
           key={tab.id}
@@ -19,16 +19,16 @@ export function FilterTabs({ tabs, active, counts, onChange }: Props) {
           onClick={() => onChange(tab.id)}
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-medium transition-all duration-150 cursor-pointer border-none ${
             active === tab.id
-              ? "bg-[#1a1a18] text-white"
-              : "text-[#6a6a60] hover:text-[#1a1a18] hover:bg-[#f0f0ec]"
+              ? "bg-(--color-ink) text-(--color-bg)"
+              : "text-[#6a6a60] hover:text-(--color-ink) hover:bg-[#f0f0ec]"
           }`}
         >
           {tab.label}
           <span
             className={`text-[10px] px-1.5 py-0.5 rounded-full font-semibold ${
               active === tab.id
-                ? "bg-white/20 text-white"
-                : "bg-[#f0f0ec] text-[#8a8a80]"
+                ? "bg-(--color-surface)/20 text-white"
+                : "bg-[#f0f0ec] text-(--color-muted)"
             }`}
           >
             {counts[tab.id]}

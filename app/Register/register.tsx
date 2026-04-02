@@ -83,11 +83,11 @@ export default function RegisterForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-white rounded-xl border border-[#e8e8e0] overflow-hidden"
+      className="bg-(--color-surface) rounded-xl border border-(--color-border) overflow-hidden"
     >
       {/* Header */}
-      <div className="px-6 py-4 border-b border-[#e8e8e0] flex items-center justify-between">
-        <p className="text-[11px] font-medium text-[#8a8a80] uppercase tracking-wider">
+      <div className="px-6 py-4 border-b border-(--color-border) flex items-center justify-between">
+        <p className="text-[11px] font-medium text-(--color-muted) uppercase tracking-wider">
           New Account Registration
         </p>
         <div className="flex items-center gap-2">
@@ -95,8 +95,8 @@ export default function RegisterForm() {
             <span className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block shrink-0" />
             Required
           </span>
-          <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-[#8a8a80] bg-[#f5f5f2] border border-[#e8e8e0] px-2 py-1 rounded-md uppercase tracking-wide">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#c4c4b8] inline-block shrink-0" />
+          <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-(--color-muted) bg-(--color-subtle) border border-(--color-border) px-2 py-1 rounded-md uppercase tracking-wide">
+            <span className="w-1.5 h-1.5 rounded-full bg-(--color-placeholder) inline-block shrink-0" />
             Optional
           </span>
         </div>
@@ -107,8 +107,8 @@ export default function RegisterForm() {
 
           {/* Column 1 — Personal Info */}
           <div className="space-y-4">
-            <div className="pb-2 border-b border-[#e8e8e0]">
-              <h3 className="text-[11px] font-semibold text-[#1a1a18] uppercase tracking-wider">
+            <div className="pb-2 border-b border-(--color-border)">
+              <h3 className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">
                 Personal Information
               </h3>
             </div>
@@ -177,8 +177,8 @@ export default function RegisterForm() {
 
           {/* Column 2 — Account Credentials */}
           <div className="space-y-4">
-            <div className="pb-2 border-b border-[#e8e8e0]">
-              <h3 className="text-[11px] font-semibold text-[#1a1a18] uppercase tracking-wider">
+            <div className="pb-2 border-b border-(--color-border)">
+              <h3 className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">
                 Account Credentials
               </h3>
             </div>
@@ -231,7 +231,7 @@ export default function RegisterForm() {
                   <button
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8a8a80] hover:text-[#1a1a18] transition-colors text-[11px] font-medium uppercase tracking-wide"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-(--color-muted) hover:text-(--color-ink) transition-colors text-[11px] font-medium uppercase tracking-wide"
                   >
                     {showPassword ? "Hide" : "Show"}
                   </button>
@@ -242,8 +242,8 @@ export default function RegisterForm() {
 
           {/* Column 3 — Role & Assignment */}
           <div className="space-y-4">
-            <div className="pb-2 border-b border-[#e8e8e0]">
-              <h3 className="text-[11px] font-semibold text-[#1a1a18] uppercase tracking-wider">
+            <div className="pb-2 border-b border-(--color-border)">
+              <h3 className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">
                 Role & Assignment
               </h3>
             </div>
@@ -312,20 +312,20 @@ export default function RegisterForm() {
               </div>
 
               {/* Role hint card */}
-              <div className="rounded-lg border border-[#e8e8e0] bg-[#f8f8f4] p-3 mt-1">
-                <p className="text-[10px] font-semibold text-[#8a8a80] uppercase tracking-wider mb-1.5">
+              <div className="rounded-lg border border-(--color-border) bg-[#f8f8f4] p-3 mt-1">
+                <p className="text-[10px] font-semibold text-(--color-muted) uppercase tracking-wider mb-1.5">
                   Role Reference
                 </p>
                 <div className="space-y-1">
                   <div className="flex items-start gap-2">
-                    <span className="mt-0.5 w-1.5 h-1.5 rounded-full bg-[#1a1a18] shrink-0" />
-                    <p className="text-[11px] text-[#1a1a18]">
+                    <span className="mt-0.5 w-1.5 h-1.5 rounded-full bg-(--color-ink) shrink-0" />
+                    <p className="text-[11px] text-(--color-ink)">
                       <span className="font-semibold">ENCODER</span> — Can input and manage records
                     </p>
                   </div>
                   <div className="flex items-start gap-2">
-                    <span className="mt-0.5 w-1.5 h-1.5 rounded-full bg-[#1a1a18] shrink-0" />
-                    <p className="text-[11px] text-[#1a1a18]">
+                    <span className="mt-0.5 w-1.5 h-1.5 rounded-full bg-(--color-ink) shrink-0" />
+                    <p className="text-[11px] text-(--color-ink)">
                       <span className="font-semibold">ADMIN</span> — Full system access
                     </p>
                   </div>
@@ -336,7 +336,7 @@ export default function RegisterForm() {
                 <button
                   type="submit"
                   disabled={buttonLoading}
-                  className="flex-1 h-10 bg-[#1a1a18] text-white text-[13px] font-medium rounded-lg hover:bg-[#333] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                  className="flex-1 h-10 bg-(--color-ink) text-(--color-bg) text-[13px] font-medium rounded-lg hover:opacity-85 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                   {buttonLoading ? "Creating…" : "Create Account →"}
                 </button>
@@ -344,7 +344,7 @@ export default function RegisterForm() {
                   type="button"
                   onClick={handleReset}
                   disabled={buttonLoading}
-                  className="flex-1 h-10 bg-transparent text-[#1a1a18] text-[13px] font-medium rounded-lg border border-[#e8e8e0] hover:border-[#1a1a18] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                  className="flex-1 h-10 bg-transparent text-(--color-ink) text-[13px] font-medium rounded-lg border border-(--color-border) hover:border-(--color-ink) transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                   Cancel
                 </button>

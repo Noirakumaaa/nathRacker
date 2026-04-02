@@ -48,13 +48,13 @@ function StatCard({
   sub?: string;
 }) {
   return (
-    <div className="bg-white border border-[#e8e8e0] rounded-xl p-4 flex items-start gap-3">
+    <div className="bg-(--color-surface) border border-(--color-border) rounded-xl p-4 flex items-start gap-3">
       <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${iconBg}`}>
         <Icon size={16} className="opacity-70" />
       </div>
       <div>
-        <p className="text-[11px] font-medium text-[#8a8a80] uppercase tracking-wider">{label}</p>
-        <p className="text-[22px] font-semibold text-[#1a1a18] leading-tight mt-0.5">{value}</p>
+        <p className="text-[11px] font-medium text-(--color-muted) uppercase tracking-wider">{label}</p>
+        <p className="text-[22px] font-semibold text-(--color-ink) leading-tight mt-0.5">{value}</p>
         {sub && <p className="text-[11px] text-[#b8b8b0] mt-0.5">{sub}</p>}
       </div>
     </div>
@@ -66,11 +66,11 @@ function MonthlyTotals({ month, year }: { month: number; year: number }) {
   const { data, isLoading } = useMonthlySummary(month, year);
 
   return (
-    <div className="bg-white border border-[#e8e8e0] rounded-xl overflow-hidden">
-      <div className="px-5 py-3.5 border-b border-[#e8e8e0] flex items-center justify-between">
+    <div className="bg-(--color-surface) border border-(--color-border) rounded-xl overflow-hidden">
+      <div className="px-5 py-3.5 border-b border-(--color-border) flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <FileText size={14} className="text-[#8a8a80]" />
-          <p className="text-[11px] font-semibold text-[#1a1a18] uppercase tracking-wider">
+          <FileText size={14} className="text-(--color-muted)" />
+          <p className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">
             This Month — {MONTHS[month - 1]} {year}
           </p>
         </div>
@@ -78,15 +78,15 @@ function MonthlyTotals({ month, year }: { month: number; year: number }) {
       </div>
       <div className="grid grid-cols-3 divide-x divide-[#f0f0ec]">
         <div className="px-5 py-4 text-center">
-          <p className="text-[10px] font-medium text-[#8a8a80] uppercase tracking-wider mb-1">
+          <p className="text-[10px] font-medium text-(--color-muted) uppercase tracking-wider mb-1">
             Encoded
           </p>
-          <p className="text-[24px] font-semibold text-[#1a1a18]">
+          <p className="text-[24px] font-semibold text-(--color-ink)">
             {isLoading ? "—" : (data?.totals.encoded ?? 0)}
           </p>
         </div>
         <div className="px-5 py-4 text-center">
-          <p className="text-[10px] font-medium text-[#8a8a80] uppercase tracking-wider mb-1">
+          <p className="text-[10px] font-medium text-(--color-muted) uppercase tracking-wider mb-1">
             Updated
           </p>
           <p className="text-[24px] font-semibold text-blue-600">
@@ -94,7 +94,7 @@ function MonthlyTotals({ month, year }: { month: number; year: number }) {
           </p>
         </div>
         <div className="px-5 py-4 text-center">
-          <p className="text-[10px] font-medium text-[#8a8a80] uppercase tracking-wider mb-1">
+          <p className="text-[10px] font-medium text-(--color-muted) uppercase tracking-wider mb-1">
             Issues
           </p>
           <p className="text-[24px] font-semibold text-amber-500">
@@ -119,22 +119,22 @@ function LguCard({
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="bg-white border border-[#e8e8e0] rounded-xl overflow-hidden">
-      <div className="px-4 py-3 border-b border-[#e8e8e0] flex items-center justify-between">
+    <div className="bg-(--color-surface) border border-(--color-border) rounded-xl overflow-hidden">
+      <div className="px-4 py-3 border-b border-(--color-border) flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <div className="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center shrink-0">
             <Landmark size={13} className="text-indigo-600" />
           </div>
           <div>
-            <p className="text-[13px] font-semibold text-[#1a1a18]">{lgu.name}</p>
-            <p className="text-[10px] text-[#8a8a80]">LGU ID #{lgu.id}</p>
+            <p className="text-[13px] font-semibold text-(--color-ink)">{lgu.name}</p>
+            <p className="text-[10px] text-(--color-muted)">LGU ID #{lgu.id}</p>
           </div>
         </div>
         <div className="flex items-center gap-1.5">
-          <span className="text-[10px] text-[#8a8a80] font-mono bg-[#f5f5f2] px-2 py-0.5 rounded-full whitespace-nowrap">
+          <span className="text-[10px] text-(--color-muted) font-mono bg-(--color-subtle) px-2 py-0.5 rounded-full whitespace-nowrap">
             {barangays.length} brgy
           </span>
-          <span className="text-[10px] text-[#8a8a80] font-mono bg-[#f5f5f2] px-2 py-0.5 rounded-full whitespace-nowrap">
+          <span className="text-[10px] text-(--color-muted) font-mono bg-(--color-subtle) px-2 py-0.5 rounded-full whitespace-nowrap">
             {members.length} staff
           </span>
         </div>
@@ -146,7 +146,7 @@ function LguCard({
           {members.map((e) => (
             <span
               key={e.id}
-              className="text-[10px] font-mono bg-[#f5f5f2] text-[#6a6a60] px-2 py-0.5 rounded-full"
+              className="text-[10px] font-mono bg-(--color-subtle) text-[#6a6a60] px-2 py-0.5 rounded-full"
               title={ROLE_LABEL[e.role] ?? e.role}
             >
               {e.govUsername}
@@ -158,9 +158,9 @@ function LguCard({
       <button
         type="button"
         onClick={() => setExpanded(!expanded)}
-        className="w-full px-4 py-2.5 flex items-center justify-between text-left hover:bg-[#fafaf8] transition-colors cursor-pointer"
+        className="w-full px-4 py-2.5 flex items-center justify-between text-left hover:bg-(--color-bg) transition-colors cursor-pointer"
       >
-        <span className="text-[11px] font-medium text-[#8a8a80] uppercase tracking-wider flex items-center gap-1.5">
+        <span className="text-[11px] font-medium text-(--color-muted) uppercase tracking-wider flex items-center gap-1.5">
           <MapPin size={11} />
           Barangays ({barangays.length})
         </span>
@@ -174,16 +174,16 @@ function LguCard({
       {expanded && (
         <div className="px-4 pb-3 grid grid-cols-2 gap-1.5">
           {barangays.length === 0 ? (
-            <p className="col-span-2 text-[12px] text-[#c4c4b8] text-center py-2">
+            <p className="col-span-2 text-[12px] text-(--color-placeholder) text-center py-2">
               No barangays registered
             </p>
           ) : (
             barangays.map((b) => (
               <div
                 key={b.id}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-[#fafaf8] border border-[#f0f0ec]"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-(--color-bg) border border-[#f0f0ec]"
               >
-                <MapPin size={10} className="text-[#c4c4b8] shrink-0" />
+                <MapPin size={10} className="text-(--color-placeholder) shrink-0" />
                 <span className="text-[11px] text-[#4a4a40] truncate">{b.name}</span>
               </div>
             ))
@@ -245,8 +245,8 @@ export default function MyOfficeDashboard({ userData }: { userData: me }) {
 
   if (isLoading) {
     return (
-      <main className="p-6 bg-[#fafaf8] min-h-screen flex items-center justify-center">
-        <div className="flex items-center gap-2 text-[#8a8a80]">
+      <main className="p-6 bg-(--color-bg) min-h-screen flex items-center justify-center">
+        <div className="flex items-center gap-2 text-(--color-muted)">
           <Loader2 size={16} className="animate-spin" />
           <span className="text-[13px]">Loading office data…</span>
         </div>
@@ -256,13 +256,13 @@ export default function MyOfficeDashboard({ userData }: { userData: me }) {
 
   if (myOfficeId === null) {
     return (
-      <main className="p-6 bg-[#fafaf8] min-h-screen flex items-center justify-center">
-        <div className="bg-white border border-[#e8e8e0] rounded-xl p-8 max-w-md w-full flex flex-col items-center gap-3 text-center">
+      <main className="p-6 bg-(--color-bg) min-h-screen flex items-center justify-center">
+        <div className="bg-(--color-surface) border border-(--color-border) rounded-xl p-8 max-w-md w-full flex flex-col items-center gap-3 text-center">
           <div className="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center">
             <AlertCircle size={18} className="text-amber-500" />
           </div>
-          <p className="text-[15px] font-semibold text-[#1a1a18]">No Office Assigned</p>
-          <p className="text-[13px] text-[#8a8a80]">
+          <p className="text-[15px] font-semibold text-(--color-ink)">No Office Assigned</p>
+          <p className="text-[13px] text-(--color-muted)">
             You have not been assigned to an operations office yet. Contact your
             administrator to set up your area assignment.
           </p>
@@ -272,25 +272,25 @@ export default function MyOfficeDashboard({ userData }: { userData: me }) {
   }
 
   return (
-    <main className="p-6 bg-[#fafaf8] min-h-screen font-sans antialiased">
+    <main className="p-6 bg-(--color-bg) min-h-screen font-sans antialiased">
       <div className="max-w-full mx-auto flex flex-col gap-5">
 
         {/* ── Page header ──────────────────────────────────────────────────── */}
         <div className="flex flex-col gap-1">
-          <p className="text-[11px] font-medium text-[#8a8a80] uppercase tracking-wider">
+          <p className="text-[11px] font-medium text-(--color-muted) uppercase tracking-wider">
             {ROLE_LABEL[userData.role] ?? userData.role}
           </p>
-          <h1 className="text-[22px] font-semibold text-[#1a1a18] tracking-tight">
+          <h1 className="text-[22px] font-semibold text-(--color-ink) tracking-tight">
             My Office
           </h1>
           <div className="flex items-center gap-2 mt-0.5">
-            <div className="w-5 h-5 rounded-md bg-[#1a1a18] flex items-center justify-center shrink-0">
+            <div className="w-5 h-5 rounded-md bg-(--color-ink) flex items-center justify-center shrink-0">
               <Building2 size={11} className="text-white" />
             </div>
-            <p className="text-[13px] font-medium text-[#1a1a18]">
+            <p className="text-[13px] font-medium text-(--color-ink)">
               {myOffice?.name ?? `Office #${myOfficeId}`}
             </p>
-            <span className="text-[11px] font-mono text-[#8a8a80] bg-[#f5f5f2] px-2 py-0.5 rounded-full">
+            <span className="text-[11px] font-mono text-(--color-muted) bg-(--color-subtle) px-2 py-0.5 rounded-full">
               ID #{myOfficeId}
             </span>
           </div>
@@ -327,16 +327,16 @@ export default function MyOfficeDashboard({ userData }: { userData: me }) {
         {/* ── LGU & Barangay section ────────────────────────────────────────── */}
         <div>
           <div className="flex items-center justify-between mb-3">
-            <p className="text-[11px] font-semibold text-[#1a1a18] uppercase tracking-wider">
+            <p className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">
               LGUs &amp; Barangays
             </p>
-            <span className="text-[11px] font-mono text-[#8a8a80] bg-[#f5f5f2] px-2.5 py-1 rounded-full">
+            <span className="text-[11px] font-mono text-(--color-muted) bg-(--color-subtle) px-2.5 py-1 rounded-full">
               {myLgus.length} LGU{myLgus.length !== 1 ? "s" : ""}
             </span>
           </div>
 
           {myLgus.length === 0 ? (
-            <div className="bg-white border border-[#e8e8e0] rounded-xl py-12 flex flex-col items-center gap-2 text-[#c4c4b8]">
+            <div className="bg-(--color-surface) border border-(--color-border) rounded-xl py-12 flex flex-col items-center gap-2 text-(--color-placeholder)">
               <Landmark size={22} />
               <p className="text-[13px]">No LGUs registered for this office</p>
             </div>
@@ -355,55 +355,55 @@ export default function MyOfficeDashboard({ userData }: { userData: me }) {
         </div>
 
         {/* ── Staff quick panel ─────────────────────────────────────────────── */}
-        <div className="bg-white border border-[#e8e8e0] rounded-xl overflow-hidden">
-          <div className="px-5 py-3.5 border-b border-[#e8e8e0] flex items-center justify-between">
+        <div className="bg-(--color-surface) border border-(--color-border) rounded-xl overflow-hidden">
+          <div className="px-5 py-3.5 border-b border-(--color-border) flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Users size={14} className="text-[#8a8a80]" />
-              <p className="text-[11px] font-semibold text-[#1a1a18] uppercase tracking-wider">
+              <Users size={14} className="text-(--color-muted)" />
+              <p className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">
                 Staff
               </p>
-              <span className="text-[10px] font-mono text-[#8a8a80] bg-[#f5f5f2] px-2 py-0.5 rounded-full">
+              <span className="text-[10px] font-mono text-(--color-muted) bg-(--color-subtle) px-2 py-0.5 rounded-full">
                 {myStaff.length}
               </span>
             </div>
             <button
               type="button"
               onClick={() => navigate("/operations/staff")}
-              className="flex items-center gap-1.5 text-[12px] font-medium text-[#1a1a18] hover:text-blue-600 transition-colors cursor-pointer bg-transparent border-none"
+              className="flex items-center gap-1.5 text-[12px] font-medium text-(--color-ink) hover:text-blue-600 transition-colors cursor-pointer bg-transparent border-none"
             >
               View All
               <ArrowUpRight size={12} />
             </button>
           </div>
-          <div className="divide-y divide-[#f5f5f2]">
+          <div className="divide-y divide-(--color-subtle)">
             {myStaff.slice(0, 5).map((emp) => (
               <button
                 key={emp.id}
                 type="button"
                 onClick={() => navigate(`/operations/staff/${emp.govUsername}`)}
-                className="w-full px-5 py-3 flex items-center justify-between hover:bg-[#fafaf8] transition-colors cursor-pointer text-left"
+                className="w-full px-5 py-3 flex items-center justify-between hover:bg-(--color-bg) transition-colors cursor-pointer text-left"
               >
                 <div className="flex items-center gap-2.5">
-                  <div className="w-7 h-7 rounded-full bg-[#f5f5f2] flex items-center justify-center shrink-0">
+                  <div className="w-7 h-7 rounded-full bg-(--color-subtle) flex items-center justify-center shrink-0">
                     <span className="text-[11px] font-bold text-[#6a6a60]">
                       {emp.govUsername[0]?.toUpperCase()}
                     </span>
                   </div>
                   <div>
-                    <p className="text-[13px] font-medium text-[#1a1a18]">
+                    <p className="text-[13px] font-medium text-(--color-ink)">
                       {emp.userInfo
                         ? `${emp.userInfo.firstName} ${emp.userInfo.lastName}`.trim() ||
                           emp.govUsername
                         : emp.govUsername}
                     </p>
-                    <p className="text-[10px] text-[#8a8a80] font-mono">{emp.govUsername}</p>
+                    <p className="text-[10px] text-(--color-muted) font-mono">{emp.govUsername}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#f5f5f2] text-[#6a6a60]">
+                  <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-(--color-subtle) text-[#6a6a60]">
                     {ROLE_LABEL[emp.role] ?? emp.role}
                   </span>
-                  <ArrowUpRight size={12} className="text-[#c4c4b8]" />
+                  <ArrowUpRight size={12} className="text-(--color-placeholder)" />
                 </div>
               </button>
             ))}
@@ -411,13 +411,13 @@ export default function MyOfficeDashboard({ userData }: { userData: me }) {
               <button
                 type="button"
                 onClick={() => navigate("/operations/staff")}
-                className="w-full px-5 py-3 text-center text-[12px] text-[#8a8a80] hover:text-[#1a1a18] hover:bg-[#fafaf8] transition-colors cursor-pointer"
+                className="w-full px-5 py-3 text-center text-[12px] text-(--color-muted) hover:text-(--color-ink) hover:bg-(--color-bg) transition-colors cursor-pointer"
               >
                 +{myStaff.length - 5} more — View all staff
               </button>
             )}
             {myStaff.length === 0 && (
-              <div className="py-8 flex flex-col items-center gap-1.5 text-[#c4c4b8]">
+              <div className="py-8 flex flex-col items-center gap-1.5 text-(--color-placeholder)">
                 <Users size={18} />
                 <p className="text-[12px]">No staff assigned to this office</p>
               </div>

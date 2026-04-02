@@ -94,10 +94,10 @@ export function CvsForm() {
 
   return (
     <>
-      <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-[#e8e8e0] overflow-hidden">
-        <div className="px-6 py-4 border-b border-[#e8e8e0] flex items-center justify-between">
-          <p className="text-[11px] font-medium text-[#8a8a80] uppercase tracking-wider">Fill in the form below</p>
-          <span className="text-[11px] text-[#c4c4b8] font-mono">* required</span>
+      <form onSubmit={handleSubmit} className="bg-(--color-surface) rounded-xl border border-(--color-border) overflow-hidden">
+        <div className="px-6 py-4 border-b border-(--color-border) flex items-center justify-between">
+          <p className="text-[11px] font-medium text-(--color-muted) uppercase tracking-wider">Fill in the form below</p>
+          <span className="text-[11px] text-(--color-placeholder) font-mono">* required</span>
         </div>
 
         <div className="p-6">
@@ -105,8 +105,8 @@ export function CvsForm() {
 
             {/* Column 1 — Basic Information */}
             <div className="space-y-4">
-              <div className="pb-2 border-b border-[#e8e8e0]">
-                <h3 className="text-[11px] font-semibold text-[#1a1a18] uppercase tracking-wider">Basic Information</h3>
+              <div className="pb-2 border-b border-(--color-border)">
+                <h3 className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">Basic Information</h3>
               </div>
               <div className="space-y-3.5">
                 <div>
@@ -134,8 +134,8 @@ export function CvsForm() {
 
             {/* Column 2 — Facility Details */}
             <div className="space-y-4">
-              <div className="pb-2 border-b border-[#e8e8e0]">
-                <h3 className="text-[11px] font-semibold text-[#1a1a18] uppercase tracking-wider">Facility Details</h3>
+              <div className="pb-2 border-b border-(--color-border)">
+                <h3 className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">Facility Details</h3>
               </div>
               <div className="space-y-3.5">
                 <div>
@@ -168,8 +168,8 @@ export function CvsForm() {
 
             {/* Column 3 — Remarks & Submit */}
             <div className="space-y-4">
-              <div className="pb-2 border-b border-[#e8e8e0]">
-                <h3 className="text-[11px] font-semibold text-[#1a1a18] uppercase tracking-wider">Remarks</h3>
+              <div className="pb-2 border-b border-(--color-border)">
+                <h3 className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">Remarks</h3>
               </div>
               <div className="space-y-3.5">
                 <div>
@@ -212,7 +212,7 @@ export function CvsForm() {
                   <button
                     type="submit"
                     disabled={buttonLoading}
-                    className="flex-1 h-10 bg-[#1a1a18] text-white text-[13px] font-medium rounded-lg hover:bg-[#333] transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1 h-10 bg-(--color-ink) text-(--color-bg) text-[13px] font-medium rounded-lg hover:opacity-85 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {buttonLoading ? "Submitting…" : "Submit →"}
                   </button>
@@ -220,7 +220,7 @@ export function CvsForm() {
                     type="button"
                     onClick={handleReset}
                     disabled={buttonLoading}
-                    className="flex-1 h-10 bg-transparent text-[#1a1a18] text-[13px] font-medium rounded-lg border border-[#e8e8e0] hover:border-[#1a1a18] transition-colors cursor-pointer disabled:opacity-50"
+                    className="flex-1 h-10 bg-transparent text-(--color-ink) text-[13px] font-medium rounded-lg border border-(--color-border) hover:border-(--color-ink) transition-colors cursor-pointer disabled:opacity-50"
                   >
                     Reset
                   </button>

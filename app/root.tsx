@@ -1,5 +1,7 @@
 // src/root.tsx
+import { useEffect } from "react";
 import { useToastStore } from "lib/zustand/ToastStore";
+import { useThemeStore } from "lib/zustand/ThemeStore";
 import { Toast, toastConfig } from "component/toastConfig";
 import {
   isRouteErrorResponse,
@@ -12,6 +14,7 @@ import {
 import type { Route } from "./+types/root";
 import "./app.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import APIFETCH from "lib/axios/axiosConfig";
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -37,7 +40,6 @@ export const links: Route.LinksFunction = () => [
 // root.tsx
 
 export function Layout({ children }: { children: React.ReactNode }) {
-  // ❌ removed useToastStore from here — causes SSR hydration mismatch
   return (
     <html lang="en">
       <head>
@@ -56,8 +58,39 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function Root() {
-  const { open, statusMessage, toastStatus } = useToastStore(); // ✅ client only
-  
+  const { open, statusMessage, toastStatus } = useToastStore();
+  const { theme, setTheme } = useThemeStore();
+
+  useEffect(() => {
+    APIFETCH.get("/settings/UserInfo")
+      .then((res) => {
+        const t = res.data?.theme;
+        if (t === "LIGHT") setTheme("light");
+        else if (t === "DARK") setTheme("dark");
+      })
+      .catch(() => {
+        // Not authenticated — use system preference
+        setTheme("system");
+      });
+  }, []);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+
+    const apply = () => {
+      const resolved = theme === "system" ? (mq.matches ? "dark" : "light") : theme;
+      document.documentElement.setAttribute("data-theme", resolved);
+    };
+
+    apply();
+
+    // Keep in sync if system preference changes while on a public page
+    if (theme === "system") {
+      mq.addEventListener("change", apply);
+      return () => mq.removeEventListener("change", apply);
+    }
+  }, [theme]);
+
   return (
     <QueryClientProvider client={queryClient}>
       <Outlet />

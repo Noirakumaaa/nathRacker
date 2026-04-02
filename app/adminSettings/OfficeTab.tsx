@@ -105,16 +105,16 @@ export default function OfficeTab() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f5f2] px-4 py-8 sm:px-6 lg:px-10">
+    <div className="min-h-screen bg-(--color-subtle) px-4 py-8 sm:px-6 lg:px-10">
       <div className="mb-6">
-        <p className="text-[11px] font-medium text-[#8a8a80] uppercase tracking-widest mb-1">Admin Management</p>
-        <h1 className="text-2xl font-semibold text-[#1a1a18] tracking-tight">Operations Office</h1>
+        <p className="text-[11px] font-medium text-(--color-muted) uppercase tracking-widest mb-1">Admin Management</p>
+        <h1 className="text-2xl font-semibold text-(--color-ink) tracking-tight">Operations Office</h1>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
         {/* ── Manual Entry ─────────────────────────────────────────────────── */}
-        <form onSubmit={submit} className="bg-white rounded-xl border border-[#e8e8e0] overflow-hidden">
+        <form onSubmit={submit} className="bg-(--color-surface) rounded-xl border border-(--color-border) overflow-hidden">
           <PanelHeader label="Add Operations Office" />
           <div className="p-6 space-y-4">
             <SectionHeader title="Office Details" />
@@ -135,7 +135,7 @@ export default function OfficeTab() {
         </form>
 
         {/* ── Excel Import ─────────────────────────────────────────────────── */}
-        <div className="bg-white rounded-xl border border-[#e8e8e0] overflow-hidden flex flex-col">
+        <div className="bg-(--color-surface) rounded-xl border border-(--color-border) overflow-hidden flex flex-col">
           <PanelHeader label="Import from Excel" legend={false} />
           <div className="p-6 flex flex-col gap-4 flex-1">
 
@@ -147,7 +147,7 @@ export default function OfficeTab() {
                 onDrop={handleDrop}
                 className={`flex-1 flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed cursor-pointer transition-colors min-h-40 ${
                   dragOver
-                    ? "border-[#1a1a18] bg-[#f0f0ec]"
+                    ? "border-(--color-ink) bg-[#f0f0ec]"
                     : "border-[#d8d8d0] bg-[#f8f8f4] hover:border-[#a8a8a0] hover:bg-[#f2f2ee]"
                 }`}
               >
@@ -158,12 +158,12 @@ export default function OfficeTab() {
                   onChange={handleFile}
                   className="sr-only"
                 />
-                <div className={`p-3 rounded-full ${dragOver ? "bg-[#e8e8e0]" : "bg-white border border-[#e8e8e0]"}`}>
-                  <Upload size={20} className="text-[#8a8a80]" />
+                <div className={`p-3 rounded-full ${dragOver ? "bg-(--color-border)" : "bg-(--color-surface) border border-(--color-border)"}`}>
+                  <Upload size={20} className="text-(--color-muted)" />
                 </div>
                 <div className="text-center">
-                  <p className="text-[13px] font-medium text-[#1a1a18]">Drop your Excel file here</p>
-                  <p className="text-[11px] text-[#8a8a80] mt-0.5">or click to browse</p>
+                  <p className="text-[13px] font-medium text-(--color-ink)">Drop your Excel file here</p>
+                  <p className="text-[11px] text-(--color-muted) mt-0.5">or click to browse</p>
                 </div>
                 <div className="flex items-center gap-1.5 text-[10px] text-[#b8b8b0]">
                   <span className="font-mono bg-[#ececea] px-1.5 py-0.5 rounded">name</span>
@@ -174,24 +174,24 @@ export default function OfficeTab() {
               /* Preview */
               <div className="flex flex-col gap-3">
                 {/* File info bar */}
-                <div className="flex items-center gap-3 px-3 py-2.5 bg-[#f5f5f2] rounded-lg border border-[#e8e8e0]">
+                <div className="flex items-center gap-3 px-3 py-2.5 bg-(--color-subtle) rounded-lg border border-(--color-border)">
                   <FileSpreadsheet size={16} className="text-emerald-500 shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-[12px] font-medium text-[#1a1a18] truncate">{fileName}</p>
-                    <p className="text-[10px] text-[#8a8a80]">{importRows.length} row{importRows.length !== 1 ? "s" : ""} found</p>
+                    <p className="text-[12px] font-medium text-(--color-ink) truncate">{fileName}</p>
+                    <p className="text-[10px] text-(--color-muted)">{importRows.length} row{importRows.length !== 1 ? "s" : ""} found</p>
                   </div>
                   <button
                     type="button"
                     onClick={clearImport}
                     disabled={importing}
-                    className="p-1 rounded-md hover:bg-[#e8e8e0] transition-colors text-[#8a8a80] hover:text-[#1a1a18] cursor-pointer border-none bg-transparent disabled:opacity-50"
+                    className="p-1 rounded-md hover:bg-(--color-border) transition-colors text-(--color-muted) hover:text-(--color-ink) cursor-pointer border-none bg-transparent disabled:opacity-50"
                   >
                     <X size={14} />
                   </button>
                 </div>
 
                 {/* Preview list */}
-                <div className="max-h-48 overflow-y-auto space-y-1 rounded-lg border border-[#e8e8e0] p-2">
+                <div className="max-h-48 overflow-y-auto space-y-1 rounded-lg border border-(--color-border) p-2">
                   {importRows.map((n, i) => (
                     <div key={i} className="flex items-center gap-2 px-2.5 py-1.5 rounded-md bg-emerald-50">
                       <CheckCircle2 size={11} className="text-emerald-500 shrink-0" />
@@ -206,7 +206,7 @@ export default function OfficeTab() {
                     type="button"
                     onClick={runImport}
                     disabled={importing || importRows.length === 0}
-                    className="flex-1 flex items-center justify-center gap-2 h-10 bg-[#1a1a18] text-white text-[13px] font-semibold rounded-lg hover:bg-[#333] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer border-none"
+                    className="flex-1 flex items-center justify-center gap-2 h-10 bg-(--color-ink) text-(--color-bg) text-[13px] font-semibold rounded-lg hover:opacity-85 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer border-none"
                   >
                     {importing ? (
                       <><Loader2 size={14} className="animate-spin" /> Importing…</>
@@ -218,7 +218,7 @@ export default function OfficeTab() {
                     type="button"
                     onClick={clearImport}
                     disabled={importing}
-                    className="px-4 h-10 text-[13px] font-medium text-[#6a6a60] border border-[#e8e8e0] rounded-lg hover:border-[#1a1a18] hover:text-[#1a1a18] transition-colors cursor-pointer bg-transparent disabled:opacity-50"
+                    className="px-4 h-10 text-[13px] font-medium text-[#6a6a60] border border-(--color-border) rounded-lg hover:border-(--color-ink) hover:text-(--color-ink) transition-colors cursor-pointer bg-transparent disabled:opacity-50"
                   >
                     Clear
                   </button>
@@ -229,11 +229,11 @@ export default function OfficeTab() {
         </div>
 
         {/* ── List ─────────────────────────────────────────────────────────── */}
-        <div className="bg-white rounded-xl border border-[#e8e8e0] overflow-hidden lg:col-span-2">
+        <div className="bg-(--color-surface) rounded-xl border border-(--color-border) overflow-hidden lg:col-span-2">
           <PanelHeader label={`Operations Offices (${offices.length})`} legend={false} />
           <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 max-h-96 overflow-y-auto">
             {offices.length === 0
-              ? <p className="text-[12px] text-[#8a8a80] text-center py-6 col-span-full">No offices added yet.</p>
+              ? <p className="text-[12px] text-(--color-muted) text-center py-6 col-span-full">No offices added yet.</p>
               : offices.map(o => (
                 <ListItem key={o.id} label={o.name} sub={`ID: ${o.id}`} onDelete={() => remove(o.id)} />
               ))

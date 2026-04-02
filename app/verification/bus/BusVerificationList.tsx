@@ -92,8 +92,8 @@ export default function BusVerificationList() {
 
   if (isLoading) {
     return (
-      <main className="p-6 bg-[#fafaf8] min-h-screen flex items-center justify-center">
-        <div className="flex items-center gap-2 text-[#8a8a80]">
+      <main className="p-6 bg-(--color-bg) min-h-screen flex items-center justify-center">
+        <div className="flex items-center gap-2 text-(--color-muted)">
           <Loader2 size={16} className="animate-spin" />
           <span className="text-[13px]">Loading…</span>
         </div>
@@ -102,25 +102,25 @@ export default function BusVerificationList() {
   }
 
   return (
-    <main className="p-6 bg-[#fafaf8] min-h-screen font-sans antialiased">
+    <main className="p-6 bg-(--color-bg) min-h-screen font-sans antialiased">
       <div className="max-w-4xl mx-auto flex flex-col gap-5">
 
         {/* ── Header ───────────────────────────────────────────────────────── */}
         <div>
-          <h1 className="text-[22px] font-semibold text-[#1a1a18] tracking-tight">
+          <h1 className="text-[22px] font-semibold text-(--color-ink) tracking-tight">
             BUS Verification
           </h1>
-          <p className="text-[12px] text-[#8a8a80] mt-0.5">
+          <p className="text-[12px] text-(--color-muted) mt-0.5">
             Select a BDM number to review and verify its records
           </p>
         </div>
 
         {/* ── Overall progress ─────────────────────────────────────────────── */}
         {totalRecords > 0 && (
-          <div className="bg-white border border-[#e8e8e0] rounded-xl p-5">
+          <div className="bg-(--color-surface) border border-(--color-border) rounded-xl p-5">
             <div className="flex items-end justify-between mb-3">
-              <span className="text-[13px] font-semibold text-[#1a1a18]">Overall Progress</span>
-              <span className={`text-[20px] font-bold ${overallPct === 100 ? "text-emerald-500" : "text-[#1a1a18]"}`}>
+              <span className="text-[13px] font-semibold text-(--color-ink)">Overall Progress</span>
+              <span className={`text-[20px] font-bold ${overallPct === 100 ? "text-emerald-500" : "text-(--color-ink)"}`}>
                 {overallPct}%
               </span>
             </div>
@@ -133,15 +133,15 @@ export default function BusVerificationList() {
             <div className="mt-4 grid grid-cols-3 gap-4 text-center">
               <div>
                 <p className="text-[20px] font-bold text-amber-500">{totalPending}</p>
-                <p className="text-[11px] text-[#8a8a80] mt-0.5">Pending</p>
+                <p className="text-[11px] text-(--color-muted) mt-0.5">Pending</p>
               </div>
               <div className="border-x border-[#f0f0ec]">
                 <p className="text-[20px] font-bold text-emerald-500">{totalVerified}</p>
-                <p className="text-[11px] text-[#8a8a80] mt-0.5">Verified</p>
+                <p className="text-[11px] text-(--color-muted) mt-0.5">Verified</p>
               </div>
               <div>
                 <p className="text-[20px] font-bold text-red-400">{totalIssues}</p>
-                <p className="text-[11px] text-[#8a8a80] mt-0.5">Issues</p>
+                <p className="text-[11px] text-(--color-muted) mt-0.5">Issues</p>
               </div>
             </div>
           </div>
@@ -150,7 +150,7 @@ export default function BusVerificationList() {
         {/* ── Controls row ─────────────────────────────────────────────────── */}
         <div className="flex flex-col sm:flex-row gap-3">
           {/* Tabs */}
-          <div className="flex items-center gap-1 bg-white border border-[#e8e8e0] rounded-xl p-1">
+          <div className="flex items-center gap-1 bg-(--color-surface) border border-(--color-border) rounded-xl p-1">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
@@ -158,13 +158,13 @@ export default function BusVerificationList() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-medium transition-all duration-150 cursor-pointer border-none whitespace-nowrap ${
                   activeTab === tab.id
-                    ? "bg-[#1a1a18] text-white"
-                    : "text-[#6a6a60] hover:text-[#1a1a18] hover:bg-[#f0f0ec]"
+                    ? "bg-(--color-ink) text-(--color-bg)"
+                    : "text-[#6a6a60] hover:text-(--color-ink) hover:bg-[#f0f0ec]"
                 }`}
               >
                 {tab.label}
                 <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-semibold ${
-                  activeTab === tab.id ? "bg-white/20 text-white" : "bg-[#f0f0ec] text-[#8a8a80]"
+                  activeTab === tab.id ? "bg-(--color-surface)/20 text-white" : "bg-[#f0f0ec] text-(--color-muted)"
                 }`}>
                   {tabCounts[tab.id]}
                 </span>
@@ -180,7 +180,7 @@ export default function BusVerificationList() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search BDM number…"
-              className="w-full pl-9 pr-9 py-2.5 text-[13px] border border-[#e8e8e0] rounded-xl text-[#1a1a18] placeholder-[#c4c4b8] bg-white focus:outline-none focus:ring-2 focus:ring-[#1a1a18] focus:border-transparent hover:border-[#c8c8c0] transition-colors"
+              className="w-full pl-9 pr-9 py-2.5 text-[13px] border border-(--color-border) rounded-xl text-(--color-ink) placeholder-(--color-placeholder) bg-(--color-surface) focus:outline-none focus:ring-2 focus:ring-(--color-ink) focus:border-transparent hover:border-(--color-border-hover) transition-colors"
             />
             {search && (
               <button
@@ -196,7 +196,7 @@ export default function BusVerificationList() {
 
         {/* ── BDM list ─────────────────────────────────────────────────────── */}
         {filtered.length === 0 ? (
-          <div className="bg-white border border-[#e8e8e0] rounded-xl py-16 flex flex-col items-center gap-2 text-[#c4c4b8]">
+          <div className="bg-(--color-surface) border border-(--color-border) rounded-xl py-16 flex flex-col items-center gap-2 text-(--color-placeholder)">
             <FileCheck size={24} />
             <p className="text-[13px]">
               {search ? `No BDM matches "${search}"` : activeTab !== "all" ? "No BDMs in this category" : "No BUS records found"}
@@ -205,16 +205,16 @@ export default function BusVerificationList() {
               <button
                 type="button"
                 onClick={() => { setSearch(""); setActiveTab("all"); }}
-                className="text-[12px] text-[#8a8a80] hover:text-[#1a1a18] transition-colors cursor-pointer bg-transparent border-none"
+                className="text-[12px] text-(--color-muted) hover:text-(--color-ink) transition-colors cursor-pointer bg-transparent border-none"
               >
                 Clear filters
               </button>
             )}
           </div>
         ) : (
-          <div className="bg-white border border-[#e8e8e0] rounded-xl overflow-hidden">
+          <div className="bg-(--color-surface) border border-(--color-border) rounded-xl overflow-hidden">
             {/* Table header */}
-            <div className="grid grid-cols-[1fr_auto] sm:grid-cols-[2fr_1fr_1fr_1fr_140px_auto] gap-4 px-4 py-2.5 border-b border-[#f0f0ec] bg-[#fafaf8]">
+            <div className="grid grid-cols-[1fr_auto] sm:grid-cols-[2fr_1fr_1fr_1fr_140px_auto] gap-4 px-4 py-2.5 border-b border-[#f0f0ec] bg-(--color-bg)">
               <span className="text-[10px] font-semibold text-[#b8b8b0] uppercase tracking-wider">BDM Number</span>
               <span className="text-[10px] font-semibold text-amber-400 uppercase tracking-wider hidden sm:block text-right">Pending</span>
               <span className="text-[10px] font-semibold text-emerald-500 uppercase tracking-wider hidden sm:block text-right">Verified</span>
@@ -224,7 +224,7 @@ export default function BusVerificationList() {
             </div>
 
             {/* Rows */}
-            <div className="divide-y divide-[#f5f5f2]">
+            <div className="divide-y divide-(--color-subtle)">
               {filtered.map((group) => {
                 const pct = group.total > 0 ? Math.round((group.verified / group.total) * 100) : 0;
                 const isComplete = group.verified === group.total && group.total > 0;
@@ -236,12 +236,12 @@ export default function BusVerificationList() {
                     key={group.bdm}
                     type="button"
                     onClick={() => navigate(`/verification/bus/${encodeURIComponent(group.bdm)}`)}
-                    className="w-full grid grid-cols-[1fr_auto] sm:grid-cols-[2fr_1fr_1fr_1fr_140px_auto] gap-4 items-center px-4 py-3.5 hover:bg-[#fafaf8] text-left transition-colors group cursor-pointer"
+                    className="w-full grid grid-cols-[1fr_auto] sm:grid-cols-[2fr_1fr_1fr_1fr_140px_auto] gap-4 items-center px-4 py-3.5 hover:bg-(--color-bg) text-left transition-colors group cursor-pointer"
                   >
                     {/* BDM number */}
                     <div className="flex items-center gap-2.5 min-w-0">
                       <span className={`w-2 h-2 rounded-full shrink-0 ${dotColor}`} />
-                      <span className="font-mono text-[13px] font-semibold text-[#1a1a18] truncate">
+                      <span className="font-mono text-[13px] font-semibold text-(--color-ink) truncate">
                         {group.bdm}
                       </span>
                       {/* Mobile-only counts */}
@@ -261,7 +261,7 @@ export default function BusVerificationList() {
                     {/* Counts (desktop) */}
                     <span className="text-[13px] font-medium text-amber-500 hidden sm:block text-right">{group.pending}</span>
                     <span className="text-[13px] font-medium text-emerald-500 hidden sm:block text-right">{group.verified}</span>
-                    <span className={`text-[13px] font-medium hidden sm:block text-right ${group.issues > 0 ? "text-red-400" : "text-[#c4c4b8]"}`}>{group.issues}</span>
+                    <span className={`text-[13px] font-medium hidden sm:block text-right ${group.issues > 0 ? "text-red-400" : "text-(--color-placeholder)"}`}>{group.issues}</span>
 
                     {/* Progress bar (desktop) */}
                     <div className="hidden sm:flex items-center gap-2">
@@ -271,11 +271,11 @@ export default function BusVerificationList() {
                           style={{ width: `${pct}%` }}
                         />
                       </div>
-                      <span className="text-[11px] text-[#8a8a80] w-8 text-right shrink-0">{pct}%</span>
+                      <span className="text-[11px] text-(--color-muted) w-8 text-right shrink-0">{pct}%</span>
                     </div>
 
                     {/* Arrow */}
-                    <ChevronRight size={14} className="text-[#c4c4b8] group-hover:text-[#1a1a18] transition-colors shrink-0" />
+                    <ChevronRight size={14} className="text-(--color-placeholder) group-hover:text-(--color-ink) transition-colors shrink-0" />
                   </button>
                 );
               })}

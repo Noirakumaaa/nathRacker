@@ -7,7 +7,7 @@ import { StatCard } from "./StatCard"
 import { DocSection } from "./docSection"
 
 const selectCls =
-  "text-[13px] text-[#1a1a18] px-3 py-1.5 rounded-lg border border-[#e8e8e0] bg-white hover:border-[#1a1a18] transition-colors outline-none cursor-pointer";
+  "text-[13px] text-[#1a1a18] px-3 py-1.5 rounded-lg border border-[#e8e8e0] bg-(--color-surface) hover:border-[#1a1a18] transition-colors outline-none cursor-pointer";
 
 export default function SummaryPage() {
   const now = new Date();
@@ -19,7 +19,7 @@ export default function SummaryPage() {
   const years = Array.from({ length: now.getFullYear() - 2022 }, (_, i) => now.getFullYear() - i);
 
   return (
-    <div className="bg-white rounded-xl border border-[#e8e8e0] overflow-hidden">
+    <div className="bg-(--color-surface) rounded-xl border border-[#e8e8e0] overflow-hidden">
 
       {/* Header */}
       <div className="px-6 py-4 border-b border-[#e8e8e0] flex flex-wrap items-center justify-between gap-3">
@@ -75,7 +75,7 @@ export default function SummaryPage() {
               <button
                 type="button"
                 onClick={() => downloadAccomplishment(month, year, data)}
-                className="flex items-center gap-2 h-10 px-4 bg-[#1a1a18] text-white text-[13px] font-medium rounded-lg hover:bg-[#333] transition-colors cursor-pointer"
+                className="flex items-center gap-2 h-10 px-4 bg-[#1a1a18] text-white text-[13px] font-medium rounded-lg hover:opacity-85 transition-colors cursor-pointer"
               >
                 <Download size={13} />
                 Download Accomplishment Report

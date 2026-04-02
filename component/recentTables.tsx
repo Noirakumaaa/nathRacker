@@ -49,17 +49,17 @@ const { data: records = [], isLoading, refetch } = useQuery<T[]>({
 
 
   return (
-    <div className="bg-white rounded-xl border border-[#e8e8e0] mt-2 overflow-hidden">
+    <div className="bg-(--color-surface) rounded-xl border border-(--color-border) mt-2 overflow-hidden">
 
       {/* Header */}
-      <div className="px-6 py-4 border-b border-[#e8e8e0] flex items-center justify-between">
+      <div className="px-6 py-4 border-b border-(--color-border) flex items-center justify-between">
         {headerLeft ? (
           headerLeft(records)
         ) : (
           <div className="flex items-center gap-3">
-            <p className="text-[11px] font-semibold text-[#1a1a18] uppercase tracking-wider">{title}</p>
+            <p className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">{title}</p>
             {!isLoading && records.length > 0 && (
-              <span className="text-[11px] font-mono bg-[#f5f5f2] text-[#8a8a80] px-2.5 py-1 rounded-full">
+              <span className="text-[11px] font-mono bg-(--color-subtle) text-(--color-muted) px-2.5 py-1 rounded-full">
                 {records.length} record{records.length !== 1 ? "s" : ""}
               </span>
             )}
@@ -71,12 +71,12 @@ const { data: records = [], isLoading, refetch } = useQuery<T[]>({
       {/* Table */}
       <div className="overflow-x-auto overflow-y-auto" style={{ maxHeight, minHeight: '220px' }}>
         <table className="min-w-full text-xs">
-          <thead className="sticky top-0 z-10 bg-[#fafaf8] border-b border-[#e8e8e0]">
+          <thead className="sticky top-0 z-10 bg-(--color-bg) border-b border-(--color-border)">
             <tr>
               {columns.map((col) => (
                 <th
                   key={col.header}
-                  className={`px-4 py-3 text-[10px] font-semibold text-[#8a8a80] uppercase tracking-widest whitespace-nowrap ${col.headerClassName ?? "text-center"}`}
+                  className={`px-4 py-3 text-[10px] font-semibold text-(--color-muted) uppercase tracking-widest whitespace-nowrap ${col.headerClassName ?? "text-center"}`}
                 >
                   {col.header}
                 </th>
@@ -84,11 +84,11 @@ const { data: records = [], isLoading, refetch } = useQuery<T[]>({
             </tr>
           </thead>
 
-          <tbody className="divide-y divide-[#f5f5f2]">
+          <tbody className="divide-y divide-(--color-subtle)">
             {isLoading ? (
               <tr>
                 <td colSpan={columns.length} className="py-14 text-center">
-                  <div className="flex flex-col items-center gap-2 text-[#c4c4b8]">
+                  <div className="flex flex-col items-center gap-2 text-(--color-placeholder)">
                     <Loader2 size={18} className="animate-spin" />
                     <span className="text-[12px]">Loading records…</span>
                   </div>
@@ -99,7 +99,7 @@ const { data: records = [], isLoading, refetch } = useQuery<T[]>({
                 <td colSpan={columns.length} className="py-16 text-center">
                   <div className="flex flex-col items-center gap-2">
                     <InboxIcon size={22} className="text-[#d4d4cc]" />
-                    <span className="text-[12px] text-[#8a8a80]">No recent updates found</span>
+                    <span className="text-[12px] text-(--color-muted)">No recent updates found</span>
                   </div>
                 </td>
               </tr>
@@ -110,13 +110,13 @@ const { data: records = [], isLoading, refetch } = useQuery<T[]>({
                   className={
                     rowClassName
                       ? rowClassName(row, i)
-                      : `hover:bg-amber-50/20 transition-colors duration-100 ${i % 2 === 0 ? "bg-white" : "bg-[#fafaf8]"}`
+                      : `hover:bg-amber-50/20 transition-colors duration-100 ${i % 2 === 0 ? "bg-(--color-surface)" : "bg-(--color-bg)"}`
                   }
                 >
                   {columns.map((col) => (
                     <td
                       key={col.header}
-                      className={`px-4 py-2.5 text-center text-[12px] text-[#8a8a80] ${col.className ?? ""}`}
+                      className={`px-4 py-2.5 text-center text-[12px] text-(--color-muted) ${col.className ?? ""}`}
                     >
                       {col.cell
                         ? col.cell(row, i)

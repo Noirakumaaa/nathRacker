@@ -57,7 +57,7 @@ export function RecordCard({ rec, onVerify, isMutating }: Props) {
 
   return (
     <div
-      className={`bg-white rounded-xl border border-[#e8e8e0] border-l-4 overflow-hidden ${config ? config.border : "border-l-amber-300"}`}
+      className={`bg-(--color-surface) rounded-xl border border-(--color-border) border-l-4 overflow-hidden ${config ? config.border : "border-l-amber-300"}`}
     >
       {/* ── Status strip ─────────────────────────────────────────────────── */}
       {config && (
@@ -108,15 +108,15 @@ export function RecordCard({ rec, onVerify, isMutating }: Props) {
         {/* Name + HH ID */}
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-[15px] font-semibold text-[#1a1a18] leading-snug">
-              {rec.granteeName || <span className="text-[#c4c4b8]">No name</span>}
+            <p className="text-[15px] font-semibold text-(--color-ink) leading-snug">
+              {rec.granteeName || <span className="text-(--color-placeholder)">No name</span>}
             </p>
             <div className="flex items-center gap-2 mt-1 flex-wrap">
-              <span className="font-mono text-[12px] bg-[#f5f5f2] text-[#6a6a60] px-2 py-0.5 rounded">
+              <span className="font-mono text-[12px] bg-(--color-subtle) text-[#6a6a60] px-2 py-0.5 rounded">
                 {rec.hhId || "—"}
               </span>
               {rec.subjectOfChange && (
-                <span className="text-[11px] text-[#8a8a80] bg-[#f5f5f2] px-2 py-0.5 rounded">
+                <span className="text-[11px] text-(--color-muted) bg-(--color-subtle) px-2 py-0.5 rounded">
                   {rec.subjectOfChange}
                 </span>
               )}
@@ -134,7 +134,7 @@ export function RecordCard({ rec, onVerify, isMutating }: Props) {
           {rec.typeOfUpdate && (
             <div>
               <p className="text-[9px] text-[#b8b8b0] uppercase tracking-wider font-semibold">Update Type</p>
-              <p className="text-[12px] text-[#1a1a18] mt-0.5">
+              <p className="text-[12px] text-(--color-ink) mt-0.5">
                 {UPDATE_TYPE_KEYMAP[rec.typeOfUpdate] ?? rec.typeOfUpdate}
               </p>
             </div>
@@ -142,31 +142,31 @@ export function RecordCard({ rec, onVerify, isMutating }: Props) {
           {rec.updateInfo && (
             <div className="col-span-2 sm:col-span-1">
               <p className="text-[9px] text-[#b8b8b0] uppercase tracking-wider font-semibold">Update Info</p>
-              <p className="text-[12px] text-[#1a1a18] mt-0.5">{rec.updateInfo}</p>
+              <p className="text-[12px] text-(--color-ink) mt-0.5">{rec.updateInfo}</p>
             </div>
           )}
           {rec.barangay && (
             <div>
               <p className="text-[9px] text-[#b8b8b0] uppercase tracking-wider font-semibold">Barangay</p>
-              <p className="text-[12px] text-[#1a1a18] mt-0.5">{rec.barangay}</p>
+              <p className="text-[12px] text-(--color-ink) mt-0.5">{rec.barangay}</p>
             </div>
           )}
           {rec.lgu && (
             <div>
               <p className="text-[9px] text-[#b8b8b0] uppercase tracking-wider font-semibold">LGU</p>
-              <p className="text-[12px] text-[#1a1a18] mt-0.5">{rec.lgu}</p>
+              <p className="text-[12px] text-(--color-ink) mt-0.5">{rec.lgu}</p>
             </div>
           )}
           {(rec.date || rec.createdAt) && (
             <div>
               <p className="text-[9px] text-[#b8b8b0] uppercase tracking-wider font-semibold">Date</p>
-              <p className="text-[12px] text-[#1a1a18] mt-0.5">{formatDate(rec.date || rec.createdAt)}</p>
+              <p className="text-[12px] text-(--color-ink) mt-0.5">{formatDate(rec.date || rec.createdAt)}</p>
             </div>
           )}
           {rec.encodedBy && (
             <div>
               <p className="text-[9px] text-[#b8b8b0] uppercase tracking-wider font-semibold">Encoded By</p>
-              <p className="text-[12px] text-[#1a1a18] font-mono mt-0.5">{rec.encodedBy}</p>
+              <p className="text-[12px] text-(--color-ink) font-mono mt-0.5">{rec.encodedBy}</p>
             </div>
           )}
         </div>
@@ -203,7 +203,7 @@ export function RecordCard({ rec, onVerify, isMutating }: Props) {
               placeholder="e.g. Missing HH ID, incorrect grantee name, duplicate entry…"
               rows={3}
               autoFocus
-              className="w-full text-[13px] border border-red-200 rounded-lg px-3 py-2.5 text-[#1a1a18] placeholder-[#c4c4b8] bg-white focus:outline-none focus:ring-2 focus:ring-red-300 focus:border-transparent resize-none"
+              className="w-full text-[13px] border border-red-200 rounded-lg px-3 py-2.5 text-(--color-ink) placeholder-(--color-placeholder) bg-(--color-surface) focus:outline-none focus:ring-2 focus:ring-red-300 focus:border-transparent resize-none"
             />
             <div className="flex items-center gap-2">
               <button
@@ -218,7 +218,7 @@ export function RecordCard({ rec, onVerify, isMutating }: Props) {
               <button
                 type="button"
                 onClick={() => setIssueText(null)}
-                className="text-[13px] text-[#8a8a80] hover:text-[#1a1a18] transition-colors cursor-pointer bg-transparent border-none"
+                className="text-[13px] text-(--color-muted) hover:text-(--color-ink) transition-colors cursor-pointer bg-transparent border-none"
               >
                 Cancel
               </button>
@@ -242,7 +242,7 @@ export function RecordCard({ rec, onVerify, isMutating }: Props) {
               type="button"
               onClick={() => setIssueText("")}
               disabled={loading}
-              className="flex items-center justify-center gap-2 py-2.5 rounded-lg bg-white text-red-500 text-[13px] font-semibold hover:bg-red-50 active:scale-[0.98] transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed border border-red-200"
+              className="flex items-center justify-center gap-2 py-2.5 rounded-lg bg-(--color-surface) text-red-500 text-[13px] font-semibold hover:bg-red-50 active:scale-[0.98] transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed border border-red-200"
             >
               <AlertCircle size={14} />
               Flag Issue
