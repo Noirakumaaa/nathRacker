@@ -10,23 +10,24 @@ const authorizedUser = ["AC","SWOIII", "ADMIN"]
 
 export default function operationLayout() {
   const navigate = useNavigate();
-  const {user, isLoading, isAuthenticated } = useAuth();
+  const { user, isLoading, isAuthenticated } = useAuth();
 
   useEffect(() => {
     if (!isAuthenticated && !isLoading) navigate("/login");
   }, [isAuthenticated, isLoading]);
 
+  const showLoader = isLoading || (isAuthenticated && !user?.role);
 
   return (
     <LayoutWrapper>
-      {isLoading ? (
+      {showLoader ? (
         <div className="flex items-center justify-center h-full">
           <div className="flex flex-col items-center gap-3">
             <Loader2 size={24} className="animate-spin text-(--color-ink)" />
             <p className="text-[13px] text-(--color-muted)">Loading...</p>
           </div>
         </div>
-      ) : isAuthenticated && user && !authorizedUser.includes(user?.role) ? (
+      ) : isAuthenticated && user && !authorizedUser.includes(user.role) ? (
         <UnauthorizedPage />
       ) : isAuthenticated && user ? (
         <Outlet />
