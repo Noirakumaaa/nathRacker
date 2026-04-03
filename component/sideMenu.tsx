@@ -163,17 +163,16 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
   const authorizedOpsStaffModule = ["AC", "SWOIII", "ADMIN"]
   const authorizedVerifierModule = ["ADMIN", "VERIFIER"]
 
-
-  const logout = async () => {
-    const res = await APIFETCH.get("/auth/logout");
-    if (res.data.logout) {
-      show(`${res.data.message}`, "success");
-      queryClient.clear();
-      navigate("/login");
-    } else {
-      show(`${res.data.message}`, "error");
-    }
-  };
+const logout = async () => {
+  const res = await APIFETCH.get("/auth/logout");
+  if (res.data.logout) {
+    queryClient.clear();       // clear first
+    navigate("/login");        // then navigate
+    show(`${res.data.message}`, "success");
+  } else {
+    show(`${res.data.message}`, "error");
+  }
+};
 
   const initials = (User?.govUsername?.[0] ?? "U").toUpperCase();
 
