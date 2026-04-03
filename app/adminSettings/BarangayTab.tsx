@@ -56,7 +56,7 @@ export default function BarangayTab() {
     }
   };
 
-  const lguName = (id: number) => lgus.find(l => l.id === id)?.name ?? `LGU ${id}`;
+  const lguName    = (id: number) => lgus.find(l => l.id === id)?.name ?? `LGU ${id}`;
   const officeName = (id: number) => offices.find(o => o.id === id)?.name ?? "";
 
   const parseFile = (file: File) => {
@@ -69,7 +69,7 @@ export default function BarangayTab() {
       const parsed = rows
         .map(r => ({
           name: String(r["name"] ?? r["Name"] ?? r["NAME"] ?? "").trim().toUpperCase(),
-          lgu: String(r["lgu"] ?? r["LGU"] ?? r["Lgu"] ?? "").trim().toUpperCase(),
+          lgu:  String(r["lgu"]  ?? r["LGU"]  ?? r["Lgu"]  ?? "").trim().toUpperCase(),
         }))
         .filter(r => r.name);
       setImportRows(parsed);
@@ -98,8 +98,7 @@ export default function BarangayTab() {
   const runImport = async () => {
     if (!importRows?.length) return;
     setImporting(true);
-    let ok = 0;
-    let fail = 0;
+    let ok = 0, fail = 0;
     for (const row of importRows) {
       const lgu = lgus.find(l => l.name.toUpperCase() === row.lgu);
       if (!lgu) { fail++; continue; }
@@ -119,20 +118,22 @@ export default function BarangayTab() {
   const matchable = importRows?.filter(r => lgus.find(l => l.name.toUpperCase() === r.lgu)).length ?? 0;
 
   return (
-    <div className="min-h-screen bg-(--color-subtle) px-4 py-8 sm:px-6 lg:px-10">
-      <div className="mb-6">
-        <p className="text-[11px] font-medium text-(--color-muted) uppercase tracking-widest mb-1">Admin Management</p>
-        <h1 className="text-2xl font-semibold text-(--color-ink) tracking-tight">Barangay</h1>
+    <div className="px-6 py-6 space-y-5">
+
+      {/* Page header */}
+      <div>
+        <p className="text-[11px] font-medium text-(--color-muted) uppercase tracking-widest mb-0.5">Admin Management</p>
+        <h1 className="text-[20px] font-semibold text-(--color-ink) tracking-tight">Barangay</h1>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
 
-        {/* ── Manual Entry ─────────────────────────────────────────────────── */}
+        {/* ── Manual Entry ── */}
         <form onSubmit={submit} className="bg-(--color-surface) rounded-xl border border-(--color-border) overflow-hidden">
           <PanelHeader label="Add Barangay" />
-          <div className="p-6 space-y-4">
+          <div className="p-5 space-y-4">
             <SectionHeader title="Barangay Details" />
-            <div className="space-y-3.5">
+            <div className="space-y-3">
               <div>
                 <label className={labelCls}>Barangay Name <Req /></label>
                 <input
@@ -150,128 +151,86 @@ export default function BarangayTab() {
                 >
                   <option value="">Select LGU</option>
                   {lgus.map(l => (
-                    <option key={l.id} value={l.id}>
-                      {l.name} — {officeName(l.operationsOfficeNumId)}
-                    </option>
+                    <option key={l.id} value={l.id}>{l.name} — {officeName(l.operationsOfficeNumId)}</option>
                   ))}
                 </select>
               </div>
-              <SubmitRow loading={loading} submitLabel="Add Barangay" onCancel={() => setForm({ name: "", lguId: "" })} cancelLabel="Clear" />
+              <SubmitRow loading={loading} submitLabel="Add Barangay" onCancel={() => setForm({ name: "", lguId: "" })} />
             </div>
           </div>
         </form>
 
-        {/* ── Excel Import ─────────────────────────────────────────────────── */}
+        {/* ── Excel Import ── */}
         <div className="bg-(--color-surface) rounded-xl border border-(--color-border) overflow-hidden flex flex-col">
           <PanelHeader label="Import from Excel" legend={false} />
-          <div className="p-6 flex flex-col gap-4 flex-1">
-
+          <div className="p-5 flex flex-col gap-4 flex-1">
             {importRows === null ? (
-              /* Drop Zone */
               <label
                 onDragOver={e => { e.preventDefault(); setDragOver(true); }}
                 onDragLeave={() => setDragOver(false)}
                 onDrop={handleDrop}
-                className={`flex-1 flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed cursor-pointer transition-colors min-h-40 ${
+                className={`flex-1 flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed cursor-pointer transition-colors min-h-36 ${
                   dragOver
-                    ? "border-(--color-ink) bg-[#f0f0ec]"
-                    : "border-[#d8d8d0] bg-[#f8f8f4] hover:border-[#a8a8a0] hover:bg-[#f2f2ee]"
+                    ? "border-(--color-ink) bg-(--color-subtle)"
+                    : "border-(--color-border) bg-(--color-subtle) hover:border-(--color-muted)"
                 }`}
               >
-                <input
-                  ref={fileRef}
-                  type="file"
-                  accept=".xlsx,.xls,.csv"
-                  onChange={handleFile}
-                  className="sr-only"
-                />
-                <div className={`p-3 rounded-full ${dragOver ? "bg-(--color-border)" : "bg-(--color-surface) border border-(--color-border)"}`}>
-                  <Upload size={20} className="text-(--color-muted)" />
+                <input ref={fileRef} type="file" accept=".xlsx,.xls,.csv" onChange={handleFile} className="sr-only" />
+                <div className="p-3 rounded-full bg-(--color-surface) border border-(--color-border)">
+                  <Upload size={18} className="text-(--color-muted)" />
                 </div>
                 <div className="text-center">
-                  <p className="text-[13px] font-medium text-(--color-ink)">Drop your Excel file here</p>
-                  <p className="text-[11px] text-(--color-muted) mt-0.5">or click to browse</p>
+                  <p className="text-[13px] font-medium text-(--color-ink)">Drop Excel file here</p>
+                  <p className="text-[11px] text-(--color-muted) mt-0.5">or click to browse · .xlsx .xls .csv</p>
                 </div>
-                <div className="flex items-center gap-1.5 text-[10px] text-[#b8b8b0]">
-                  <span className="font-mono bg-[#ececea] px-1.5 py-0.5 rounded">name</span>
+                <div className="flex items-center gap-1 text-[10px] text-(--color-placeholder)">
+                  <span className="font-mono bg-(--color-border) px-1.5 py-0.5 rounded">name</span>
                   <span>+</span>
-                  <span className="font-mono bg-[#ececea] px-1.5 py-0.5 rounded">lgu</span>
-                  <span>columns · .xlsx .xls .csv</span>
+                  <span className="font-mono bg-(--color-border) px-1.5 py-0.5 rounded">lgu</span>
+                  <span>columns required</span>
                 </div>
               </label>
             ) : (
-              /* Preview */
               <div className="flex flex-col gap-3">
-                {/* File info bar */}
                 <div className="flex items-center gap-3 px-3 py-2.5 bg-(--color-subtle) rounded-lg border border-(--color-border)">
-                  <FileSpreadsheet size={16} className="text-emerald-500 shrink-0" />
+                  <FileSpreadsheet size={15} className="text-emerald-500 shrink-0" />
                   <div className="flex-1 min-w-0">
                     <p className="text-[12px] font-medium text-(--color-ink) truncate">{fileName}</p>
                     <p className="text-[10px] text-(--color-muted)">
-                      {importRows.length} row{importRows.length !== 1 ? "s" : ""} —{" "}
+                      {importRows.length} rows —{" "}
                       <span className="text-emerald-600">{matchable} will import</span>
-                      {importRows.length - matchable > 0 && (
-                        <span className="text-red-500">, {importRows.length - matchable} unmatched</span>
-                      )}
+                      {importRows.length - matchable > 0 && <span className="text-red-500">, {importRows.length - matchable} unmatched</span>}
                     </p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={clearImport}
-                    disabled={importing}
-                    className="p-1 rounded-md hover:bg-(--color-border) transition-colors text-(--color-muted) hover:text-(--color-ink) cursor-pointer border-none bg-transparent disabled:opacity-50"
-                  >
-                    <X size={14} />
+                  <button type="button" onClick={clearImport} disabled={importing}
+                    className="p-1 rounded-md hover:bg-(--color-border) transition-colors text-(--color-muted) hover:text-(--color-ink) cursor-pointer border-none bg-transparent disabled:opacity-50">
+                    <X size={13} />
                   </button>
                 </div>
-
-                {/* Preview list */}
-                <div className="max-h-48 overflow-y-auto space-y-1 rounded-lg border border-(--color-border) p-2">
+                <div className="max-h-44 overflow-y-auto space-y-1 rounded-lg border border-(--color-border) p-2">
                   {importRows.map((r, i) => {
                     const matched = lgus.find(l => l.name.toUpperCase() === r.lgu);
                     return (
-                      <div
-                        key={i}
-                        className={`flex items-center gap-2 px-2.5 py-1.5 rounded-md ${
-                          matched ? "bg-emerald-50" : "bg-red-50"
-                        }`}
-                      >
+                      <div key={i} className={`flex items-center gap-2 px-2.5 py-1.5 rounded-md ${matched ? "bg-emerald-50" : "bg-red-50"}`}>
                         {matched
                           ? <CheckCircle2 size={11} className="text-emerald-500 shrink-0" />
                           : <AlertTriangle size={11} className="text-red-400 shrink-0" />
                         }
-                        <span className={`text-[12px] font-medium ${matched ? "text-emerald-800" : "text-red-700"}`}>
-                          {r.name}
-                        </span>
+                        <span className={`text-[12px] font-medium ${matched ? "text-emerald-800" : "text-red-700"}`}>{r.name}</span>
                         <span className={`text-[10px] ml-auto ${matched ? "text-emerald-500" : "text-red-400"}`}>
-                          {r.lgu || "(no LGU)"}
-                          {!matched && " · not found"}
+                          {r.lgu || "(no LGU)"}{!matched && " · not found"}
                         </span>
                       </div>
                     );
                   })}
                 </div>
-
-                {/* Actions */}
-                <div className="flex gap-2 pt-1">
-                  <button
-                    type="button"
-                    onClick={runImport}
-                    disabled={importing || matchable === 0}
-                    className="flex-1 flex items-center justify-center gap-2 h-10 bg-(--color-ink) text-(--color-bg) text-[13px] font-semibold rounded-lg hover:opacity-85 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer border-none"
-                  >
-                    {importing ? (
-                      <><Loader2 size={14} className="animate-spin" /> Importing…</>
-                    ) : (
-                      `Import ${matchable} Barangay${matchable !== 1 ? "s" : ""} →`
-                    )}
+                <div className="flex gap-2">
+                  <button type="button" onClick={runImport} disabled={importing || matchable === 0}
+                    className="flex-1 flex items-center justify-center gap-2 h-9 bg-(--color-ink) text-(--color-bg) text-[13px] font-medium rounded-lg hover:opacity-85 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer border-none">
+                    {importing ? <><Loader2 size={13} className="animate-spin" /> Importing…</> : `Import ${matchable} Barangay${matchable !== 1 ? "s" : ""}`}
                   </button>
-                  <button
-                    type="button"
-                    onClick={clearImport}
-                    disabled={importing}
-                    className="px-4 h-10 text-[13px] font-medium text-[#6a6a60] border border-(--color-border) rounded-lg hover:border-(--color-ink) hover:text-(--color-ink) transition-colors cursor-pointer bg-transparent disabled:opacity-50"
-                  >
+                  <button type="button" onClick={clearImport} disabled={importing}
+                    className="px-4 h-9 text-[13px] font-medium text-(--color-muted) border border-(--color-border) rounded-lg hover:border-(--color-ink) hover:text-(--color-ink) transition-colors cursor-pointer bg-transparent disabled:opacity-50">
                     Clear
                   </button>
                 </div>
@@ -280,12 +239,12 @@ export default function BarangayTab() {
           </div>
         </div>
 
-        {/* ── List ─────────────────────────────────────────────────────────── */}
+        {/* ── List ── */}
         <div className="bg-(--color-surface) rounded-xl border border-(--color-border) overflow-hidden lg:col-span-2">
           <PanelHeader label={`Barangays (${barangays.length})`} legend={false} />
-          <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 max-h-96 overflow-y-auto">
+          <div className="p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 max-h-80 overflow-y-auto">
             {barangays.length === 0
-              ? <p className="text-[12px] text-(--color-muted) text-center py-6 col-span-full">No barangays added yet.</p>
+              ? <p className="text-[12px] text-(--color-muted) text-center py-8 col-span-full">No barangays added yet.</p>
               : barangays.map(b => (
                 <ListItem
                   key={b.id}

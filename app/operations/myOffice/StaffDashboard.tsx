@@ -56,9 +56,7 @@ function countUpdated(records: GlobalRecord[]) {
   return records.filter((r) => r.remarks === "UPDATED").length;
 }
 function countIssues(records: GlobalRecord[]) {
-  return records.filter(
-    (r) => r.remarks !== "YES" && r.remarks !== "UPDATED" && r.remarks !== "NO",
-  ).length;
+  return records.filter((r) => r.remarks === "NO").length;
 }
 
 // ── Summary block (3 columns: encoded / updated / issues) ─────────────────────

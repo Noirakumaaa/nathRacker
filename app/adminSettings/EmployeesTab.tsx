@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Search, User, X, ChevronRight, Filter } from "lucide-react";
+import { Search, User, X, ChevronRight, Filter, Loader2 } from "lucide-react";
 import APIFETCH from "lib/axios/axiosConfig";
 import { useToastStore } from "lib/zustand/ToastStore";
 import { labelCls, inputCls } from "component/styleConfig";
@@ -13,7 +13,9 @@ const numberFields = ["assignedOperationId", "assignedLGUID", "assignedBarangayI
 const roleBadge = (role: string) =>
   role === "ADMIN"
     ? "bg-violet-50 text-violet-600 border border-violet-200"
-    : "bg-sky-50 text-sky-600 border border-sky-200";
+    : role === "ENCODER"
+    ? "bg-sky-50 text-sky-600 border border-sky-200"
+    : "bg-(--color-subtle) text-(--color-muted) border border-(--color-border)";
 
 export default function EmployeesTab() {
   const { show } = useToastStore();
@@ -44,15 +46,14 @@ export default function EmployeesTab() {
   });
 
   const offices: OperationsOffice[] = areaData?.operations ?? [];
-  const lgus: Lgu[] = areaData?.lgu ?? [];
-  const barangays: Barangay[] = areaData?.barangay ?? [];
+  const lgus: Lgu[]                 = areaData?.lgu       ?? [];
+  const barangays: Barangay[]       = areaData?.barangay  ?? [];
 
   const officeName = (id: number | null | undefined) => offices.find(o => o.id === id)?.name ?? "";
-  const lguName = (id: number | null | undefined) => lgus.find(l => l.id === id)?.name ?? "";
+  const lguName    = (id: number | null | undefined) => lgus.find(l => l.id === id)?.name    ?? "";
 
-  // Filter LGU/barangay dropdowns based on parent selection
-  const filterableLgus = filterOffice === "" ? lgus : lgus.filter(l => l.operationsOfficeNumId === filterOffice);
-  const filterableBarangays = filterLgu === "" ? barangays : barangays.filter(b => b.lguId === filterLgu);
+  const filterableLgus      = filterOffice === "" ? lgus      : lgus.filter(l => l.operationsOfficeNumId === filterOffice);
+  const filterableBarangays = filterLgu    === "" ? barangays : barangays.filter(b => b.lguId === filterLgu);
 
   const filteredEmployees = employees.filter(emp => {
     const q = search.toLowerCase();
@@ -60,39 +61,29 @@ export default function EmployeesTab() {
       emp.govUsername.toLowerCase().includes(q) ||
       emp.userInfo?.firstName?.toLowerCase().includes(q) ||
       emp.userInfo?.lastName?.toLowerCase().includes(q);
-    const matchOffice = filterOffice === "" || emp.userInfo?.assignedOperationId === filterOffice;
-    const matchLgu = filterLgu === "" || emp.userInfo?.assignedLGUID === filterLgu;
-    const matchBarangay = filterBarangay === "" || emp.userInfo?.assignedBarangayId === filterBarangay;
+    const matchOffice   = filterOffice   === "" || emp.userInfo?.assignedOperationId === filterOffice;
+    const matchLgu      = filterLgu      === "" || emp.userInfo?.assignedLGUID        === filterLgu;
+    const matchBarangay = filterBarangay === "" || emp.userInfo?.assignedBarangayId   === filterBarangay;
     return matchSearch && matchOffice && matchLgu && matchBarangay;
   });
 
   const hasActiveFilters = filterOffice !== "" || filterLgu !== "" || filterBarangay !== "";
+  const clearFilters = () => { setFilterOffice(""); setFilterLgu(""); setFilterBarangay(""); };
 
-  const clearFilters = () => {
-    setFilterOffice("");
-    setFilterLgu("");
-    setFilterBarangay("");
-  };
-
-  // Edit form dropdowns (cascading)
-  const filteredLgus = form.assignedOperationId === ""
-    ? lgus
-    : lgus.filter(l => l.operationsOfficeNumId === form.assignedOperationId);
-  const filteredBarangays = form.assignedLGUID === ""
-    ? barangays
-    : barangays.filter(b => b.lguId === form.assignedLGUID);
+  const filteredLgus      = form.assignedOperationId === "" ? lgus      : lgus.filter(l => l.operationsOfficeNumId === form.assignedOperationId);
+  const filteredBarangays = form.assignedLGUID        === "" ? barangays : barangays.filter(b => b.lguId === form.assignedLGUID);
 
   const selectEmployee = (emp: Employee) => {
     setSelected(emp);
     setForm({
-      firstName: emp.userInfo?.firstName ?? "",
-      lastName: emp.userInfo?.lastName ?? "",
-      middleName: emp.userInfo?.middleName ?? "",
-      phone: emp.userInfo?.phone ?? "",
-      role: emp.role,
+      firstName:          emp.userInfo?.firstName          ?? "",
+      lastName:           emp.userInfo?.lastName           ?? "",
+      middleName:         emp.userInfo?.middleName         ?? "",
+      phone:              emp.userInfo?.phone              ?? "",
+      role:               emp.role,
       assignedOperationId: emp.userInfo?.assignedOperationId ?? "",
-      assignedLGUID: emp.userInfo?.assignedLGUID ?? "",
-      assignedBarangayId: emp.userInfo?.assignedBarangayId ?? "",
+      assignedLGUID:       emp.userInfo?.assignedLGUID        ?? "",
+      assignedBarangayId:  emp.userInfo?.assignedBarangayId   ?? "",
     });
   };
 
@@ -115,8 +106,8 @@ export default function EmployeesTab() {
       await APIFETCH.patch(`/admin/employee/${selected!.id}`, {
         ...form,
         assignedOperationId: form.assignedOperationId === "" ? null : form.assignedOperationId,
-        assignedLGUID: form.assignedLGUID === "" ? null : form.assignedLGUID,
-        assignedBarangayId: form.assignedBarangayId === "" ? null : form.assignedBarangayId,
+        assignedLGUID:       form.assignedLGUID        === "" ? null : form.assignedLGUID,
+        assignedBarangayId:  form.assignedBarangayId   === "" ? null : form.assignedBarangayId,
       });
     },
     onSuccess: () => {
@@ -129,42 +120,42 @@ export default function EmployeesTab() {
 
   const initials = (emp: Employee) => {
     const f = emp.userInfo?.firstName?.[0] ?? "";
-    const l = emp.userInfo?.lastName?.[0] ?? "";
+    const l = emp.userInfo?.lastName?.[0]  ?? "";
     return (f + l).toUpperCase() || emp.govUsername[0].toUpperCase();
   };
 
   return (
-    <div className="min-h-screen bg-(--color-subtle) px-4 py-8 sm:px-6 lg:px-10">
+    <div className="px-6 py-6 space-y-5">
 
-      {/* Header */}
-      <div className="mb-6 flex items-end justify-between">
+      {/* Page header */}
+      <div className="flex items-end justify-between">
         <div>
-          <p className="text-[11px] font-medium text-(--color-muted) uppercase tracking-widest mb-1">Admin Management</p>
-          <h1 className="text-2xl font-semibold text-(--color-ink) tracking-tight">Employees</h1>
+          <p className="text-[11px] font-medium text-(--color-muted) uppercase tracking-widest mb-0.5">Admin Management</p>
+          <h1 className="text-[20px] font-semibold text-(--color-ink) tracking-tight">Employees</h1>
         </div>
         <p className="text-[12px] text-(--color-muted)">{employees.length} total</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
 
-        {/* ── Left: Employee List ── */}
+        {/* ── Left: List ── */}
         <div className="lg:col-span-2 flex flex-col gap-3">
 
-          {/* Search + Filter toggle */}
+          {/* Search + filter toggle */}
           <div className="flex gap-2">
             <div className="relative flex-1">
-              <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-(--color-muted)" />
+              <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-(--color-muted) pointer-events-none" />
               <input
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 className={inputCls + " pl-8"}
-                placeholder="Search name or username..."
+                placeholder="Search name or username…"
               />
             </div>
             <button
               type="button"
               onClick={() => setShowFilters(v => !v)}
-              className={`h-10 px-3 rounded-lg border text-[12px] font-medium flex items-center gap-1.5 transition-colors cursor-pointer ${
+              className={`h-10 px-3 rounded-lg border text-[12px] font-medium flex items-center gap-1.5 transition-colors cursor-pointer shrink-0 ${
                 showFilters || hasActiveFilters
                   ? "bg-(--color-ink) text-(--color-bg) border-(--color-ink)"
                   : "bg-(--color-surface) text-(--color-muted) border-(--color-border) hover:border-(--color-ink) hover:text-(--color-ink)"
@@ -173,7 +164,7 @@ export default function EmployeesTab() {
               <Filter size={12} />
               Filter
               {hasActiveFilters && (
-                <span className="w-4 h-4 rounded-full bg-(--color-surface)/20 text-white text-[9px] font-bold flex items-center justify-center">
+                <span className="w-4 h-4 rounded-full bg-white/20 text-[9px] font-bold flex items-center justify-center">
                   {[filterOffice, filterLgu, filterBarangay].filter(f => f !== "").length}
                 </span>
               )}
@@ -183,43 +174,38 @@ export default function EmployeesTab() {
           {/* Filter panel */}
           {showFilters && (
             <div className="bg-(--color-surface) rounded-xl border border-(--color-border) p-4 space-y-3">
-              <div className="flex items-center justify-between mb-1">
-                <p className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">Filter by Area</p>
+              <div className="flex items-center justify-between">
+                <p className="text-[11px] font-semibold text-(--color-muted) uppercase tracking-wider">Filter by Area</p>
                 {hasActiveFilters && (
-                  <button type="button" onClick={clearFilters} className="text-[10px] text-(--color-muted) hover:text-(--color-ink) flex items-center gap-1 transition-colors cursor-pointer">
+                  <button type="button" onClick={clearFilters}
+                    className="text-[10px] text-(--color-muted) hover:text-(--color-ink) flex items-center gap-1 transition-colors cursor-pointer bg-transparent border-none">
                     <X size={10} /> Clear all
                   </button>
                 )}
               </div>
               <div>
                 <label className={labelCls}>Operations Office</label>
-                <select
-                  value={filterOffice}
+                <select value={filterOffice}
                   onChange={e => { setFilterOffice(e.target.value === "" ? "" : Number(e.target.value)); setFilterLgu(""); setFilterBarangay(""); }}
-                  className={inputCls}
-                >
+                  className={inputCls}>
                   <option value="">All Offices</option>
                   {offices.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}
                 </select>
               </div>
               <div>
                 <label className={labelCls}>LGU</label>
-                <select
-                  value={filterLgu}
+                <select value={filterLgu}
                   onChange={e => { setFilterLgu(e.target.value === "" ? "" : Number(e.target.value)); setFilterBarangay(""); }}
-                  className={inputCls}
-                >
+                  className={inputCls}>
                   <option value="">All LGUs</option>
                   {filterableLgus.map(l => <option key={l.id} value={l.id}>{l.name} — {officeName(l.operationsOfficeNumId)}</option>)}
                 </select>
               </div>
               <div>
                 <label className={labelCls}>Barangay</label>
-                <select
-                  value={filterBarangay}
+                <select value={filterBarangay}
                   onChange={e => setFilterBarangay(e.target.value === "" ? "" : Number(e.target.value))}
-                  className={inputCls}
-                >
+                  className={inputCls}>
                   <option value="">All Barangays</option>
                   {filterableBarangays.map(b => <option key={b.id} value={b.id}>{b.name} — {lguName(b.lguId)}</option>)}
                 </select>
@@ -227,29 +213,30 @@ export default function EmployeesTab() {
             </div>
           )}
 
-          {/* List */}
+          {/* Employee list */}
           <div className="bg-(--color-surface) rounded-xl border border-(--color-border) overflow-hidden">
             <div className="px-4 py-3 border-b border-(--color-border) flex items-center justify-between">
               <p className="text-[11px] font-semibold text-(--color-muted) uppercase tracking-wider">
                 {filteredEmployees.length} {filteredEmployees.length === 1 ? "Employee" : "Employees"}
               </p>
               {(search || hasActiveFilters) && (
-                <button type="button" onClick={() => { setSearch(""); clearFilters(); }} className="text-[10px] text-(--color-muted) hover:text-(--color-ink) flex items-center gap-1 transition-colors cursor-pointer">
+                <button type="button" onClick={() => { setSearch(""); clearFilters(); }}
+                  className="text-[10px] text-(--color-muted) hover:text-(--color-ink) flex items-center gap-1 transition-colors cursor-pointer bg-transparent border-none">
                   <X size={10} /> Clear
                 </button>
               )}
             </div>
 
-            <div className="divide-y divide-[#f0f0ec] max-h-140 overflow-y-auto">
+            <div className="divide-y divide-(--color-border) max-h-128 overflow-y-auto">
               {isLoading && (
-                <div className="py-12 flex flex-col items-center gap-2">
-                  <div className="w-5 h-5 border-2 border-(--color-ink) border-t-transparent rounded-full animate-spin" />
-                  <p className="text-[11px] text-(--color-muted)">Loading employees...</p>
+                <div className="py-12 flex flex-col items-center gap-2 text-(--color-muted)">
+                  <Loader2 size={18} className="animate-spin" />
+                  <p className="text-[11px]">Loading employees…</p>
                 </div>
               )}
               {!isLoading && filteredEmployees.length === 0 && (
                 <div className="py-12 flex flex-col items-center gap-2 text-(--color-muted)">
-                  <User size={24} className="opacity-30" />
+                  <User size={22} className="opacity-30" />
                   <p className="text-[12px]">{search || hasActiveFilters ? "No results found." : "No employees yet."}</p>
                 </div>
               )}
@@ -261,34 +248,28 @@ export default function EmployeesTab() {
                     type="button"
                     onClick={() => selectEmployee(emp)}
                     className={`w-full text-left px-4 py-3 flex items-center gap-3 transition-colors cursor-pointer ${
-                      isSelected ? "bg-(--color-ink)" : "hover:bg-[#f8f8f4]"
+                      isSelected ? "bg-(--color-ink)" : "hover:bg-(--color-subtle)"
                     }`}
                   >
-                    {/* Avatar */}
-                    <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 text-[11px] font-bold ${
-                      isSelected ? "bg-(--color-surface)/20 text-white" : "bg-[#f0f0ec] text-(--color-ink)"
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-[11px] font-bold ${
+                      isSelected ? "bg-white/15 text-white" : "bg-(--color-subtle) text-(--color-ink)"
                     }`}>
                       {initials(emp)}
                     </div>
-
-                    {/* Info */}
                     <div className="flex-1 min-w-0">
                       <p className={`text-[13px] font-semibold truncate ${isSelected ? "text-white" : "text-(--color-ink)"}`}>
                         {emp.userInfo?.firstName} {emp.userInfo?.lastName}
                       </p>
-                      <p className={`text-[11px] truncate ${isSelected ? "text-white/60" : "text-(--color-muted)"}`}>
+                      <p className={`text-[11px] truncate ${isSelected ? "text-white/55" : "text-(--color-muted)"}`}>
                         {emp.govUsername}
                       </p>
                     </div>
-
-                    {/* Role badge */}
-                    <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide shrink-0 ${
-                      isSelected ? "bg-(--color-surface)/15 text-white" : roleBadge(emp.role)
+                    <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded shrink-0 ${
+                      isSelected ? "bg-white/15 text-white" : roleBadge(emp.role)
                     }`}>
                       {emp.role}
                     </span>
-
-                    <ChevronRight size={12} className={`shrink-0 ${isSelected ? "text-white/40" : "text-(--color-placeholder)"}`} />
+                    <ChevronRight size={12} className={`shrink-0 ${isSelected ? "text-white/30" : "text-(--color-placeholder)"}`} />
                   </button>
                 );
               })}
@@ -300,21 +281,21 @@ export default function EmployeesTab() {
         <div className="lg:col-span-3">
           {!selected ? (
             <div className="bg-(--color-surface) rounded-xl border border-(--color-border) h-full min-h-64 flex flex-col items-center justify-center gap-3 text-(--color-muted)">
-              <div className="w-12 h-12 rounded-full bg-[#f0f0ec] flex items-center justify-center">
-                <User size={20} className="opacity-40" />
+              <div className="w-12 h-12 rounded-full bg-(--color-subtle) flex items-center justify-center">
+                <User size={20} className="opacity-30" />
               </div>
               <div className="text-center">
                 <p className="text-[13px] font-medium text-(--color-ink)">No employee selected</p>
-                <p className="text-[11px] mt-0.5">Select an employee from the list to edit their information.</p>
+                <p className="text-[11px] mt-0.5">Select from the list to edit their details.</p>
               </div>
             </div>
           ) : (
             <div className="bg-(--color-surface) rounded-xl border border-(--color-border) overflow-hidden">
 
               {/* Edit header */}
-              <div className="px-6 py-4 border-b border-(--color-border) flex items-center justify-between">
+              <div className="px-5 py-4 border-b border-(--color-border) flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-(--color-ink) flex items-center justify-center text-[12px] font-bold text-white shrink-0">
+                  <div className="w-9 h-9 rounded-full bg-(--color-ink) flex items-center justify-center text-[12px] font-bold text-(--color-bg) shrink-0">
                     {initials(selected)}
                   </div>
                   <div>
@@ -324,21 +305,18 @@ export default function EmployeesTab() {
                     <p className="text-[11px] text-(--color-muted)">{selected.email}</p>
                   </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setSelected(null)}
-                  className="w-7 h-7 rounded-lg border border-(--color-border) flex items-center justify-center text-(--color-muted) hover:text-(--color-ink) hover:border-(--color-ink) transition-colors cursor-pointer"
-                >
+                <button type="button" onClick={() => setSelected(null)}
+                  className="w-7 h-7 rounded-lg border border-(--color-border) flex items-center justify-center text-(--color-muted) hover:text-(--color-ink) hover:border-(--color-ink) transition-colors cursor-pointer bg-transparent">
                   <X size={13} />
                 </button>
               </div>
 
-              <form onSubmit={e => { e.preventDefault(); save(); }} className="p-6 space-y-5">
+              <form onSubmit={e => { e.preventDefault(); save(); }} className="p-5 space-y-5">
 
-                {/* Personal Info */}
+                {/* Personal */}
                 <div>
                   <SectionHeader title="Personal Information" />
-                  <div className="mt-3.5 grid grid-cols-2 gap-3">
+                  <div className="mt-3 grid grid-cols-2 gap-3">
                     <div>
                       <label className={labelCls}>First Name <Req /></label>
                       <input name="firstName" value={form.firstName} onChange={handle} required className={inputCls} placeholder="First Name" />
@@ -361,7 +339,7 @@ export default function EmployeesTab() {
                 {/* Role */}
                 <div>
                   <SectionHeader title="Role" />
-                  <div className="mt-3.5">
+                  <div className="mt-3">
                     <label className={labelCls}>Role <Req /></label>
                     <select name="role" value={form.role} onChange={handle} required className={inputCls}>
                       <option value="">Select Role</option>
@@ -374,7 +352,7 @@ export default function EmployeesTab() {
                 {/* Assignment */}
                 <div>
                   <SectionHeader title="Area Assignment" />
-                  <div className="mt-3.5 space-y-3">
+                  <div className="mt-3 space-y-3">
                     <div>
                       <label className={labelCls}>Operations Office <Opt /></label>
                       <select name="assignedOperationId" value={form.assignedOperationId} onChange={handle} className={inputCls}>
@@ -387,14 +365,14 @@ export default function EmployeesTab() {
                         <label className={labelCls}>LGU <Opt /></label>
                         <select name="assignedLGUID" value={form.assignedLGUID} onChange={handle} className={inputCls}>
                           <option value="">Select LGU</option>
-                          {filteredLgus.map(l => <option key={l.id} value={l.id}>{l.name} — {officeName(l.operationsOfficeNumId)}</option>)}
+                          {filteredLgus.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
                         </select>
                       </div>
                       <div>
                         <label className={labelCls}>Barangay <Opt /></label>
                         <select name="assignedBarangayId" value={form.assignedBarangayId} onChange={handle} className={inputCls}>
                           <option value="">Select Barangay</option>
-                          {filteredBarangays.map(b => <option key={b.id} value={b.id}>{b.name} — {lguName(b.lguId)}</option>)}
+                          {filteredBarangays.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
                         </select>
                       </div>
                     </div>
