@@ -257,10 +257,6 @@ export function Login() {
       {/* FOOTER */}
       <footer className="border-t border-(--color-border) px-5 sm:px-10 py-5 sm:py-7 flex justify-between items-center gap-4">
         <p className="text-[13px] text-(--color-muted)">© 2026 NathRacker</p>
-        <div className="flex gap-5">
-          <a href="/login" className="text-[13px] text-(--color-muted) hover:text-(--color-ink) transition-colors no-underline">Login</a>
-          <a href="/register" className="text-[13px] text-(--color-muted) hover:text-(--color-ink) transition-colors no-underline">Register</a>
-        </div>
       </footer>
 
       <style>{`

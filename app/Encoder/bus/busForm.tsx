@@ -19,7 +19,10 @@ export default function BusForm() {
   const { show } = useToastStore();
 
   const [buttonLoading, setButtonLoading] = useState(false);
-  const today = new Date().toISOString().slice(0, 10);
+  const [today, setToday] = useState("");
+  useEffect(() => {
+    setToday(new Date().toISOString().slice(0, 10));
+  }, []);
 
   const [formData, setFormData] = useState<BusFormFields>({
     lgu: "",
@@ -36,17 +39,25 @@ export default function BusForm() {
     note: "",
   });
 
-  const { data } = useQuery({
+  const { data, isError, isSuccess } = useQuery({
     queryKey: ["SelectedBus", id],
     queryFn: async () => {
       const res = await APIFETCH.get<BusRecord>(`/bus/records/${id}`);
-      return res.data;
+      return res.data ?? null;
     },
     enabled: !!id,
+    retry: false,
   });
 
   useEffect(() => {
-    console.log(data);
+    if (!id) return;
+    if (isError || (isSuccess && !data)) navigate("/bus");
+  }, [id, isError, isSuccess, data]);
+
+
+
+
+  useEffect(() => {
     if (data) {
       setFormData(() => ({
         lgu: data.lgu ?? "",
@@ -57,11 +68,9 @@ export default function BusForm() {
         typeOfUpdate: data.typeOfUpdate ?? "",
         updateInfo: data.updateInfo ?? "",
         issue: data.issue ?? "",
-        encodedBy: data.encodedBy ?? "",
         remarks: data.remarks ?? "",
         drn: data.drn ?? "",
         cl: data.cl ?? "",
-        date: today,
         note: data.note ?? "",
       }));
     }
@@ -76,6 +85,7 @@ export default function BusForm() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log(formData)
     const res = await APIFETCH.post<BusResponse>("/bus/upload", formData);
     setButtonLoading(true);
     if (res.data.upload) {
@@ -262,7 +272,7 @@ export default function BusForm() {
                 </div>
                 <div>
                   <label htmlFor="remarks" className={labelCls}>
-                    Encoded Y/N <Req />
+                    REMARKS <Req />
                   </label>
                   <select
                     id="remarks"

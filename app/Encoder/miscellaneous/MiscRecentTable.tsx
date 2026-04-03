@@ -1,82 +1,158 @@
-import React from "react";
-import { Copy } from "lucide-react";
+import { useState } from "react";
+import { ArrowUpRight, Copy, Trash2 } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import RecentTable from "./../../../component/recentTables";
 import type { ColumnDef } from "./../../../component/recentTables";
 import type { MiscRecord } from "./../../types/miscTypes";
 import { EncodedBadge } from "component/StyleBadge";
 import { useNavigate } from "react-router";
-
-
+import { DeleteModal } from "~/records/deleteModal";
+import APIFETCH from "lib/axios/axiosConfig";
+import { useToastStore } from "lib/zustand/ToastStore";
 
 export default function MiscRecentTable() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { show } = useToastStore();
+  const [deleteModal, setDeleteModal] = useState<{ open: boolean; id: string | null }>({ open: false, id: null });
 
-  const handleEdit=(record : MiscRecord)=>{
-    navigate(`/miscellaneous/${record.id}`)
-  }
-const buildColumns : ColumnDef<MiscRecord>[] = [
-  {
-    header: "HH ID",
-    cell: (r) => (
-      <div className="flex items-center justify-center gap-1.5 group">
-        <span className="font-mono text-[11px] text-(--color-ink) whitespace-nowrap">{r.hhId}</span>
-        <button
-          onClick={() => navigator.clipboard.writeText(r.hhId)}
-          className="opacity-0 group-hover:opacity-100 transition-opacity text-(--color-placeholder) hover:text-(--color-muted) cursor-pointer bg-transparent border-none"
-          title="Copy HH ID"
-        >
-          <Copy size={11} />
-        </button>
-      </div>
-    ),
-  },
-  {
-    header: "Grantee Name",
-    cell: (r) => <span className="font-medium text-(--color-ink) whitespace-nowrap">{r.granteeName}</span>,
-  },
-  {
-    header: "Doc Type",
-    cell: (r) => (
-      <span className="font-mono text-[10px] font-medium px-2 py-0.5 rounded-md bg-amber-50 text-amber-600 tracking-wider whitespace-nowrap">
-        {r.documentType || "—"}
-      </span>
-    ),
-  },
-  {
-    header: "Subject",
-    cell: (r) => <span className="max-w-30 truncate block">{r.subjectOfChange || <span className="text-[#d4d4cc]">—</span>}</span>,
-  },
-  {
-    header: "Remarks",
-    cell: (r) => <EncodedBadge value={r.remarks} />,
-  },
-  {
-    header: "Date",
-    cell: (r) => (
-      <span className="text-[11px] whitespace-nowrap tabular-nums">
-        {new Date(r.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-      </span>
-    ),
-  },
-  {
-    header: "Action",
-    cell: (r) => (
-      <button
-        onClick={() => handleEdit(r)}
-        className="text-[11px] font-medium text-blue-600 hover:text-blue-800 hover:underline transition-colors whitespace-nowrap cursor-pointer bg-transparent border-none"
-      >
-        Load
-      </button>
-    ),
-  },
-];
+  const handleDelete = async () => {
+    if (!deleteModal.id) return;
+    try {
+      const res = await APIFETCH.delete(`/miscellaneous/delete/${deleteModal.id}`);
+      if (res.data.deleted ?? res.status === 200) {
+        show(res.data.message ?? "Record deleted", "success");
+        queryClient.invalidateQueries({ queryKey: ["recentMisc"] });
+        queryClient.invalidateQueries({ queryKey: ["allDocuments"] });
+      } else {
+        show(res.data.message ?? "Failed to delete", "error");
+      }
+    } catch {
+      show("Failed to delete record", "error");
+    } finally {
+      setDeleteModal({ open: false, id: null });
+    }
+  };
+
+  const buildColumns: ColumnDef<MiscRecord>[] = [
+    {
+      header: "HH ID",
+      headerClassName: "text-left first:pl-6",
+      className: "pl-6 pr-4",
+      cell: (r) => (
+        <div className="flex items-center gap-1.5 group">
+          <span className="font-mono text-[11px] text-(--color-ink) whitespace-nowrap">{r.hhId}</span>
+          <button
+            onClick={() => navigator.clipboard.writeText(r.hhId)}
+            className="opacity-0 group-hover:opacity-100 transition-opacity text-(--color-placeholder) hover:text-(--color-muted) cursor-pointer bg-transparent border-none"
+            title="Copy HH ID"
+          >
+            <Copy size={11} />
+          </button>
+        </div>
+      ),
+    },
+    {
+      header: "Grantee Name",
+      headerClassName: "text-left",
+      cell: (r) => (
+        <span className="text-[12px] font-medium text-(--color-ink) whitespace-nowrap">{r.granteeName}</span>
+      ),
+    },
+    {
+      header: "Doc Type",
+      headerClassName: "text-left",
+      cell: (r) => (
+        <span className="font-mono text-[10px] font-medium px-2 py-0.5 rounded-md bg-amber-50 text-amber-600 tracking-wider whitespace-nowrap">
+          {r.documentType || "—"}
+        </span>
+      ),
+    },
+    {
+      header: "Subject",
+      headerClassName: "text-left",
+      cell: (r) => (
+        <span className="max-w-30 truncate block text-[12px] text-(--color-muted)">
+          {r.subjectOfChange || <span className="text-[#d4d4cc]">—</span>}
+        </span>
+      ),
+    },
+    {
+      header: "Remarks",
+      headerClassName: "text-left",
+      cell: (r) => <EncodedBadge value={r.remarks} />,
+    },
+    {
+      header: "Date",
+      headerClassName: "text-left",
+      cell: (r) => (
+        <span className="text-[11px] text-(--color-muted) whitespace-nowrap tabular-nums">
+          {new Date(r.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+        </span>
+      ),
+    },
+    {
+      header: "Actions",
+      headerClassName: "text-left",
+      className: "pl-4 pr-6",
+      cell: (r) => (
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => navigate(`/miscellaneous/${r.id}`)}
+            className="inline-flex items-center gap-1 text-[11px] font-medium text-(--color-muted) hover:text-(--color-ink) transition-colors cursor-pointer bg-transparent border-none whitespace-nowrap"
+          >
+            Load <ArrowUpRight size={11} />
+          </button>
+          <button
+            onClick={() => setDeleteModal({ open: true, id: r.id })}
+            className="inline-flex items-center gap-1 text-[11px] font-medium text-red-400 hover:text-red-600 transition-colors cursor-pointer bg-transparent border-none whitespace-nowrap"
+          >
+            <Trash2 size={11} /> Delete
+          </button>
+        </div>
+      ),
+    },
+  ];
 
   return (
-    <RecentTable<MiscRecord>
-      queryKey="recentMisc"
-      endpoint="/miscellaneous/recent"
-      columns={buildColumns}
-      title="Recent Updates"
-    />
+    <>
+      <DeleteModal
+        open={deleteModal.open}
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteModal({ open: false, id: null })}
+      />
+      <RecentTable<MiscRecord>
+        queryKey="recentMisc"
+        endpoint="/miscellaneous/recent"
+        columns={buildColumns}
+        rowClassName={(_, i) =>
+          `group hover:bg-(--color-bg) transition-colors duration-100 ${i % 2 === 0 ? "bg-(--color-surface)" : "bg-(--color-bg)"}`
+        }
+        headerLeft={(records) => (
+          <div className="flex items-center gap-3">
+            <p className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">Recent Updates</p>
+            {records.length > 0 && (
+              <span className="text-[10px] font-mono bg-violet-50 text-violet-500 px-2 py-0.5 rounded-full">
+                {records.length} record{records.length !== 1 ? "s" : ""}
+              </span>
+            )}
+          </div>
+        )}
+        headerRight={(records) =>
+          records.length > 0 ? (
+            <span className="text-[11px] text-(--color-placeholder) font-mono">
+              {new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+            </span>
+          ) : null
+        }
+        footer={(records) => (
+          <div className="px-6 py-3 border-t border-(--color-border) bg-(--color-bg)">
+            <p className="text-[11px] text-(--color-muted)">
+              Showing {records.length} most recent record{records.length !== 1 ? "s" : ""}
+            </p>
+          </div>
+        )}
+      />
+    </>
   );
 }

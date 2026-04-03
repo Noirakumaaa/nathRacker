@@ -16,51 +16,51 @@ const UnauthorizedPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-(--color-bg) flex items-center justify-center p-6">
       <div className="max-w-md w-full">
         {/* Main Card */}
-        <div className="bg-(--color-surface) rounded-xl shadow-sm border border-gray-200 p-8 text-center">
+        <div className="bg-(--color-surface) rounded-xl shadow-sm border border-(--color-border) p-8 text-center">
           {/* Icon */}
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <Shield className="w-8 h-8 text-red-600" />
           </div>
 
           {/* Title */}
-          <h1 className="text-2xl font-bold text-gray-900 mb-3">Access Denied</h1>
-          
+          <h1 className="text-2xl font-bold text-(--color-ink) mb-3">Access Denied</h1>
+
           {/* Description */}
-          <p className="text-gray-600 mb-6 leading-relaxed">
-            You are not authorized to access this page. Please contact your administrator 
+          <p className="text-(--color-muted) mb-6 leading-relaxed">
+            You are not authorized to access this page. Please contact your administrator
             if you believe this is an error.
           </p>
 
           {/* Error Code */}
-          <div className="bg-gray-50 rounded-lg p-4 mb-8">
-            <p className="text-sm text-gray-500">Error Code</p>
-            <p className="text-lg font-mono text-gray-900">401 - Unauthorized</p>
+          <div className="bg-(--color-subtle) rounded-lg p-4 mb-8">
+            <p className="text-sm text-(--color-muted)">Error Code</p>
+            <p className="text-lg font-mono text-(--color-ink)">401 - Unauthorized</p>
           </div>
 
           {/* Action Buttons */}
           <div className="space-y-3">
             <button
               onClick={handleGoBack}
-              className="w-full flex items-center justify-center px-4 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+              className="w-full flex items-center justify-center px-4 py-3 bg-(--color-ink) text-(--color-bg) rounded-lg font-medium hover:opacity-80 transition-opacity"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Go Back
             </button>
-            
+
             <button
               onClick={handleGoHome}
-              className="w-full flex items-center justify-center px-4 py-3 bg-(--color-surface) text-gray-700 border border-gray-200 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+              className="w-full flex items-center justify-center px-4 py-3 bg-(--color-surface) text-(--color-ink) border border-(--color-border) rounded-lg font-medium hover:bg-(--color-subtle) transition-colors"
             >
               <Home className="w-4 h-4 mr-2" />
               Go to Dashboard
             </button>
-            
+
             <button
               onClick={handleContactSupport}
-              className="w-full flex items-center justify-center px-4 py-3 bg-(--color-surface) text-gray-700 border border-gray-200 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+              className="w-full flex items-center justify-center px-4 py-3 bg-(--color-surface) text-(--color-ink) border border-(--color-border) rounded-lg font-medium hover:bg-(--color-subtle) transition-colors"
             >
               <Mail className="w-4 h-4 mr-2" />
               Contact Support
@@ -70,7 +70,7 @@ const UnauthorizedPage = () => {
 
         {/* Additional Info */}
         <div className="mt-6 text-center">
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-(--color-muted)">
             Need help? Check your permissions or contact your system administrator.
           </p>
         </div>

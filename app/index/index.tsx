@@ -399,13 +399,13 @@ export default function IndexPage() {
         </h2>
         <div className="flex flex-col gap-2.5 items-start shrink-0">
           <p className="text-[14px] text-(--color-muted)">
-            Free to use. No setup required.
+            No setup required.
           </p>
           <button
             onClick={() => (window.location.href = "/register")}
             className="px-7 py-3 rounded-lg text-[15px] font-medium bg-(--color-ink) text-(--color-bg) hover:opacity-85 transition-colors cursor-pointer"
           >
-            Create an account →
+            Contact the admin →
           </button>
           <button
             onClick={() => (window.location.href = "/login")}

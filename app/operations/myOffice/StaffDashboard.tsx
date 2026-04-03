@@ -202,8 +202,8 @@ export default function StaffDashboard({ govUsername }: { govUsername: string })
 
   if (!emp && employees.length > 0) {
     return (
-      <main className="p-6 bg-(--color-bg) min-h-screen flex items-center justify-center">
-        <div className="bg-(--color-surface) border border-(--color-border) rounded-xl p-8 max-w-md w-full flex flex-col items-center gap-3 text-center">
+      <main className="p-6 bg-(--color-bg) font-sans antialiased">
+        <div className="bg-(--color-surface) border border-(--color-border) rounded-xl p-8 max-w-md flex flex-col items-center gap-3 text-center">
           <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center">
             <AlertCircle size={18} className="text-red-400" />
           </div>

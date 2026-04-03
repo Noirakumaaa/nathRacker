@@ -10,11 +10,19 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useRouteLoaderData,
 } from "react-router";
 import type { Route } from "./+types/root";
 import "./app.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import APIFETCH from "lib/axios/axiosConfig";
+
+export async function loader({ request }: Route.LoaderArgs) {
+  const cookie = request.headers.get("Cookie") ?? "";
+  const match = cookie.match(/(?:^|;\s*)resolved-theme=([^;]*)/);
+  const theme = match?.[1] === "dark" ? "dark" : "light";
+  return { theme };
+}
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -40,8 +48,9 @@ export const links: Route.LinksFunction = () => [
 // root.tsx
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  const data = useRouteLoaderData<typeof loader>("root");
   return (
-    <html lang="en">
+    <html lang="en" data-theme={data?.theme ?? "light"}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -80,6 +89,7 @@ export default function Root() {
     const apply = () => {
       const resolved = theme === "system" ? (mq.matches ? "dark" : "light") : theme;
       document.documentElement.setAttribute("data-theme", resolved);
+      document.cookie = `resolved-theme=${resolved}; path=/; max-age=31536000; SameSite=Lax`;
     };
 
     apply();

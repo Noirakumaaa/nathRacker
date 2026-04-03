@@ -36,7 +36,7 @@ export default function SWDIForm() {
     date: new Date().toISOString().split("T")[0],
   });
 
-  const { data } = useQuery({
+  const { data,isError, isSuccess } = useQuery({
     queryKey: ["SelectedSwdi", id],
     queryFn: async () => {
       const res = await APIFETCH.get<SwdiRecord>(`/swdi/record/${id}`);
@@ -44,6 +44,12 @@ export default function SWDIForm() {
     },
     enabled: !!id,
   });
+
+    useEffect(() => {
+      if (!id) return;
+      if (isError || (isSuccess && !data)) navigate("/swdi");
+    }, [id, isError, isSuccess, data]);
+  
 
   useEffect(() => {
     if (data) {

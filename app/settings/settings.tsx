@@ -442,19 +442,19 @@ function AppearanceSettings() {
       id: "light" as const,
       label: "Light",
       icon: Sun,
-      preview: "bg-(--color-surface) border-(--color-border)",
+      preview: "bg-[#f7f7f3] border-[#e0e0d8]",
     },
     {
       id: "dark" as const,
       label: "Dark",
       icon: Moon,
-      preview: "bg-(--color-ink) border-[#333]",
+      preview: "bg-[#1c1c1a] border-[#303030]",
     },
     {
       id: "system" as const,
       label: "System",
       icon: Monitor,
-      preview: "bg-gradient-to-br from-white to-(--color-ink) border-(--color-border-hover)",
+      preview: "bg-gradient-to-br from-[#f7f7f3] to-[#1c1c1a] border-[#a0a098]",
     },
   ];
 
@@ -497,30 +497,6 @@ function AppearanceSettings() {
         </div>
       </div>
 
-      <div className="mb-6">
-        <label className={labelCls}>Density</label>
-        <div className="grid grid-cols-2 gap-3 mt-2">
-          {(["comfortable", "compact"] as const).map((d) => (
-            <button
-              key={d}
-              type="button"
-              onClick={() => setDensity(d)}
-              className={`flex items-center justify-between px-4 py-3 rounded-xl border-2 transition-all cursor-pointer ${
-                density === d
-                  ? "border-(--color-ink) bg-(--color-bg)"
-                  : "border-(--color-border) hover:border-(--color-border-hover) bg-(--color-surface)"
-              }`}
-            >
-              <span className="text-[13px] font-medium text-(--color-ink) capitalize">
-                {d}
-              </span>
-              {density === d && (
-                <Check className="w-3.5 h-3.5 text-(--color-ink)" />
-              )}
-            </button>
-          ))}
-        </div>
-      </div>
 
       <SaveBtn
         status={status}
@@ -1648,13 +1624,13 @@ const TABS = [
     icon: Shield,
     component: SecuritySettings,
   },
-  {
-    id: "language",
-    label: "Language",
-    icon: Globe,
-    component: LanguageSettings,
-  },
-  { id: "backup", label: "Backup", icon: Database, component: BackupSettings },
+  // {
+  //   id: "language",
+  //   label: "Language",
+  //   icon: Globe,
+  //   component: LanguageSettings,
+  // },
+  // { id: "backup", label: "Backup", icon: Database, component: BackupSettings },
   {
     id: "import",
     label: "Import Data",

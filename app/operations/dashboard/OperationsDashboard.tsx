@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useState } from "react";
 import {
   Building2,
@@ -181,11 +181,16 @@ export default function OperationsDashboard({ userData }: { userData: me }) {
   });
 
   const { data: counts = [] } = useQuery<CountItem[]>({
-    queryKey: ["documentCounts"],
+    queryKey: ["documentCounts", selectedOffice],
     queryFn: async () => {
-      const res = await APIFETCH.get("/alldocuments/count/documents");
+      const url =
+        selectedOffice === "all"
+          ? "/admin/count/documents/all"
+          : `/admin/count/documents/by-office?officeId=${selectedOffice}`;
+      const res = await APIFETCH.get(url);
       return Array.isArray(res.data) ? res.data : (res.data?.data ?? []);
     },
+    placeholderData: keepPreviousData,
   });
 
   const { data: employees = [] } = useQuery<Employee[]>({
@@ -287,7 +292,12 @@ export default function OperationsDashboard({ userData }: { userData: me }) {
           />
           <OverviewCard
             label="Encoders"
-            value={employees.filter((e) => e.role === "ENCODER").length}
+            value={employees.filter(
+              (e) =>
+                e.role === "ENCODER" &&
+                (selectedOffice === "all" ||
+                  e.userInfo?.assignedOperationId === selectedOffice),
+            ).length}
             icon={Users}
             iconBg="bg-sky-50 text-sky-600"
             sub="Active encoder staff"

@@ -13,7 +13,7 @@ export function DocSection({ type, summary }: { type: DocType; summary: DocTypeS
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center justify-between px-5 py-3 bg-(--color-surface) hover:bg-[#f8f8f4] transition-colors text-left"
+        className="w-full flex items-center justify-between px-5 py-3 bg-(--color-surface) hover:bg-(--color-subtle) transition-colors text-left"
       >
         <span className="flex items-center gap-2 text-[13px] font-medium text-(--color-ink)">
           <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: DOC_DOT[type] }} />

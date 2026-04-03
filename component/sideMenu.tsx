@@ -158,9 +158,11 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
     updateSidebarOption(option);
   };
 
-  const isAdmin = User?.role === "ADMIN";
-  const isOpsStaff =
-    User?.role === "AREA_COORDINATOR" || User?.role === "SOCIAL_WORKER_III" || "ADMIN";
+  const authorizedEncoderModule = ["ADMIN", "ENCODER"]
+  const authorizedVerifiedModule = ["ADMIN", "VERIFIER"]
+  const authorizedOpsStaffModule = ["AC", "SWOIII", "ADMIN"]
+  const authorizedVerifierModule = ["ADMIN", "VERIFIER"]
+
 
   const logout = async () => {
     const res = await APIFETCH.get("/auth/logout");
@@ -206,8 +208,9 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
 
         {/* Nav */}
         <div ref={navRef} className="flex-1 overflow-y-auto py-2 px-2.5 space-y-0" style={{ overflowAnchor: 'none' }}>
-
-          <SectionLabel label="Encoders Modules" />
+        {authorizedEncoderModule.includes(User?.role) && (
+          <>
+              <SectionLabel label="Encoders Modules" />
           <nav className="space-y-0.5">
             {menuItems.map((item) => (
               <NavItem
@@ -218,8 +221,13 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
               />
             ))}
           </nav>
+          </>
 
-          <SectionLabel label="Verification Modules" />
+        )}
+        
+          {authorizedVerifiedModule.includes(User?.role) && (
+            <>
+            <SectionLabel label="Verification Modules" />
           <nav className="space-y-0.5">
             {verificationMenuItems.map((item) => (
               <NavItem
@@ -243,6 +251,9 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
               </div>
             )}
           </nav>
+            </>
+          )}
+          
 
           <SectionLabel label="Reports" />
           <nav className="space-y-0.5">
@@ -256,7 +267,7 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
             ))}
           </nav>
 
-          {isOpsStaff && (
+          {authorizedOpsStaffModule.includes(User?.role) && (
             <>
               <SectionLabel label="Operations" />
               <nav className="space-y-0.5">
@@ -272,7 +283,7 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
             </>
           )}
 
-          {isAdmin && (
+          {User?.role === "ADMIN" && (
             <>
               <SectionLabel label="Admin" />
               <nav className="space-y-0.5">

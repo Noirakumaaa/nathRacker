@@ -1,4 +1,4 @@
-import BusMain from "~/bus/busMain";
+import BusMain from "~/Encoder/bus/busMain";
 import UnauthorizedPage from "~/notAuthorized/notAuthorized";
 import { AuthorizedUser } from "~/types/authorizedUser";
 import { useAuth } from "component/authGuard";

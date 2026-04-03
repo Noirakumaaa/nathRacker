@@ -1,4 +1,4 @@
-import IndexPage from '../index/index';
+import IndexPage from "~/index";
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from 'component/authGuard';
