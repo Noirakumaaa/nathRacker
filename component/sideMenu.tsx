@@ -31,16 +31,41 @@ type SidebarProps = {
 
 const menuItems = [
   { id: "dashboard", label: "Dashboard", icon: Home },
-  { id: "bus",  label: "BUS",          icon: FileText,  tag: "bg-indigo-50 text-indigo-500" },
-  { id: "swdi", label: "SWDI",         icon: FileInput, tag: "bg-emerald-50 text-emerald-600" },
-  { id: "LCN",  label: "LCN",          icon: IdCard,    tag: "bg-rose-50 text-rose-500" },
-  { id: "cvs",  label: "CVS",          icon: FileText,  tag: "bg-violet-50 text-violet-500" },
-  { id: "msc",  label: "Miscellaneous",icon: FileIcon,  tag: "bg-sky-50 text-sky-500" },
+  {
+    id: "bus",
+    label: "BUS",
+    icon: FileText,
+    tag: "bg-indigo-50 text-indigo-500",
+  },
+  {
+    id: "swdi",
+    label: "SWDI",
+    icon: FileInput,
+    tag: "bg-emerald-50 text-emerald-600",
+  },
+  { id: "LCN", label: "LCN", icon: IdCard, tag: "bg-rose-50 text-rose-500" },
+  {
+    id: "cvs",
+    label: "CVS",
+    icon: FileText,
+    tag: "bg-violet-50 text-violet-500",
+  },
+  {
+    id: "msc",
+    label: "Miscellaneous",
+    icon: FileIcon,
+    tag: "bg-sky-50 text-sky-500",
+  },
 ];
 
 const verificationMenuItems = [
-  { id: "verification/bus", label: "BUS Verification", icon: FileText, enabled: true },
-  { id: "cvsVer",           label: "CVS Verification", icon: FileText, enabled: false },
+  {
+    id: "verification/bus",
+    label: "BUS Verification",
+    icon: FileText,
+    enabled: true,
+  },
+  { id: "cvsVer", label: "CVS Verification", icon: FileText, enabled: false },
 ];
 
 const bottomItems = [
@@ -49,22 +74,22 @@ const bottomItems = [
 ];
 
 const adminItems = [
-  { id: "operations/dashboard", label: "Ops Dashboard",    icon: Home },
-  { id: "admin/register",       label: "Register Account", icon: UserPlus },
-  { id: "admin/employees",      label: "Employees",        icon: Users },
-  { id: "admin/office",         label: "Operations Office",icon: Building2 },
-  { id: "admin/lgu",            label: "LGU",              icon: Landmark },
-  { id: "admin/barangay",       label: "Barangay",         icon: MapPin },
+  { id: "operations/dashboard", label: "Ops Dashboard", icon: Home },
+  { id: "admin/register", label: "Register Account", icon: UserPlus },
+  { id: "admin/employees", label: "Employees", icon: Users },
+  { id: "admin/office", label: "Operations Office", icon: Building2 },
+  { id: "admin/lgu", label: "LGU", icon: Landmark },
+  { id: "admin/barangay", label: "Barangay", icon: MapPin },
 ];
 
 const operationsItems = [
   { id: "operations/my-office", label: "My Office", icon: Building2 },
-  { id: "operations/staff",     label: "Staff",     icon: Users },
+  { id: "operations/staff", label: "Staff", icon: Users },
 ];
 
 const AccountItems = [
   { id: "settings", label: "Settings", icon: Settings },
-  { id: "logout",   label: "Logout",   icon: LogOut },
+  { id: "logout", label: "Logout", icon: LogOut },
 ];
 
 // ── Section label ─────────────────────────────────────────────
@@ -158,21 +183,19 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
     updateSidebarOption(option);
   };
 
-  const authorizedEncoderModule = ["ADMIN", "ENCODER"]
-  const authorizedVerifiedModule = ["ADMIN", "VERIFIER"]
-  const authorizedOpsStaffModule = ["AC", "SWOIII", "ADMIN"]
-  const authorizedVerifierModule = ["ADMIN", "VERIFIER"]
+  const authorizedEncoderModule = ["ADMIN", "ENCODER"];
+  const authorizedVerifiedModule = ["ADMIN", "VERIFIER"];
+  const authorizedOpsStaffModule = ["AC", "SWOIII", "ADMIN"];
+  const authorizedVerifierModule = ["ADMIN", "VERIFIER"];
 
-const logout = async () => {
-  const res = await APIFETCH.get("/auth/logout");
-  if (res.data.logout) {
-    queryClient.clear();       // clear first
-    navigate("/login");        // then navigate
-    show(`${res.data.message}`, "success");
-  } else {
-    show(`${res.data.message}`, "error");
-  }
-};
+  const logout = async () => {
+    const res = await APIFETCH.get("/auth/logout");
+    if (res.data.logout) {
+      queryClient.clear(); // clear first
+      window.location.href = "/login";
+
+    }
+  };
 
   const initials = (User?.govUsername?.[0] ?? "U").toUpperCase();
 
@@ -198,7 +221,11 @@ const logout = async () => {
         {/* Logo */}
         <div className="h-15 flex items-center px-5 border-b border-(--color-border) shrink-0">
           <a href="/" className="flex items-center gap-2.5 no-underline group">
-            <img src="/nathracker_icon_v9.svg" alt="NathRacker" className="w-10 h-10" />
+            <img
+              src="/nathracker_icon_v9.svg"
+              alt="NathRacker"
+              className="w-10 h-10"
+            />
             <span className="text-[15px] font-semibold tracking-tight text-(--color-ink)">
               NathRacker
             </span>
@@ -206,53 +233,58 @@ const logout = async () => {
         </div>
 
         {/* Nav */}
-        <div ref={navRef} className="flex-1 overflow-y-auto py-2 px-2.5 space-y-0" style={{ overflowAnchor: 'none' }}>
-        {authorizedEncoderModule.includes(User?.role) && (
-          <>
-              <SectionLabel label="Encoders Modules" />
-          <nav className="space-y-0.5">
-            {menuItems.map((item) => (
-              <NavItem
-                key={item.id}
-                item={item}
-                isActive={activeItem === item.id}
-                onClick={() => updateSidebar(item.id)}
-              />
-            ))}
-          </nav>
-          </>
-
-        )}
-        
-          {authorizedVerifiedModule.includes(User?.role) && (
+        <div
+          ref={navRef}
+          className="flex-1 overflow-y-auto py-2 px-2.5 space-y-0"
+          style={{ overflowAnchor: "none" }}
+        >
+          {authorizedEncoderModule.includes(User?.role) && (
             <>
-            <SectionLabel label="Verification Modules" />
-          <nav className="space-y-0.5">
-            {verificationMenuItems.map((item) => (
-              <NavItem
-                key={item.id}
-                item={item}
-                isActive={activeItem === item.id}
-                onClick={() =>
-                  item.enabled
-                    ? updateSidebar(item.id)
-                    : console.log("UNDERDEVELOPMENT")
-                }
-                disabled={!item.enabled}
-              />
-            ))}
-            {verificationMenuItems.some((i) => !i.enabled) && (
-              <div className="flex items-center gap-1.5 px-3 py-1">
-                <Construction size={10} className="text-(--color-placeholder)" />
-                <span className="text-[10px] text-(--color-placeholder)">
-                  Some modules under development
-                </span>
-              </div>
-            )}
-          </nav>
+              <SectionLabel label="Encoders Modules" />
+              <nav className="space-y-0.5">
+                {menuItems.map((item) => (
+                  <NavItem
+                    key={item.id}
+                    item={item}
+                    isActive={activeItem === item.id}
+                    onClick={() => updateSidebar(item.id)}
+                  />
+                ))}
+              </nav>
             </>
           )}
-          
+
+          {authorizedVerifiedModule.includes(User?.role) && (
+            <>
+              <SectionLabel label="Verification Modules" />
+              <nav className="space-y-0.5">
+                {verificationMenuItems.map((item) => (
+                  <NavItem
+                    key={item.id}
+                    item={item}
+                    isActive={activeItem === item.id}
+                    onClick={() =>
+                      item.enabled
+                        ? updateSidebar(item.id)
+                        : console.log("UNDERDEVELOPMENT")
+                    }
+                    disabled={!item.enabled}
+                  />
+                ))}
+                {verificationMenuItems.some((i) => !i.enabled) && (
+                  <div className="flex items-center gap-1.5 px-3 py-1">
+                    <Construction
+                      size={10}
+                      className="text-(--color-placeholder)"
+                    />
+                    <span className="text-[10px] text-(--color-placeholder)">
+                      Some modules under development
+                    </span>
+                  </div>
+                )}
+              </nav>
+            </>
+          )}
 
           <SectionLabel label="Reports" />
           <nav className="space-y-0.5">
@@ -309,7 +341,6 @@ const logout = async () => {
               />
             ))}
           </nav>
-
         </div>
 
         {/* Footer — user card */}
@@ -317,7 +348,9 @@ const logout = async () => {
           {User && (
             <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg bg-(--color-surface) border border-(--color-border)">
               <div className="w-7 h-7 rounded-full bg-(--color-ink) flex items-center justify-center shrink-0">
-                <span className="text-[11px] font-bold text-(--color-bg)">{initials}</span>
+                <span className="text-[11px] font-bold text-(--color-bg)">
+                  {initials}
+                </span>
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-[12px] font-semibold text-(--color-ink) truncate leading-tight">
