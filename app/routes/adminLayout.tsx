@@ -24,9 +24,9 @@ export default function AppLayout() {
             <p className="text-[13px] text-(--color-muted)">Loading...</p>
           </div>
         </div>
-      ) : isAuthenticated && !authorizedUser.includes(user?.role) ? (
+      ) : isAuthenticated && user && !authorizedUser.includes(user?.role) ? (
         <UnauthorizedPage />
-      ) : isAuthenticated ? (
+      ) : isAuthenticated && user ? (
         <Outlet />
       ) : null}
     </LayoutWrapper>
