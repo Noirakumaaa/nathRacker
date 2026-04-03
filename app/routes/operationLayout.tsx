@@ -26,7 +26,7 @@ export default function operationLayout() {
             <p className="text-[13px] text-(--color-muted)">Loading...</p>
           </div>
         </div>
-      ) : !authorizedUser.includes(user?.role) ? (
+      ) : isAuthenticated && !authorizedUser.includes(user?.role) ? (
         <UnauthorizedPage />
       ) : isAuthenticated ? (
         <Outlet />
