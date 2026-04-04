@@ -2,12 +2,13 @@
   "name": "nathracker",
   "private": true,
   "type": "module",
-  "scripts": {
-    "build": "react-router build",
-    "dev": "react-router dev",
-    "start": "react-router-serve ./build/server/index.js",
-    "typecheck": "react-router typegen && tsc"
-  },
+"scripts": {
+  "build": "react-router build --mode production",
+  "build:staging": "react-router build --mode staging",
+  "dev": "react-router dev --mode staging",
+  "start": "react-router-serve ./build/server/index.js",
+  "typecheck": "react-router typegen && tsc"
+},
   "dependencies": {
     "@react-router/node": "7.12.0",
     "@react-router/serve": "7.12.0",

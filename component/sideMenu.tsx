@@ -191,7 +191,7 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
   const logout = async () => {
     const res = await APIFETCH.get("/auth/logout");
     if (res.data.logout) {
-      queryClient.clear(); // clear first
+      queryClient.clear();
       window.location.href = "/login";
 
     }

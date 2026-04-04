@@ -23,8 +23,8 @@ export function useAuth() {
       }
     },
     retry: false,
-    staleTime: 0,
-    gcTime: 0,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 
   // When the query errors (expired cookie, 401, etc.) keep isLoading true

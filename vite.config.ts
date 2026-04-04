@@ -6,15 +6,12 @@ import tsconfigPaths from "vite-tsconfig-paths"
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
 
-  const allowedHosts = env.ALLOWED_HOSTS
-    ? env.ALLOWED_HOSTS.split(',').map((h) => h.trim())
-    : []
 
   return {
     plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
     server: {
       host: "0.0.0.0",
-      port: 3000,
+      port: env.PORT ? Number(env.PORT) : undefined,
       proxy: {
         "/api": {
           target: env.API_URL || "http://localhost:3001",
@@ -22,7 +19,7 @@ export default defineConfig(({ mode }) => {
           secure: false
         }
       },
-      allowedHosts,
+      allowedHosts: ['staging.nathdomain.com',"nathdomain.com"],
     }
   }
 })

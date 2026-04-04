@@ -37,7 +37,7 @@ export function LcnRecentTable() {
   const buildColumns: ColumnDef<LcnRecord>[] = [
     {
       header: "HH ID",
-      headerClassName: "text-left first:pl-6",
+      headerClassName: "text-center first:pl-6",
       className: "pl-6 pr-4",
       cell: (r) => (
         <div className="flex items-center gap-1.5 group">
@@ -54,7 +54,7 @@ export function LcnRecentTable() {
     },
     {
       header: "Grantee",
-      headerClassName: "text-left",
+      headerClassName: "text-center",
       cell: (r) => (
         <span className="text-[12px] font-medium text-(--color-ink) whitespace-nowrap">
           {r.granteeName || <span className="text-[#d4d4cc]">—</span>}
@@ -62,26 +62,8 @@ export function LcnRecentTable() {
       ),
     },
     {
-      header: "LGU",
-      headerClassName: "text-left",
-      cell: (r) => (
-        <span className="text-[12px] text-(--color-muted) whitespace-nowrap">
-          {r.lgu || <span className="text-[#d4d4cc]">—</span>}
-        </span>
-      ),
-    },
-    {
-      header: "Barangay",
-      headerClassName: "text-left",
-      cell: (r) => (
-        <span className="text-[12px] text-(--color-muted) whitespace-nowrap">
-          {r.barangay || <span className="text-[#d4d4cc]">—</span>}
-        </span>
-      ),
-    },
-    {
       header: "Subject",
-      headerClassName: "text-left",
+      headerClassName: "text-center",
       className: "max-w-[120px] truncate",
       cell: (r) => (
         <span className="text-[12px] text-(--color-muted)">
@@ -91,7 +73,7 @@ export function LcnRecentTable() {
     },
     {
       header: "PCN",
-      headerClassName: "text-left",
+      headerClassName: "text-center",
       cell: (r) => (
         <span className="font-mono text-[10px] font-medium px-2 py-0.5 rounded-md bg-rose-50 text-rose-600 tracking-wider whitespace-nowrap">
           {r.pcn || "—"}
@@ -99,8 +81,8 @@ export function LcnRecentTable() {
       ),
     },
     {
-      header: "TR",
-      headerClassName: "text-left",
+      header: "LRN",
+      headerClassName: "text-center",
       cell: (r) => (
         <span className="font-mono text-[11px] text-(--color-muted) whitespace-nowrap">
           {r.lrn || <span className="text-[#d4d4cc] font-sans">—</span>}
@@ -109,30 +91,12 @@ export function LcnRecentTable() {
     },
     {
       header: "Remarks",
-      headerClassName: "text-left",
+      headerClassName: "text-center",
       cell: (r) => <EncodedBadge value={r.remarks} />,
     },
     {
-      header: "DRN",
-      headerClassName: "text-left",
-      cell: (r) => (
-        <span className="font-mono text-[11px] text-(--color-muted) whitespace-nowrap">
-          {r.drn || <span className="text-[#d4d4cc] font-sans">—</span>}
-        </span>
-      ),
-    },
-    {
-      header: "CL",
-      headerClassName: "text-left",
-      cell: (r) => (
-        <span className="font-mono text-[11px] text-(--color-muted) whitespace-nowrap">
-          {r.cl || <span className="text-[#d4d4cc] font-sans">—</span>}
-        </span>
-      ),
-    },
-    {
       header: "Date",
-      headerClassName: "text-left",
+      headerClassName: "text-center",
       cell: (r) => (
         <span className="text-[11px] text-(--color-muted) whitespace-nowrap tabular-nums">
           {new Date(r.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
@@ -140,18 +104,8 @@ export function LcnRecentTable() {
       ),
     },
     {
-      header: "Note",
-      headerClassName: "text-left",
-      className: "max-w-[100px] truncate",
-      cell: (r) => (
-        <span className="text-[12px] text-(--color-muted)">
-          {r.note || <span className="text-[#d4d4cc]">—</span>}
-        </span>
-      ),
-    },
-    {
       header: "Actions",
-      headerClassName: "text-left",
+      headerClassName: "text-center",
       className: "pl-4 pr-6",
       cell: (r) => (
         <div className="flex items-center gap-3">

@@ -8,8 +8,7 @@ import { useNavigate } from "react-router";
 import { useParams } from "react-router";
 import type { RouteParams } from "~/types/authTypes";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Opt,Req } from "component/LabelStyle";
-
+import { Opt, Req } from "component/LabelStyle";
 
 export default function BusForm() {
   const queryClient = useQueryClient();
@@ -54,9 +53,6 @@ export default function BusForm() {
     if (isError || (isSuccess && !data)) navigate("/bus");
   }, [id, isError, isSuccess, data]);
 
-
-
-
   useEffect(() => {
     if (data) {
       setFormData(() => ({
@@ -77,17 +73,25 @@ export default function BusForm() {
   }, [data]);
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value.toUpperCase() }));
   };
 
+  const handleLettersOnly = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    e.target.value = e.target.value.replace(/[^a-zA-Z.,' ]/g, "");
+    handleInputChange(e);
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(formData)
-    const res = await APIFETCH.post<BusResponse>("/bus/upload", formData);
     setButtonLoading(true);
+    const res = await APIFETCH.post<BusResponse>("/bus/upload", formData);
     if (res.data.upload) {
       show(`${res.data.message}`, "success");
       queryClient.invalidateQueries({ queryKey: ["recentBus"] });
@@ -162,6 +166,8 @@ export default function BusForm() {
                     className={inputCls}
                     placeholder="Enter LGU"
                     required
+                    maxLength={20}
+                    minLength={6}
                   />
                 </div>
                 <div>
@@ -177,6 +183,8 @@ export default function BusForm() {
                     className={inputCls}
                     placeholder="Enter Barangay"
                     required
+                    maxLength={20}
+                    minLength={6}
                   />
                 </div>
                 <div>
@@ -188,10 +196,15 @@ export default function BusForm() {
                     id="hhId"
                     name="hhId"
                     value={formData.hhId}
-                    onChange={handleInputChange}
+                    onChange={(e) => {
+                      e.target.value = e.target.value.replace(/[^0-9-]/g, "");
+                      handleInputChange(e);
+                    }}
                     className={inputCls}
                     placeholder="Enter HH ID"
                     required
+                    maxLength={25}
+                    minLength={6}
                   />
                 </div>
                 <div>
@@ -203,10 +216,12 @@ export default function BusForm() {
                     id="granteeName"
                     name="granteeName"
                     value={formData.granteeName}
-                    onChange={handleInputChange}
+                    onChange={handleLettersOnly}
                     className={inputCls}
                     placeholder="Enter Name"
                     required
+                    maxLength={40}
+                    minLength={6}
                   />
                 </div>
                 <div>
@@ -218,10 +233,12 @@ export default function BusForm() {
                     id="subjectOfChange"
                     name="subjectOfChange"
                     value={formData.subjectOfChange}
-                    onChange={handleInputChange}
+                    onChange={handleLettersOnly}
                     className={inputCls}
                     placeholder="Enter Subject"
                     required
+                    maxLength={40}
+                    minLength={6}
                   />
                 </div>
               </div>
@@ -264,10 +281,12 @@ export default function BusForm() {
                     id="updateInfo"
                     name="updateInfo"
                     value={formData.updateInfo}
-                    onChange={handleInputChange}
+                    onChange={handleLettersOnly}
                     required
                     className={inputCls}
                     placeholder="Enter Update Info"
+                    maxLength={50}
+                    minLength={6}
                   />
                 </div>
                 <div>
@@ -297,10 +316,12 @@ export default function BusForm() {
                     id="cl"
                     name="cl"
                     value={formData.cl}
-                    onChange={handleInputChange}
+                    onChange={handleLettersOnly}
                     required
                     className={inputCls}
                     placeholder="Enter City Link or SWA"
+                    maxLength={50}
+                    minLength={6}
                   />
                 </div>
                 <div>
@@ -336,10 +357,18 @@ export default function BusForm() {
                     id="issue"
                     name="issue"
                     value={formData.issue}
-                    onChange={handleInputChange}
+                    onChange={(e) => {
+                      e.target.value = e.target.value.replace(
+                        /[^a-zA-Z0-9. ]/g,
+                        "",
+                      );
+                      handleInputChange(e);
+                    }}
                     rows={2}
                     className={inputCls + " resize-none"}
                     placeholder="Enter issues..."
+                    maxLength={80}
+                    minLength={6}
                   />
                 </div>
                 <div>
@@ -355,6 +384,8 @@ export default function BusForm() {
                     required
                     className={inputCls}
                     placeholder="Enter DRN"
+                    maxLength={4}
+                    minLength={4}
                   />
                 </div>
                 <div>
@@ -365,10 +396,18 @@ export default function BusForm() {
                     id="note"
                     name="note"
                     value={formData.note}
-                    onChange={handleInputChange}
+                    onChange={(e) => {
+                      e.target.value = e.target.value.replace(
+                        /[^a-zA-Z0-9. ]/g,
+                        "",
+                      );
+                      handleInputChange(e);
+                    }}
                     rows={2}
                     className={inputCls + " resize-none"}
                     placeholder="Enter note..."
+                    maxLength={80}
+                    minLength={6}
                   />
                 </div>
 
@@ -397,3 +436,4 @@ export default function BusForm() {
     </>
   );
 }
+12312321

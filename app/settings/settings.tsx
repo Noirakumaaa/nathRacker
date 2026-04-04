@@ -531,21 +531,13 @@ function SecuritySettings() {
     }
   })
 
-  const msToKey: Record<number, string> = {
-    [15 * 60 * 1000]: "15",
-    [30 * 60 * 1000]: "30",
-    [60 * 60 * 1000]: "1",
-    [2 * 60 * 60 * 1000]: "2",
-    [4 * 60 * 60 * 1000]: "4",
-    [365 * 24 * 60 * 60 * 1000]: "never",
-  };
 
   useEffect(() => {
     if (!SecurityData) return;
     setSec({
       twoFactor: SecurityData.twoFactorAuth,
       loginAlerts: SecurityData.loginAlert,
-      sessionTimeout: msToKey[SecurityData.sessionTime] ?? "30",
+      sessionTimeout: SecurityData.sessionTime
     });
   }, [SecurityData])
 

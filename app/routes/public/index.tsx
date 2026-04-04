@@ -2,7 +2,6 @@ import IndexPage from "~/index";
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from 'component/authGuard';
-import { LoadingScreen } from 'component/LoadingScreen';
 
 export function meta() {
   return [
@@ -13,14 +12,11 @@ export function meta() {
 
 export default function Index() {
   const navigate = useNavigate();
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     if (isAuthenticated) navigate("/dashboard");
   }, [isAuthenticated]);
 
-  if (isLoading) return <LoadingScreen />;
-
   return (<IndexPage />)
-
 }

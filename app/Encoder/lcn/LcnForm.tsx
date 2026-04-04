@@ -74,6 +74,12 @@ export function LcnForm() {
     setFormData((prev) => ({ ...prev, [name]: value.toUpperCase() }));
   };
 
+  const handlePcnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const digits = e.target.value.replace(/[^0-9]/g, "").slice(0, 16);
+    const formatted = digits.match(/.{1,4}/g)?.join("-") ?? digits;
+    setFormData((prev) => ({ ...prev, pcn: formatted }));
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!formData.pcn.trim() && !formData.lrn.trim()) {
@@ -231,9 +237,9 @@ export function LcnForm() {
                     type="text"
                     name="pcn"
                     value={formData.pcn}
-                    onChange={handleChange}
+                    onChange={handlePcnChange}
                     className={inputCls}
-                    placeholder="Enter PCN"
+                    placeholder="XXXX-XXXX-XXXX-XXXX"
                   />
                 </div>
                 <div>
@@ -249,12 +255,12 @@ export function LcnForm() {
                     value={formData.lrn}
                     onChange={handleChange}
                     className={inputCls}
-                    placeholder="Enter TR"
+                    placeholder="Enter LRN"
                   />
                 </div>
                 <div>
                   <label className={labelCls}>
-                    Encoded Y/N <Req />
+                    REMARKS<Req />
                   </label>
                   <select
                     name="remarks"

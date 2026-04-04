@@ -422,20 +422,7 @@ export default function IndexPage() {
           <img src="/nathracker_icon_v9.svg" alt="NathRacker" className="w-7 h-7" />
           <p className="text-[13px] text-(--color-muted)">© 2026 NathRacker</p>
         </div>
-        <div className="flex gap-5">
-          <a
-            href="/login"
-            className="text-[13px] text-(--color-muted) hover:text-(--color-ink) transition-colors no-underline"
-          >
-            Login
-          </a>
-          <a
-            href="/register"
-            className="text-[13px] text-(--color-muted) hover:text-(--color-ink) transition-colors no-underline"
-          >
-            Register
-          </a>
-        </div>
+  
       </footer>
 
       <style>{`
