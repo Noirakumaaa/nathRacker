@@ -10,7 +10,10 @@ export function meta() {
 }
 
 export default function OperationsDashboardRoute() {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) return null;
+  if (!user) return <UnauthorizedPage />;
 
   if (user.role !== "ADMIN") return <UnauthorizedPage />;
 

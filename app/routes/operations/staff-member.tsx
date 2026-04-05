@@ -13,7 +13,10 @@ export function meta() {
 export default function StaffMemberRoute() {
   const navigate = useNavigate();
   const { username } = useParams<{ username: string }>();
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) return null;
+  if (!user) return <UnauthorizedPage />;
 
   useEffect(() => {
     if (!username) navigate("/operations/staff");

@@ -11,7 +11,10 @@ export function meta() {
 }
 
 export default function BusRoute() {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) return null;
+  if (!user) return <UnauthorizedPage />;
 
   if (!AuthorizedUser.includes(user.role)) return <UnauthorizedPage />;
 

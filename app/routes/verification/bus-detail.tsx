@@ -13,7 +13,10 @@ export function meta() {
 export default function BusVerificationDetailRoute() {
   const navigate = useNavigate();
   const { cl } = useParams<{ cl: string }>();
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) return null;
+  if (!user) return <UnauthorizedPage />;
 
   useEffect(() => {
     if (!cl) navigate("/verification/bus");

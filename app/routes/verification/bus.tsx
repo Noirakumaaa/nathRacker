@@ -9,7 +9,10 @@ export function meta() {
 }
 
 export default function BusVerificationRoute() {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) return null;
+  if (!user) return <UnauthorizedPage />;
 
   if (!ALLOWED_ROLES.includes(user.role)) return <UnauthorizedPage />;
 
