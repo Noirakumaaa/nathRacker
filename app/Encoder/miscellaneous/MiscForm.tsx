@@ -30,7 +30,7 @@ interface BARANGAY {
 
 export default function MiscForm() {
 
-  const miscId = useSelectedID((state)=> state.selectedIds.misc)
+  const miscId = useSelectedID((state) => state.selectedIds.misc)
   const clearSelectedId = useSelectedID((s) => s.clearSelectedId);
   const queryClient = useQueryClient()
   const { show } = useToastStore();
@@ -174,17 +174,17 @@ export default function MiscForm() {
         onSubmit={handleSubmit}
         className="bg-(--color-surface) rounded-xl border border-(--color-border) overflow-hidden"
       >
-      <div className="px-6 py-4 border-b border-(--color-border) flex items-center justify-between">
-        <p className="text-[11px] font-medium text-(--color-muted) uppercase tracking-wider">
-          Fill in the form below
-        </p>
-        <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-red-600 bg-red-50 border border-red-200 px-2 py-1 rounded-md uppercase tracking-wide">
-            <span className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block shrink-0" />
-            Selected Item : {miscId ?? "NONE"}
-          </span>
+        <div className="px-6 py-4 border-b border-(--color-border) flex items-center justify-between">
+          <p className="text-[11px] font-medium text-(--color-muted) uppercase tracking-wider">
+            Fill in the form below
+          </p>
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-red-600 bg-red-50 border border-red-200 px-2 py-1 rounded-md uppercase tracking-wide">
+              <span className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block shrink-0" />
+              Selected Item : {miscId ?? "NONE"}
+            </span>
+          </div>
         </div>
-      </div>
 
         <div className="p-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

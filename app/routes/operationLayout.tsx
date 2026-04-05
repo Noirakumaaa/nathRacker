@@ -6,7 +6,7 @@ import { useAuth } from "component/authGuard";
 import UnauthorizedPage from "~/notAuthorized/notAuthorized";
 
 
-const authorizedUser = ["AC","SWOIII", "ADMIN"]
+const authorizedUser = ["AC", "SWOIII", "ADMIN"]
 
 export default function operationLayout() {
   const navigate = useNavigate();
@@ -24,7 +24,7 @@ export default function operationLayout() {
         <div className="flex items-center justify-center h-full">
           <div className="flex flex-col items-center gap-3">
             <Loader2 size={24} className="animate-spin text-(--color-ink)" />
-            <p className="text-[13px] text-(--color-muted)">Loading...operation</p>
+            <p className="text-[13px] text-(--color-muted)">Loading...</p>
           </div>
         </div>
       ) : isAuthenticated && user && !authorizedUser.includes(user.role ?? "") ? (

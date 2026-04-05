@@ -167,7 +167,7 @@ export default function SWDIForm() {
     };
     console.log("Payload : ", payload);
     const res = await APIFETCH.post<SwdiResponse>("/swdi/upload", payload);
-    
+
     if (res.data.upload) {
       show(`${res.data.message}`, "success");
       queryClient.invalidateQueries({ queryKey: ["recentSwdi"] });
@@ -208,10 +208,14 @@ export default function SWDIForm() {
           <p className="text-[11px] font-medium text-(--color-muted) uppercase tracking-wider">
             Fill in the form below
           </p>
-          <span className="text-[11px] text-(--color-placeholder) font-mono">
-            * required
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-red-600 bg-red-50 border border-red-200 px-2 py-1 rounded-md uppercase tracking-wide">
+              <span className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block shrink-0" />
+              Selected Item : {swdiId ?? "NONE"}
+            </span>
+          </div>
         </div>
+
 
         <div className="p-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
