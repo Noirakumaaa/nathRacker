@@ -8,12 +8,18 @@ import { useNavigate } from "react-router";
 import { DeleteModal } from "~/records/deleteModal";
 import APIFETCH from "lib/axios/axiosConfig";
 import { useToastStore } from "lib/zustand/ToastStore";
+import { useSelectedID } from "lib/zustand/selectedId";
 
 export default function SwdiRecent() {
+  const setId = useSelectedID((state) => state.setSelectedId)
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { show } = useToastStore();
   const [deleteModal, setDeleteModal] = useState<{ open: boolean; id: string | null }>({ open: false, id: null });
+
+  const handleLoad = (data : SwdiRecord) => {
+    setId('swdi', Number(data.id))
+  }
 
   const handleDelete = async () => {
     if (!deleteModal.id) return;
@@ -115,14 +121,14 @@ export default function SwdiRecent() {
         <div className="flex items-center gap-3">
           <button
             type="button"
-            onClick={() => navigate(`/swdi/${r.id}`)}
+            onClick={() => handleLoad(r)}
             className="inline-flex items-center gap-1 text-[11px] font-medium text-(--color-muted) hover:text-(--color-ink) transition-colors cursor-pointer bg-transparent border-none whitespace-nowrap"
           >
             Load <ArrowUpRight size={11} />
           </button>
           <button
             type="button"
-            onClick={() => setDeleteModal({ open: true, id: r.id })}
+            onClick={() => setDeleteModal({ open: true, id: String(r.id) })}
             className="inline-flex items-center gap-1 text-[11px] font-medium text-red-400 hover:text-red-600 transition-colors cursor-pointer bg-transparent border-none whitespace-nowrap"
           >
             <Trash2 size={11} /> Delete

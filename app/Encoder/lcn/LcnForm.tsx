@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import APIFETCH from "lib/axios/axiosConfig";
 import { useState, useEffect } from "react";
 import type { LcnFormFields } from "~/types/lcnTypes";
@@ -7,17 +7,37 @@ import { useNavigate } from "react-router";
 import type { RouteParams } from "~/types/authTypes";
 import { useToastStore } from "lib/zustand/ToastStore";
 import { labelCls, inputCls } from "component/styleConfig";
-import { queryClient } from "~/root";
-import { Req } from "component/LabelStyle";
-export function LcnForm() {
-  const { id } = useParams<RouteParams>();
-  const { show } = useToastStore();
 
-  const navigate = useNavigate();
+interface Option {
+  value: string | number;
+  label: string;
+}
+
+interface LGU {
+  id: string | number;
+  name: string;
+  barangay: BARANGAY[];
+}
+
+interface BARANGAY {
+  id: string | number;
+  name: string;
+}
+
+import { Req } from "component/LabelStyle";
+import { useSelectedID } from "lib/zustand/selectedId";
+export function LcnForm() {
+  const queryClient = useQueryClient();
+  const { show } = useToastStore()
+  const lcnId = useSelectedID((state) => state.selectedIds.lcn)
+  const clearSelectedId = useSelectedID((s) => s.clearSelectedId);
 
   const today = new Date().toISOString().slice(0, 10);
 
   const [buttonLoading, setButtonLoading] = useState(false);
+
+  const [LguOption, setLguOption] = useState<Option[]>([]);
+  const [barangayOptions, setBarangayOptions] = useState<Option[]>([]);
 
   const [formData, setFormData] = useState<LcnFormFields>({
     lgu: "",
@@ -37,13 +57,56 @@ export function LcnForm() {
   });
 
   const { data } = useQuery({
-    queryKey: ["SelectedLcn", id],
+    queryKey: ["SelectedLcn", lcnId],
     queryFn: async () => {
-      const res = await APIFETCH.get(`/lcn/record/${id}`);
+      const res = await APIFETCH.get(`/lcn/record/${lcnId}`);
       return res.data;
     },
-    enabled: !!id,
+    enabled: !!lcnId,
   });
+
+  // Fetch LGU list
+  const { data: lgu } = useQuery({
+    queryKey: ["LGU"],
+    queryFn: async () => {
+      const res = await APIFETCH.get<LGU[]>("/bus/lgu");
+      return res.data;
+    },
+  });
+
+  // Format LGU options
+  useEffect(() => {
+    if (!lgu) return;
+    const formattedOptions: Option[] = lgu.map((item) => ({
+      value: item.id.toString(),
+      label: item.name,
+    }));
+    setLguOption(formattedOptions);
+  }, [lgu]);
+
+  // Update Barangay options when LGU changes
+  useEffect(() => {
+    if (!lgu) return;
+
+    // Log LGU names
+    lgu.forEach((l) => console.log("LGU name:", l.name));
+
+    const selectedLgu = lgu.find(
+      (l) => l.id.toString() === formData.lgu.toString(),
+    );
+    console.log("Selected LGU:", selectedLgu?.name);
+
+    const options =
+      selectedLgu?.barangay.map((b) => ({
+        value: b.id.toString(),
+        label: b.name,
+      })) || [];
+
+    setBarangayOptions(options);
+
+    // Reset barangay if LGU changes
+    setFormData((prev) => ({ ...prev, barangay: "" }));
+  }, [formData.lgu, lgu]);
 
   useEffect(() => {
     if (!data) return;
@@ -80,22 +143,36 @@ export function LcnForm() {
     setFormData((prev) => ({ ...prev, pcn: formatted }));
   };
 
+  const handlelettersonly = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.target.value = e.target.value.replace(/[^a-zA-Z. 1-5 ]/g, "");
+    handleChange(e);
+  };
+
+  const handledigitonly = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.target.value = e.target.value.replace(/[^0-9-]/g, "");
+    handleChange(e);
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
     if (!formData.pcn.trim() && !formData.lrn.trim()) {
       show("Please enter at least one of PCN or LRN.", "error");
       return;
     }
     setButtonLoading(true);
-    const res = await APIFETCH.post(`/lcn/upload`, formData);
-    if (res.data.upload) {
-      show(`${res.data.message}`, "success");
-      setButtonLoading(false);
-      queryClient.invalidateQueries({ queryKey: ["RecentLcn"] });
-    } else if (!res.data.upload) {
-      show(`${res.data.message}`, "error");
-      setButtonLoading(false);
-    }
+
+      const res = await APIFETCH.post(`/lcn/upload`, formData);
+      if (res.data.upload) {
+        show(`${res.data.message}`, "success");
+        queryClient.invalidateQueries({ queryKey: ["recentLcn"] });
+        queryClient.invalidateQueries({ queryKey: ["allDocuments"] });
+        setButtonLoading(false);
+        handleReset();
+      } else {
+        show(`${res.data.message}`, "error");
+      }
+   
   };
 
   const handleReset = () => {
@@ -115,7 +192,7 @@ export function LcnForm() {
       date: today,
       note: "",
     });
-    navigate("/lcn");
+    clearSelectedId("lcn");
   };
 
   return (
@@ -124,14 +201,19 @@ export function LcnForm() {
         onSubmit={handleSubmit}
         className="bg-(--color-surface) rounded-xl border border-(--color-border) overflow-hidden"
       >
-        <div className="px-6 py-4 border-b border-(--color-border) flex items-center justify-between">
-          <p className="text-[11px] font-medium text-(--color-muted) uppercase tracking-wider">
-            Fill in the form below
-          </p>
-          <span className="text-[11px] text-(--color-placeholder) font-mono">
-            * required
+      <div className="px-6 py-4 border-b border-(--color-border) flex items-center justify-between">
+        <p className="text-[11px] font-medium text-(--color-muted) uppercase tracking-wider">
+          Fill in the form below
+        </p>
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-red-600 bg-red-50 border border-red-200 px-2 py-1 rounded-md uppercase tracking-wide">
+            <span className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block shrink-0" />
+            Selected Item : {lcnId ?? "NONE"}
           </span>
         </div>
+      </div>
+
+
 
         <div className="p-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -151,40 +233,61 @@ export function LcnForm() {
                     type="text"
                     name="hhId"
                     value={formData.hhId}
-                    onChange={handleChange}
+                    onChange={handledigitonly}
                     className={inputCls}
                     placeholder="Enter HH ID"
                     required
+                    maxLength={25}
+                    minLength={6}
                   />
                 </div>
 
+                {/* LGU */}
                 <div>
-                  <label className={labelCls}>
+                  <label htmlFor="lgu" className={labelCls}>
                     LGU <Req />
                   </label>
-                  <input
-                    type="text"
+                  <select
+                    id="lgu"
                     name="lgu"
                     value={formData.lgu}
                     onChange={handleChange}
                     className={inputCls}
-                    placeholder="Enter LGU"
                     required
-                  />
+                  >
+                    <option value="">--Select LGU--</option>
+                    {LguOption.map((item) => (
+                      <option key={item.value} value={item.value}>
+                        {item.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-                                <div>
-                  <label className={labelCls}>
-                    Barangay <Req />{" "}
+
+                {/* Barangay */}
+                <div>
+                  <label htmlFor="barangay" className={labelCls}>
+                    Barangay <Req />
                   </label>
-                  <input
-                    type="text"
+                  <select
+                    id="barangay"
                     name="barangay"
                     value={formData.barangay}
                     onChange={handleChange}
-                    className={inputCls}
-                    placeholder="Enter Barangay"
+                    className={
+                      inputCls +
+                      (formData.lgu ? "" : " opacity-80 cursor-not-allowed")
+                    }
                     required
-                  />
+                    disabled={!formData.lgu}
+                  >
+                    <option value="">--Select Barangay--</option>
+                    {barangayOptions.map((b) => (
+                      <option key={b.value} value={b.value}>
+                        {b.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <label className={labelCls}>
@@ -194,10 +297,12 @@ export function LcnForm() {
                     type="text"
                     name="granteeName"
                     value={formData.granteeName}
-                    onChange={handleChange}
+                    onChange={handlelettersonly}
                     className={inputCls}
                     placeholder="Enter Name"
                     required
+                    maxLength={50}
+                    minLength={6}
                   />
                 </div>
 
@@ -209,7 +314,7 @@ export function LcnForm() {
                     type="text"
                     name="subjectOfChange"
                     value={formData.subjectOfChange}
-                    onChange={handleChange}
+                    onChange={handlelettersonly}
                     className={inputCls}
                     placeholder="Enter Subject"
                     required
@@ -260,7 +365,8 @@ export function LcnForm() {
                 </div>
                 <div>
                   <label className={labelCls}>
-                    REMARKS<Req />
+                    REMARKS
+                    <Req />
                   </label>
                   <select
                     name="remarks"
@@ -284,6 +390,8 @@ export function LcnForm() {
                     onChange={handleChange}
                     className={inputCls}
                     placeholder="Enter City Link or SWA"
+                    maxLength={25}
+                    minLength={6}
                   />
                 </div>
                 <div>
@@ -317,6 +425,8 @@ export function LcnForm() {
                     onChange={handleChange}
                     className={inputCls}
                     placeholder="Enter DRN"
+                    maxLength={9}
+                    minLength={6}
                   />
                 </div>
                 <div>
@@ -324,10 +434,18 @@ export function LcnForm() {
                   <textarea
                     name="issue"
                     value={formData.issue}
-                    onChange={handleChange}
+                    onChange={(e) => {
+                      const sanitizedValue = e.target.value; // you can sanitize here if needed
+                      setFormData((data) => ({
+                        ...data,
+                        issue: sanitizedValue,
+                      }));
+                    }}
                     rows={2}
                     className={inputCls + " resize-none"}
                     placeholder="Enter issues..."
+                    maxLength={85}
+                    minLength={6}
                   />
                 </div>
                 <div>
@@ -339,6 +457,8 @@ export function LcnForm() {
                     rows={2}
                     className={inputCls + " resize-none"}
                     placeholder="Enter note..."
+                    maxLength={85}
+                    minLength={6}
                   />
                 </div>
 

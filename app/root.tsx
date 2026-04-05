@@ -15,7 +15,8 @@ import {
 import type { Route } from "./+types/root";
 import "./app.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import APIFETCH from "lib/axios/axiosConfig";
+
+
 
 export async function loader({ request }: Route.LoaderArgs) {
   const cookie = request.headers.get("Cookie") ?? "";
@@ -68,38 +69,38 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function Root() {
   const { open, statusMessage, toastStatus } = useToastStore();
-  const { theme, setTheme } = useThemeStore();
+  // const { theme, setTheme } = useThemeStore();
 
-  useEffect(() => {
-    APIFETCH.get("/settings/UserInfo")
-      .then((res) => {
-        const t = res.data?.theme;
-        if (t === "LIGHT") setTheme("light");
-        else if (t === "DARK") setTheme("dark");
-      })
-      .catch(() => {
-        // Not authenticated — use system preference
-        setTheme("system");
-      });
-  }, []);
+  // useEffect(() => {
+  //   APIFETCH.get("/settings/UserInfo")
+  //     .then((res) => {
+  //       const t = res.data?.theme;
+  //       if (t === "LIGHT") setTheme("light");
+  //       else if (t === "DARK") setTheme("dark");
+  //     })
+  //     .catch(() => {
+  //       // Not authenticated — use system preference
+  //       setTheme("system");
+  //     });
+  // }, []);
 
-  useEffect(() => {
-    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+  // useEffect(() => {
+  //   const mq = window.matchMedia("(prefers-color-scheme: dark)");
 
-    const apply = () => {
-      const resolved = theme === "system" ? (mq.matches ? "dark" : "light") : theme;
-      document.documentElement.setAttribute("data-theme", resolved);
-      document.cookie = `resolved-theme=${resolved}; path=/; max-age=31536000; SameSite=Lax`;
-    };
+  //   const apply = () => {
+  //     const resolved = theme === "system" ? (mq.matches ? "dark" : "light") : theme;
+  //     document.documentElement.setAttribute("data-theme", resolved);
+  //     document.cookie = `resolved-theme=${resolved}; path=/; max-age=31536000; SameSite=Lax`;
+  //   };
 
-    apply();
+  //   apply();
 
-    // Keep in sync if system preference changes while on a public page
-    if (theme === "system") {
-      mq.addEventListener("change", apply);
-      return () => mq.removeEventListener("change", apply);
-    }
-  }, [theme]);
+  //   // Keep in sync if system preference changes while on a public page
+  //   if (theme === "system") {
+  //     mq.addEventListener("change", apply);
+  //     return () => mq.removeEventListener("change", apply);
+  //   }
+  // }, [theme]);
 
   return (
     <QueryClientProvider client={queryClient}>

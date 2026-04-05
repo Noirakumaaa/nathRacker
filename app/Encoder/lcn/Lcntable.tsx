@@ -9,12 +9,17 @@ import { EncodedBadge } from "component/StyleBadge";
 import { DeleteModal } from "~/records/deleteModal";
 import APIFETCH from "lib/axios/axiosConfig";
 import { useToastStore } from "lib/zustand/ToastStore";
+import { useSelectedID } from "lib/zustand/selectedId";
 
 export function LcnRecentTable() {
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { show } = useToastStore();
   const [deleteModal, setDeleteModal] = useState<{ open: boolean; id: string | null }>({ open: false, id: null });
+  const setID = useSelectedID((state)=>state.setSelectedId)
+  
+    const handleLoad = (r : LcnRecord) => {
+      setID("lcn", Number(r.id))
+    }
 
   const handleDelete = async () => {
     if (!deleteModal.id) return;
@@ -22,7 +27,7 @@ export function LcnRecentTable() {
       const res = await APIFETCH.delete(`/lcn/delete/${deleteModal.id}`);
       if (res.data.deleted ?? res.status === 200) {
         show(res.data.message ?? "Record deleted", "success");
-        queryClient.invalidateQueries({ queryKey: ["recentPcn"] });
+        queryClient.invalidateQueries({ queryKey: ["recentLcn"] });
         queryClient.invalidateQueries({ queryKey: ["allDocuments"] });
       } else {
         show(res.data.message ?? "Failed to delete", "error");
@@ -110,7 +115,7 @@ export function LcnRecentTable() {
       cell: (r) => (
         <div className="flex items-center gap-3">
           <button
-            onClick={() => navigate(`/lcn/${r.id}`)}
+            onClick={() =>handleLoad(r)}
             className="inline-flex items-center gap-1 text-[11px] font-medium text-(--color-muted) hover:text-(--color-ink) transition-colors cursor-pointer bg-transparent border-none whitespace-nowrap"
           >
             Load <ArrowUpRight size={11} />
@@ -134,7 +139,7 @@ export function LcnRecentTable() {
         onCancel={() => setDeleteModal({ open: false, id: null })}
       />
       <RecentTable<LcnRecord>
-        queryKey="recentPcn"
+        queryKey="recentLcn"
         endpoint="/lcn/recent"
         columns={buildColumns}
         rowClassName={(_, i) =>

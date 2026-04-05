@@ -512,6 +512,8 @@ function AppearanceSettings() {
   );
 }
 
+
+
 // ── 4. Security Settings ──────────────────────────────────────────────────────
 function SecuritySettings() {
   const [sec, setSec] = useState({
@@ -521,6 +523,16 @@ function SecuritySettings() {
   });
   const { show } = useToastStore()
   const { status, trigger } = useSaveStatus();
+
+  const sessionTimeoutFormatReversed: { [key: number]: string } = {
+  900000: "15",
+  1800000: "30",
+  3600000: "1",
+  7200000: "2",
+  10800000: "3",
+  14400000: "4",
+  31536000000: "never"
+};
 
 
   const { data: SecurityData } = useQuery({
@@ -537,7 +549,7 @@ function SecuritySettings() {
     setSec({
       twoFactor: SecurityData.twoFactorAuth,
       loginAlerts: SecurityData.loginAlert,
-      sessionTimeout: SecurityData.sessionTime
+      sessionTimeout: sessionTimeoutFormatReversed[SecurityData.sessionTime]
     });
   }, [SecurityData])
 

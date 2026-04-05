@@ -11,15 +11,36 @@ import { useNavigate } from "react-router";
 import type { RouteParams } from "~/types/authTypes";
 import { useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
-import { queryClient } from "~/root";
+import { useQueryClient } from "@tanstack/react-query";
 import { Req } from "component/LabelStyle";
+import { useSelectedID } from "lib/zustand/selectedId";
+
+interface Option {
+  value: string | number;
+  label: string;
+}
+
+interface LGU {
+  id: string | number;
+  name: string;
+  barangay: BARANGAY[];
+}
+
+interface BARANGAY {
+  id: string | number;
+  name: string;
+}
 
 export default function SWDIForm() {
-  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const swdiId = useSelectedID((state) => state.selectedIds.swdi);
+  const clearSelectedId = useSelectedID((s) => s.clearSelectedId);
   const { show } = useToastStore();
-  const { id } = useParams<RouteParams>();
   const [buttonLoading, setButtonLoading] = useState(false);
   const [swdiScoreInput, setSwdiScoreInput] = useState<string>("");
+
+  const [LguOption, setLguOption] = useState<Option[]>([]);
+  const [barangayOptions, setBarangayOptions] = useState<Option[]>([]);
 
   const [formData, setFormData] = useState<SwdiFormFields>({
     hhId: "",
@@ -36,20 +57,57 @@ export default function SWDIForm() {
     date: new Date().toISOString().split("T")[0],
   });
 
-  const { data,isError, isSuccess } = useQuery({
-    queryKey: ["SelectedSwdi", id],
+  const { data, isError, isSuccess } = useQuery({
+    queryKey: ["SelectedSwdi", swdiId],
     queryFn: async () => {
-      const res = await APIFETCH.get<SwdiRecord>(`/swdi/record/${id}`);
+      const res = await APIFETCH.get<SwdiRecord>(`/swdi/record/${swdiId}`);
       return res.data;
     },
-    enabled: !!id,
+    enabled: !!swdiId,
   });
 
-    useEffect(() => {
-      if (!id) return;
-      if (isError || (isSuccess && !data)) navigate("/swdi");
-    }, [id, isError, isSuccess, data]);
-  
+  // Fetch LGU list
+  const { data: lgu } = useQuery({
+    queryKey: ["LGU"],
+    queryFn: async () => {
+      const res = await APIFETCH.get<LGU[]>("/bus/lgu");
+      return res.data;
+    },
+  });
+
+  // Format LGU options
+  useEffect(() => {
+    if (!lgu) return;
+    const formattedOptions: Option[] = lgu.map((item) => ({
+      value: item.id.toString(),
+      label: item.name,
+    }));
+    setLguOption(formattedOptions);
+  }, [lgu]);
+
+  // Update Barangay options when LGU changes
+  useEffect(() => {
+    if (!lgu) return;
+
+    // Log LGU names
+    lgu.forEach((l) => console.log("LGU name:", l.name));
+
+    const selectedLgu = lgu.find(
+      (l) => l.id.toString() === formData.lgu.toString(),
+    );
+    console.log("Selected LGU:", selectedLgu?.name);
+
+    const options =
+      selectedLgu?.barangay.map((b) => ({
+        value: b.id.toString(),
+        label: b.name,
+      })) || [];
+
+    setBarangayOptions(options);
+
+    // Reset barangay if LGU changes
+    setFormData((prev) => ({ ...prev, barangay: "" }));
+  }, [formData.lgu, lgu]);
 
   useEffect(() => {
     if (data) {
@@ -70,6 +128,16 @@ export default function SWDIForm() {
       }));
     }
   }, [data]);
+
+  // AUTO SET BARANGAY
+  useEffect(() => {
+    if (!data || !barangayOptions.length) return;
+
+    setFormData((prev) => ({
+      ...prev,
+      barangay: data.barangay?.toString() ?? "",
+    }));
+  }, [barangayOptions, data]);
 
   useEffect(() => {
     const score = parseFloat(swdiScoreInput);
@@ -92,17 +160,19 @@ export default function SWDIForm() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setButtonLoading(true);
     const payload = {
       ...formData,
       swdiScore: parseFloat(swdiScoreInput) || 0,
     };
     console.log("Payload : ", payload);
     const res = await APIFETCH.post<SwdiResponse>("/swdi/upload", payload);
-    setButtonLoading(true);
+    
     if (res.data.upload) {
       show(`${res.data.message}`, "success");
       queryClient.invalidateQueries({ queryKey: ["recentSwdi"] });
       setButtonLoading(false);
+      handleReset();
     } else if (!res.data.upload) {
       show(`#{show.data.message}`, "error");
       setButtonLoading(false);
@@ -125,8 +195,8 @@ export default function SWDIForm() {
       note: "",
       date: new Date().toISOString().split("T")[0],
     });
-    navigate("/")
-  }
+    clearSelectedId("swdi");
+  };
 
   return (
     <>
@@ -168,33 +238,52 @@ export default function SWDIForm() {
                     required
                   />
                 </div>
+                {/* LGU */}
                 <div>
-                  <label className={labelCls}>
+                  <label htmlFor="lgu" className={labelCls}>
                     LGU <Req />
                   </label>
-                  <input
-                    type="text"
+                  <select
+                    id="lgu"
                     name="lgu"
                     value={formData.lgu}
                     onChange={handleInputChange}
                     className={inputCls}
-                    placeholder="Enter LGU"
                     required
-                  />
+                  >
+                    <option value="">--Select LGU--</option>
+                    {LguOption.map((item) => (
+                      <option key={item.value} value={item.value}>
+                        {item.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
+
+                {/* Barangay */}
                 <div>
-                  <label className={labelCls}>
+                  <label htmlFor="barangay" className={labelCls}>
                     Barangay <Req />
                   </label>
-                  <input
-                    type="text"
+                  <select
+                    id="barangay"
                     name="barangay"
                     value={formData.barangay}
                     onChange={handleInputChange}
-                    className={inputCls}
-                    placeholder="Enter Barangay"
+                    className={
+                      inputCls +
+                      (formData.lgu ? "" : " opacity-80 cursor-not-allowed")
+                    }
                     required
-                  />
+                    disabled={!formData.lgu}
+                  >
+                    <option value="">--Select Barangay--</option>
+                    {barangayOptions.map((b) => (
+                      <option key={b.value} value={b.value}>
+                        {b.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <label htmlFor="grantee" className={labelCls}>
@@ -224,7 +313,8 @@ export default function SWDIForm() {
               <div className="space-y-3.5">
                 <div>
                   <label htmlFor="remarks" className={labelCls}>
-                    Remarks<Req />
+                    Remarks
+                    <Req />
                   </label>
                   <select
                     id="remarks"
@@ -274,9 +364,7 @@ export default function SWDIForm() {
                   />
                 </div>
                 <div>
-                  <label className={labelCls}>
-                    SWDI Level
-                  </label>
+                  <label className={labelCls}>SWDI Level</label>
                   <input
                     type="text"
                     name="swdiLevel"
@@ -284,7 +372,8 @@ export default function SWDIForm() {
                     value={formData.swdiLevel}
                     onChange={handleInputChange}
                     className={
-                      inputCls + " bg-(--color-bg) cursor-default text-(--color-muted)"
+                      inputCls +
+                      " bg-(--color-bg) cursor-default text-(--color-muted)"
                     }
                     placeholder="Auto-calculated"
                     required
@@ -331,8 +420,7 @@ export default function SWDIForm() {
                 </div>
                 <div>
                   <label className={labelCls}>
-                    Assigned City Link or SWA{" "}
-                    <Req />
+                    Assigned City Link or SWA <Req />
                   </label>
                   <input
                     type="text"

@@ -1,6 +1,7 @@
 import React from "react";
 
 export type MiscFormFields = {
+  [x: string]: string;
   lgu: string;
   barangay: string;
   hhId: string;

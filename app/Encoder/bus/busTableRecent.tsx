@@ -8,16 +8,18 @@ import { useNavigate } from "react-router";
 import { DeleteModal } from "~/records/deleteModal";
 import APIFETCH from "lib/axios/axiosConfig";
 import { useToastStore } from "lib/zustand/ToastStore";
+import { useSelectedID } from "lib/zustand/selectedId";
 
 export default function BusRecentTable() {
+  const selectBusID = useSelectedID((s) => s.setSelectedId)
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { show } = useToastStore();
   const [deleteModal, setDeleteModal] = useState<{ open: boolean; id: string | null }>({ open: false, id: null });
-  const [today, setToday] = useState("");
-  useEffect(() => {
-    setToday(new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }));
-  }, []);
+
+  const handleload = (r : BusRecord) =>{
+    selectBusID('bus', Number(r.id))
+  }
 
   const handleDelete = async () => {
     if (!deleteModal.id) return;
@@ -119,7 +121,7 @@ export default function BusRecentTable() {
       cell: (r) => (
         <div className="flex items-center gap-3">
           <button
-            onClick={() => navigate(`/bus/${r.id}`)}
+            onClick={() => handleload(r)}
             className="inline-flex items-center gap-1 text-[11px] font-medium text-(--color-muted) hover:text-(--color-ink) transition-colors cursor-pointer bg-transparent border-none whitespace-nowrap"
           >
             Load <ArrowUpRight size={11} />
@@ -159,13 +161,6 @@ export default function BusRecentTable() {
             )}
           </div>
         )}
-        headerRight={(records) =>
-          records.length > 0 ? (
-            <span className="text-[11px] text-(--color-placeholder) font-mono">
-              {today}
-            </span>
-          ) : null
-        }
         footer={(records) => (
           <div className="px-6 py-3 border-t border-(--color-border) bg-(--color-bg)">
             <p className="text-[11px] text-(--color-muted)">

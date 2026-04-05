@@ -204,6 +204,7 @@ useEffect(() => {
         date,
         encodedBy,
         verifiedBy,
+        verified,
         userId,
         operationsOfficeNumId,
         createdAt,
@@ -212,6 +213,7 @@ useEffect(() => {
       } = data;
 
       setFormData(cleanedData);
+      console.log("FORM DATA AFTER FETCHING : ",cleanedData)
     })
     .finally(() => setFetching(false));
 }, [item]);
@@ -229,12 +231,14 @@ useEffect(() => {
     e.preventDefault();
     if (!formData) return;
     setLoading(true);
+    console.log("FORM DATA : ",formData)
     try {
       const res = await APIFETCH.patch(SAVE_ENDPOINT[type], formData);
       if (res.data.update) {
         show(res.data.message ?? "Saved successfully.", "success");
         onSaved();
         onClose();
+        console.log("FORM DATA : ",formData)
         queryClient.invalidateQueries({queryKey : ["allDocuments"]})
       } else {
         show(res.data.message ?? "Failed to save.", "error");

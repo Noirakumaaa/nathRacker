@@ -9,12 +9,19 @@ import { useNavigate } from "react-router";
 import { DeleteModal } from "~/records/deleteModal";
 import APIFETCH from "lib/axios/axiosConfig";
 import { useToastStore } from "lib/zustand/ToastStore";
+import { useSelectedID } from "lib/zustand/selectedId";
 
 export default function CvsRecentTable() {
-  const navigate = useNavigate();
+
+  const setID = useSelectedID((state)=>state.setSelectedId)
   const queryClient = useQueryClient();
   const { show } = useToastStore();
   const [deleteModal, setDeleteModal] = useState<{ open: boolean; id: Number | null }>({ open: false, id: null });
+
+  const handleLoad = (r : CvsRecord) => {
+    setID("cvs", r.id)
+  }
+
 
   const handleDelete = async () => {
     if (!deleteModal.id) return;
@@ -112,7 +119,7 @@ export default function CvsRecentTable() {
       cell: (r) => (
         <div className="flex items-center justify-center gap-3">
           <button
-            onClick={() => navigate(`/cvs/${r.id}`)}
+            onClick={() => handleLoad(r)}
             className="inline-flex items-center gap-1 text-[11px] font-medium text-(--color-muted) hover:text-(--color-ink) transition-colors whitespace-nowrap cursor-pointer bg-transparent border-none"
           >
             Load <ArrowUpRight size={11} />

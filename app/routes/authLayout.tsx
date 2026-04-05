@@ -19,7 +19,7 @@ export default function AppLayout() {
         <div className="flex items-center justify-center h-full">
           <div className="flex flex-col items-center gap-3">
             <Loader2 size={24} className="animate-spin text-(--color-ink)" />
-            <p className="text-[13px] text-(--color-muted)">Loading...</p>
+            <p className="text-[13px] text-(--color-muted)">Loading...auth</p>
           </div>
         </div>
       ): isAuthenticated ? (

@@ -1,21 +1,44 @@
 import React, { useEffect, useState } from "react";
-import type{ MiscRecord, MiscFormFields, ToastStatus } from "./../../types/miscTypes";
-import { useNavigate, useParams } from "react-router";
-import { useQuery } from "@tanstack/react-query";
+import type {
+  MiscRecord,
+  MiscFormFields,
+} from "./../../types/miscTypes";
+
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import APIFETCH from "lib/axios/axiosConfig";
 import type { RouteParams } from "~/types/authTypes";
-import { labelCls,inputCls } from "component/styleConfig";
+import { labelCls, inputCls } from "component/styleConfig";
 import { useToastStore } from "lib/zustand/ToastStore";
-import { queryClient } from "~/root";
 import { Req } from "component/LabelStyle";
+import { useSelectedID } from "lib/zustand/selectedId";
+
+interface Option {
+  value: string | number;
+  label: string;
+}
+
+interface LGU {
+  id: string | number;
+  name: string;
+  barangay: BARANGAY[];
+}
+
+interface BARANGAY {
+  id: string | number;
+  name: string;
+}
 
 export default function MiscForm() {
-  const { id } = useParams<RouteParams>()
-  const navigate = useNavigate()
-  const { show } = useToastStore()
+
+  const miscId = useSelectedID((state)=> state.selectedIds.misc)
+  const clearSelectedId = useSelectedID((s) => s.clearSelectedId);
+  const queryClient = useQueryClient()
+  const { show } = useToastStore();
   const today = new Date().toISOString().slice(0, 10);
   const [buttonLoading, setButtonLoading] = useState(false);
 
+  const [LguOption, setLguOption] = useState<Option[]>([]);
+  const [barangayOptions, setBarangayOptions] = useState<Option[]>([]);
 
   const [formData, setFormData] = useState<MiscFormFields>({
     lgu: "",
@@ -33,33 +56,75 @@ export default function MiscForm() {
   });
 
   const { data } = useQuery({
-    queryKey : ["SelectedMisc", id],
-    queryFn : async () => {
-      const res = await APIFETCH.get<MiscRecord>(`/miscellaneous/record/${id}`)
-      return res.data
+    queryKey: ["SelectedMisc", miscId],
+    queryFn: async () => {
+      const res = await APIFETCH.get<MiscRecord>(`/miscellaneous/record/${miscId}`);
+      return res.data;
     },
-    enabled : !!id
-  })
-
-
-useEffect(() => {
-  if (!data) return;
-
-  setFormData({
-    lgu: data.lgu ?? "",
-    barangay:data.barangay ?? "",
-    hhId: data.hhId ?? "",
-    granteeName: data.granteeName ?? "",
-    documentType: data.documentType ?? "",
-    remarks: data.remarks ?? "",
-    issue: data.issue ?? "",
-    subjectOfChange: data.subjectOfChange ?? "",
-    drn: data.drn ?? "",
-    cl: data.cl ?? "",
-    date: today,
-    note: data.note ?? "",
+    enabled: !!miscId,
   });
-}, [data]);
+  // Fetch LGU list
+  const { data: lgu } = useQuery({
+    queryKey: ["LGU"],
+    queryFn: async () => {
+      const res = await APIFETCH.get<LGU[]>("/bus/lgu");
+      return res.data;
+    },
+  });
+
+  // Format LGU options
+  useEffect(() => {
+    if (!lgu) return;
+    const formattedOptions: Option[] = lgu.map((item) => ({
+      value: item.id.toString(),
+      label: item.name,
+    }));
+    setLguOption(formattedOptions);
+  }, [lgu]);
+
+  // Update Barangay options when LGU changes
+  useEffect(() => {
+    if (!lgu) return;
+
+    // Log LGU names
+    lgu.forEach((l) => console.log("LGU name:", l.name));
+
+    const selectedLgu = lgu.find(
+      (l) => l.id.toString() === formData.lgu.toString(),
+    );
+    console.log("Selected LGU:", selectedLgu?.name);
+
+    const options =
+      selectedLgu?.barangay.map((b) => ({
+        value: b.id.toString(),
+        label: b.name,
+      })) || [];
+
+    setBarangayOptions(options);
+
+    // Reset barangay if LGU changes
+    setFormData((prev) => ({ ...prev, barangay: "" }));
+  }, [formData.lgu, lgu]);
+
+  useEffect(() => {
+    if (!data) return;
+
+    setFormData({
+      lgu: data.lgu ?? "",
+      barangay: data.barangay ?? "",
+      hhId: data.hhId ?? "",
+      granteeName: data.granteeName ?? "",
+      documentType: data.documentType ?? "",
+      remarks: data.remarks ?? "",
+      issue: data.issue ?? "",
+      subjectOfChange: data.subjectOfChange ?? "",
+      drn: data.drn ?? "",
+      cl: data.cl ?? "",
+      date: today,
+      note: data.note ?? "",
+    });
+
+  }, [data]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -73,35 +138,35 @@ useEffect(() => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setButtonLoading(true);
-    const res = await APIFETCH.post("/miscellaneous/upload", formData)
-    if(res.data.upload){
-      show(`${res.data.message}`, "success")
-      queryClient.invalidateQueries({queryKey : ["recentMisc"]})
+    const res = await APIFETCH.post("/miscellaneous/upload", formData);
+    if (res.data.upload) {
+      show(`${res.data.message}`, "success");
+      queryClient.invalidateQueries({ queryKey: ["recentMisc"] });
       setButtonLoading(false);
-    }else if(!res.data.upload){
-      show(`${res.data.message}`, "error")
+      handleReset();
+    } else if (!res.data.upload) {
+      show(`${res.data.message}`, "error");
       setButtonLoading(false);
     }
-
-    
   };
 
-  const handleReset = () => {setFormData({ 
-        lgu: "",
-    barangay: "",
-    hhId: "",
-    granteeName: "",
-    documentType: "",
-    remarks: "",
-    issue: "",
-    subjectOfChange: "",
-    drn: "",
-    cl: "",
-    date: today,
-    note: "",
-  });
-  navigate("/miscellaneous")
-}
+  const handleReset = () => {
+    setFormData({
+      lgu: "",
+      barangay: "",
+      hhId: "",
+      granteeName: "",
+      documentType: "",
+      remarks: "",
+      issue: "",
+      subjectOfChange: "",
+      drn: "",
+      cl: "",
+      date: today,
+      note: "",
+    });
+    clearSelectedId("misc");
+  };
 
   return (
     <>
@@ -109,14 +174,17 @@ useEffect(() => {
         onSubmit={handleSubmit}
         className="bg-(--color-surface) rounded-xl border border-(--color-border) overflow-hidden"
       >
-        <div className="px-6 py-4 border-b border-(--color-border) flex items-center justify-between">
-          <p className="text-[11px] font-medium text-(--color-muted) uppercase tracking-wider">
-            Fill in the form below
-          </p>
-          <span className="text-[11px] text-(--color-placeholder) font-mono">
-            * required
+      <div className="px-6 py-4 border-b border-(--color-border) flex items-center justify-between">
+        <p className="text-[11px] font-medium text-(--color-muted) uppercase tracking-wider">
+          Fill in the form below
+        </p>
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-red-600 bg-red-50 border border-red-200 px-2 py-1 rounded-md uppercase tracking-wide">
+            <span className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block shrink-0" />
+            Selected Item : {miscId ?? "NONE"}
           </span>
         </div>
+      </div>
 
         <div className="p-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -127,27 +195,52 @@ useEffect(() => {
                 </h3>
               </div>
               <div className="space-y-3.5">
+                {/* LGU */}
                 <div>
-                  <label className={labelCls}>LGU</label>
-                  <input
-                    type="text"
+                  <label htmlFor="lgu" className={labelCls}>
+                    LGU <Req />
+                  </label>
+                  <select
+                    id="lgu"
                     name="lgu"
                     value={formData.lgu}
                     onChange={handleChange}
                     className={inputCls}
-                    placeholder="Enter LGU"
-                  />
+                    required
+                  >
+                    <option value="">--Select LGU--</option>
+                    {LguOption.map((item) => (
+                      <option key={item.value} value={item.value}>
+                        {item.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
+
+                {/* Barangay */}
                 <div>
-                  <label className={labelCls}>Barangay</label>
-                  <input
-                    type="text"
+                  <label htmlFor="barangay" className={labelCls}>
+                    Barangay <Req />
+                  </label>
+                  <select
+                    id="barangay"
                     name="barangay"
                     value={formData.barangay}
                     onChange={handleChange}
-                    className={inputCls}
-                    placeholder="Enter Barangay"
-                  />
+                    className={
+                      inputCls +
+                      (formData.lgu ? "" : " opacity-80 cursor-not-allowed")
+                    }
+                    required
+                    disabled={!formData.lgu}
+                  >
+                    <option value="">--Select Barangay--</option>
+                    {barangayOptions.map((b) => (
+                      <option key={b.value} value={b.value}>
+                        {b.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <label className={labelCls}>

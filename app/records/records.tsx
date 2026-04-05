@@ -23,6 +23,7 @@ import APIFETCH from "lib/axios/axiosConfig";
 import { inputCls, labelCls, moduleStyle, encodedStyle } from "component/styleConfig";
 import { EncodedBadge } from "component/StyleBadge";
 import { useToastStore } from "lib/zustand/ToastStore";
+import { useQueryClient } from "@tanstack/react-query";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -82,6 +83,7 @@ function Dash() {
 export function RecordsTable() {
   const navigate = useNavigate();
   const { show } = useToastStore();
+  const queryClient = useQueryClient()
 
   // view modals
   const [selectedBusItem,  setSelectedBusItem]  = useState<BusFormFields  | null>(null);
@@ -168,6 +170,7 @@ export function RecordsTable() {
     try {
       const res = await APIFETCH.delete(`/alldocuments/delete/${deleteModal.id}`);
       show(res.data.message, res.data.deleted ? "success" : "error");
+      queryClient.invalidateQueries({queryKey : ["recentCvs","recentBus", "recentSwdi", "recentMisc", "recentLcn"]})
       if (res.data.deleted) await refetch();
     } catch {
       show("Failed to delete record.", "error");
