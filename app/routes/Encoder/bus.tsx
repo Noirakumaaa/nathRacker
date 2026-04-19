@@ -1,7 +1,7 @@
-import BusMain from "~/Encoder/bus/busMain";
-import UnauthorizedPage from "~/notAuthorized/notAuthorized";
+import BusMain from "~/features/encoder/bus/busMain";
+import UnauthorizedPage from "~/features/not-authorized/not-authorized";
 import { AuthorizedUser } from "~/types/authorizedUser";
-import { useAuth } from "component/authGuard";
+import { useAuth } from "~/components/authGuard";
 
 export function meta() {
   return [

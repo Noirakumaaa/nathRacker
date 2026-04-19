@@ -1,9 +1,9 @@
 import { Outlet, useNavigate } from "react-router";
 import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
-import LayoutWrapper from "layout/navLayout";
-import { useAuth } from "component/authGuard";
-import UnauthorizedPage from "~/notAuthorized/notAuthorized";
+import LayoutWrapper from "~/layouts/navLayout";
+import { useAuth } from "~/components/authGuard";
+import UnauthorizedPage from "~/features/not-authorized/not-authorized";
 
 
 const authorizedUser = ["AC", "SWOIII", "ADMIN"]

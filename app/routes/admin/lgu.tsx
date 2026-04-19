@@ -1,7 +1,7 @@
-import LguTab from "~/adminSettings/LguTab";
-import UnauthorizedPage from "~/notAuthorized/notAuthorized";
+import LguTab from "~/features/admin/settings/LguTab";
+import UnauthorizedPage from "~/features/not-authorized/not-authorized";
 import { AuthorizedUser } from "~/types/authorizedUser";
-import { useAuth } from "component/authGuard";
+import { useAuth } from "~/components/authGuard";
 
 export function meta() {
   return [

@@ -1,7 +1,7 @@
-import MiscMain from "~/Encoder/miscellaneous/MiscMain";
-import UnauthorizedPage from "~/notAuthorized/notAuthorized";
+import MiscMain from "~/features/encoder/miscellaneous/MiscMain";
+import UnauthorizedPage from "~/features/not-authorized/not-authorized";
 import { AuthorizedUser } from "~/types/authorizedUser";
-import { useAuth } from "component/authGuard";
+import { useAuth } from "~/components/authGuard";
 
 export function meta() {
   return [

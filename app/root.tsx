@@ -1,8 +1,8 @@
 // src/root.tsx
 import { useEffect } from "react";
-import { useToastStore } from "lib/zustand/ToastStore";
-import { useThemeStore } from "lib/zustand/ThemeStore";
-import { Toast, toastConfig } from "component/toastConfig";
+import { useToastStore } from "~/lib/zustand/ToastStore";
+import { useThemeStore } from "~/lib/zustand/ThemeStore";
+import { Toast, toastConfig } from "~/components/toastConfig";
 import {
   isRouteErrorResponse,
   Links,

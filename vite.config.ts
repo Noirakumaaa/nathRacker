@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => {
           secure: false
         }
       },
-      allowedHosts: ['staging.nathdomain.com',"nathdomain.com"],
+      allowedHosts: ['staging.nathdomain.com', "nathdomain.com", "nathracker.nathdomain.com"],
     }
   }
 })

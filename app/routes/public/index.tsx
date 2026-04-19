@@ -1,7 +1,7 @@
-import IndexPage from "~/index";
+import IndexPage from "~/features/home/index";
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
-import { useAuth } from 'component/authGuard';
+import { useAuth } from '~/components/authGuard';
 
 export function meta() {
   return [

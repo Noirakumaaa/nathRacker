@@ -1,6 +1,6 @@
-import StaffPage from "~/operations/myOffice/StaffPage";
-import UnauthorizedPage from "~/notAuthorized/notAuthorized";
-import { useAuth } from "component/authGuard";
+import StaffPage from "~/features/operations/my-office/StaffPage";
+import UnauthorizedPage from "~/features/not-authorized/not-authorized";
+import { useAuth } from "~/components/authGuard";
 
 const ALLOWED_ROLES = ["AREA_COORDINATOR", "SOCIAL_WORKER_III", "ADMIN"];
 

@@ -1,7 +1,7 @@
-import { RecordsTable } from "./../records/records";
-import UnauthorizedPage from "~/notAuthorized/notAuthorized";
+import { RecordsTable } from "~/features/records/records";
+import UnauthorizedPage from "~/features/not-authorized/not-authorized";
 import { AuthorizedUser } from "~/types/authorizedUser";
-import { useAuth } from "component/authGuard";
+import { useAuth } from "~/components/authGuard";
 
 export function meta() {
   return [

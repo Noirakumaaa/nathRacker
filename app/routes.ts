@@ -25,6 +25,7 @@ export default [
   
   layout("routes/authLayout.tsx", [
     route("records",                         "routes/records.tsx"),
+    route("my-records",                      "routes/my-records.tsx"),
     route("summary",                         "routes/summary.tsx"),
     route("settings",                        "routes/settings.tsx"),
   ]),

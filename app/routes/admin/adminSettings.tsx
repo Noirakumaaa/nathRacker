@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
-import AdminSettingsPage from "~/adminSettings/AdminSettingsPage";
-import LayoutWrapper from "layout/navLayout";
-import UnauthorizedPage from "~/notAuthorized/notAuthorized";
+import AdminSettingsPage from "~/features/admin/settings/AdminSettingsPage";
+import LayoutWrapper from "~/layouts/navLayout";
+import UnauthorizedPage from "~/features/not-authorized/not-authorized";
 import { AuthorizedUser } from "~/types/authorizedUser";
-import { LoadingScreen } from "component/LoadingScreen";
-import { useAuth } from "component/authGuard";
+import { LoadingScreen } from "~/components/LoadingScreen";
+import { useAuth } from "~/components/authGuard";
 
 export function meta() {
   return [

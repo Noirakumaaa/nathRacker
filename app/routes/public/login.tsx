@@ -1,7 +1,7 @@
-import { Login } from "~/Login/login";
+import { Login } from "~/features/auth/login";
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
-import { useAuth } from "component/authGuard";
+import { useAuth } from "~/components/authGuard";
 
 export default function LoginRoute() {
   const navigate = useNavigate();

@@ -1,6 +1,6 @@
-import OperationsDashboard from "~/operations/dashboard/OperationsDashboard";
-import UnauthorizedPage from "~/notAuthorized/notAuthorized";
-import { useAuth } from "component/authGuard";
+import OperationsDashboard from "~/features/operations/dashboard/OperationsDashboard";
+import UnauthorizedPage from "~/features/not-authorized/not-authorized";
+import { useAuth } from "~/components/authGuard";
 
 export function meta() {
   return [

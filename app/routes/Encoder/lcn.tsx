@@ -1,7 +1,7 @@
-import LcnMain from "~/Encoder/lcn/Lcn";
-import UnauthorizedPage from "~/notAuthorized/notAuthorized";
+import LcnMain from "~/features/encoder/lcn/Lcn";
+import UnauthorizedPage from "~/features/not-authorized/not-authorized";
 import { AuthorizedUser } from "~/types/authorizedUser";
-import { useAuth } from "component/authGuard";
+import { useAuth } from "~/components/authGuard";
 
 export function meta() {
   return [

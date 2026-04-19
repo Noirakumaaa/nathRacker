@@ -1,6 +1,6 @@
-import BusVerificationList from "~/verification/bus/BusVerificationList";
-import UnauthorizedPage from "~/notAuthorized/notAuthorized";
-import { useAuth } from "component/authGuard";
+import BusVerificationList from "~/features/verification/bus/BusVerificationList";
+import UnauthorizedPage from "~/features/not-authorized/not-authorized";
+import { useAuth } from "~/components/authGuard";
 
 const ALLOWED_ROLES = ["AREA_COORDINATOR", "SOCIAL_WORKER_III", "ADMIN"];
 

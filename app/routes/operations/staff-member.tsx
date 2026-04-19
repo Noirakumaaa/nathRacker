@@ -1,8 +1,8 @@
-import StaffDashboard from "~/operations/myOffice/StaffDashboard";
-import UnauthorizedPage from "~/notAuthorized/notAuthorized";
+import StaffDashboard from "~/features/operations/my-office/StaffDashboard";
+import UnauthorizedPage from "~/features/not-authorized/not-authorized";
 import { useNavigate, useParams } from "react-router";
 import { useEffect } from "react";
-import { useAuth } from "component/authGuard";
+import { useAuth } from "~/components/authGuard";
 
 const ALLOWED_ROLES = ["AREA_COORDINATOR", "SOCIAL_WORKER_III", "ADMIN"];
 

@@ -1,8 +1,8 @@
 import { Outlet, useNavigate } from "react-router";
 import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
-import LayoutWrapper from "layout/navLayout";
-import { useAuth } from "component/authGuard";
+import LayoutWrapper from "~/layouts/navLayout";
+import { useAuth } from "~/components/authGuard";
 
 export default function AppLayout() {
   const navigate = useNavigate();
