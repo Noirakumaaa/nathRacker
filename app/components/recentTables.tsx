@@ -1,7 +1,8 @@
+import { memo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
-import { Loader2, InboxIcon } from "lucide-react";
+import { InboxIcon } from "lucide-react";
 import APIFETCH from "~/lib/axios/axiosConfig";
+import { TableSkeleton } from "~/components/Skeleton";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -25,9 +26,52 @@ type RecentTableProps<T extends { id: string | number }> = {
   footer?: (records: T[]) => React.ReactNode;
 };
 
+// ── Row ───────────────────────────────────────────────────────────────────────
+
+type RowProps<T extends { id: string | number }> = {
+  row: T;
+  index: number;
+  columns: ColumnDef<T>[];
+  rowClassName?: (row: T, index: number) => string;
+};
+
+function TableRowInner<T extends { id: string | number }>({
+  row,
+  index,
+  columns,
+  rowClassName,
+}: RowProps<T>) {
+  return (
+    <tr
+      className={
+        rowClassName
+          ? rowClassName(row, index)
+          : `hover:bg-amber-50/20 transition-colors duration-100 ${
+              index % 2 === 0 ? "bg-(--color-surface)" : "bg-(--color-bg)"
+            }`
+      }
+    >
+      {columns.map((col) => (
+        <td
+          key={col.header}
+          className={`px-4 py-2.5 text-center text-[12px] text-(--color-muted) ${col.className ?? ""}`}
+        >
+          {col.cell
+            ? col.cell(row, index)
+            : col.accessor
+            ? String(row[col.accessor] ?? "—")
+            : "—"}
+        </td>
+      ))}
+    </tr>
+  );
+}
+
+const TableRow = memo(TableRowInner) as typeof TableRowInner;
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export default function RecentTable<T extends { id: string | number }>({
+function RecentTableComponent<T extends { id: string | number }>({
   queryKey,
   endpoint,
   columns,
@@ -38,15 +82,13 @@ export default function RecentTable<T extends { id: string | number }>({
   headerLeft,
   footer,
 }: RecentTableProps<T>) {
-
-const { data: records = [], isLoading, refetch } = useQuery<T[]>({
-  queryKey: [queryKey],
-  queryFn: async () => {
-    const res = await APIFETCH.get(endpoint);
-    return res.data as T[];
-  },
-});
-
+  const { data: records = [], isLoading } = useQuery<T[]>({
+    queryKey: [queryKey],
+    queryFn: async () => {
+      const res = await APIFETCH.get(endpoint);
+      return res.data as T[];
+    },
+  });
 
   return (
     <div className="bg-(--color-surface) rounded-xl border border-(--color-border) mt-2 overflow-hidden">
@@ -69,7 +111,7 @@ const { data: records = [], isLoading, refetch } = useQuery<T[]>({
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto overflow-y-auto" style={{ maxHeight, minHeight: '220px' }}>
+      <div className="overflow-x-auto overflow-y-auto" style={{ maxHeight, minHeight: "220px" }}>
         <table className="min-w-full text-xs">
           <thead className="sticky top-0 z-10 bg-(--color-bg) border-b border-(--color-border)">
             <tr>
@@ -86,14 +128,7 @@ const { data: records = [], isLoading, refetch } = useQuery<T[]>({
 
           <tbody className="divide-y divide-(--color-subtle)">
             {isLoading ? (
-              <tr>
-                <td colSpan={columns.length} className="py-14 text-center">
-                  <div className="flex flex-col items-center gap-2 text-(--color-placeholder)">
-                    <Loader2 size={18} className="animate-spin" />
-                    <span className="text-[12px]">Loading records…</span>
-                  </div>
-                </td>
-              </tr>
+              <TableSkeleton rows={6} cols={columns.length} />
             ) : records.length === 0 ? (
               <tr>
                 <td colSpan={columns.length} className="py-16 text-center">
@@ -105,27 +140,13 @@ const { data: records = [], isLoading, refetch } = useQuery<T[]>({
               </tr>
             ) : (
               records.map((row, i) => (
-                <tr
+                <TableRow
                   key={row.id}
-                  className={
-                    rowClassName
-                      ? rowClassName(row, i)
-                      : `hover:bg-amber-50/20 transition-colors duration-100 ${i % 2 === 0 ? "bg-(--color-surface)" : "bg-(--color-bg)"}`
-                  }
-                >
-                  {columns.map((col) => (
-                    <td
-                      key={col.header}
-                      className={`px-4 py-2.5 text-center text-[12px] text-(--color-muted) ${col.className ?? ""}`}
-                    >
-                      {col.cell
-                        ? col.cell(row, i)
-                        : col.accessor
-                        ? String(row[col.accessor] ?? "—")
-                        : "—"}
-                    </td>
-                  ))}
-                </tr>
+                  row={row}
+                  index={i}
+                  columns={columns}
+                  rowClassName={rowClassName}
+                />
               ))
             )}
           </tbody>
@@ -137,3 +158,5 @@ const { data: records = [], isLoading, refetch } = useQuery<T[]>({
     </div>
   );
 }
+
+export default memo(RecentTableComponent) as typeof RecentTableComponent;

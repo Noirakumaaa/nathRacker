@@ -1,40 +1,40 @@
 export type BusFormFields = {
-  lgu: string;
-  barangay: string;
-  hhId: string;
-  granteeName: string;
-  typeOfUpdate: string;
-  updateInfo: string;
-  remarks: string;
-  issue: string;
-  subjectOfChange: string;
-  drn: string;
-  cl: string;
-  note: string;
+    lgu: string;
+    barangay: string;
+    hhId: string;
+    granteeName: string;
+    typeOfUpdate: string;
+    updateInfo: string;
+    remarks: string;
+    issue: string;
+    subjectOfChange: string;
+    drn: string;
+    cl: string;
+    note: string;
 }
 
 export type BusRecord = {
-  id: string;
-  lgu: string;
-  barangay: string;
-  hhId: string;
-  granteeName: string;
-  typeOfUpdate: string;
-  updateInfo: string;
-  remarks: string;
-  issue: string;
-  subjectOfChange: string;
-  encodedBy: string;
-  drn: string;
-  cl: string;
-  date: string;
-  note: string;
-  verified: string;
-  verifiedBy: string;
-  verificationIssue: string | null;
-  userId: number;
-  createdAt: string;
-  updatedAt: string;
+    id: string;
+    lgu: string;
+    barangay: string;
+    hhId: string;
+    granteeName: string;
+    typeOfUpdate: string;
+    updateInfo: string;
+    remarks: string;
+    issue: string;
+    subjectOfChange: string;
+    encodedBy: string;
+    drn: string;
+    cl: string;
+    date: string;
+    note: string;
+    verified: string;
+    verifiedBy: string;
+    verificationIssue: string | null;
+    userId: number;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export type BusData = {
@@ -64,21 +64,21 @@ export function getEncodedBadgeClass(encoded: string) {
 }
 
 export const UPDATE_TYPE_KEYMAP: Record<string, string> = {
-  '8': 'New Registration',
-  '2': 'Address Change',
-  '4': 'Health Change',
-  '5': 'School Update',
-  '6': 'Grantee Update',
-  '7': 'Decease Update',
-  '9': 'Basic Info Update',
-  '10': 'IP Affiliation Update',
-  '11': 'Beneficiary Update',
-  '12': 'Pregnancy Update',
+    '8': 'New Registration',
+    '2': 'Address Change',
+    '4': 'Health Change',
+    '5': 'School Update',
+    '6': 'Grantee Update',
+    '7': 'Decease Update',
+    '9': 'Basic Info Update',
+    '10': 'IP Affiliation Update',
+    '11': 'Beneficiary Update',
+    '12': 'Pregnancy Update',
 };
 
 
 export type BusResponse = {
-    message : string
-    data : BusRecord
-    upload : boolean
+    message: string
+    data: BusRecord
+    upload: boolean
 }

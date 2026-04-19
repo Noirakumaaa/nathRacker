@@ -1,3 +1,4 @@
+import { memo } from "react";
 import {
   FileText,
   IdCard,
@@ -7,7 +8,7 @@ import {
 } from "lucide-react";
 import { moduleStyle } from "~/components/styleConfig";
 
-export function QuickActions() {
+export const QuickActions = memo(function QuickActions() {
   const actions = [
     {
       label: "New BUS Entry",
@@ -72,4 +73,4 @@ export function QuickActions() {
       </div>
     </div>
   );
-}
+});

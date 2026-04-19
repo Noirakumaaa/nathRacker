@@ -34,6 +34,9 @@ export const toastConfig: Record<ToastStatus, { icon: React.ReactNode; accent: s
 
 export const Toast = ({ statusMessage, toastStatus, toastConfig } : ToastProps) => (
   <div
+    role="status"
+    aria-live="polite"
+    aria-atomic="true"
     style={{ animation: "slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1)" }}
     className="fixed bottom-7 left-7 bg-(--color-surface) text-(--color-ink) px-4 py-3 rounded-[10px] shadow-[0_2px_16px_rgba(0,0,0,0.10),0_0_0_1px_rgba(0,0,0,0.06)] text-[13px] font-medium font-['DM_Sans',sans-serif] z-[9999] flex items-center gap-[10px] max-w-[300px]"
   >

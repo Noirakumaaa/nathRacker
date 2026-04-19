@@ -5,8 +5,8 @@ import { useAuth } from "~/components/authGuard";
 
 export function meta() {
   return [
-    { title: "CVS" },
-    { name: "description", content: "View your dashboard" },
+    { title: "CVS Encoder | NathRacker" },
+    { name: "description", content: "Encode CVS compliance verification forms" },
   ];
 }
 

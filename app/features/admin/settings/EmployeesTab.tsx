@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Search, User, X, ChevronRight, Filter, Loader2 } from "lucide-react";
+import { Search, User, X, ChevronRight, Filter } from "lucide-react";
+import { EmployeeRowSkeleton } from "~/components/Skeleton";
 import APIFETCH from "~/lib/axios/axiosConfig";
 import { useToastStore } from "~/lib/zustand/ToastStore";
 import { labelCls, inputCls } from "~/components/styleConfig";
 import { Req, Opt } from "~/components/LabelStyle";
 import { SectionHeader, SubmitRow } from "./shared";
-import type { OperationsOffice, Lgu, Barangay, Employee } from "./types";
+import type { OperationsOffice, Lgu, Barangay, Employee, UserRole } from "./types";
 
 const numberFields = ["assignedOperationId", "assignedLGUID", "assignedBarangayId"];
 
@@ -29,7 +30,7 @@ export default function EmployeesTab() {
 
   const [form, setForm] = useState({
     firstName: "", lastName: "", middleName: "", phone: "",
-    role: "" as "ENCODER" | "ADMIN" | "",
+    role: "" as UserRole | "",
     assignedOperationId: "" as number | "",
     assignedLGUID: "" as number | "",
     assignedBarangayId: "" as number | "",
@@ -229,10 +230,9 @@ export default function EmployeesTab() {
 
             <div className="divide-y divide-(--color-border) max-h-128 overflow-y-auto">
               {isLoading && (
-                <div className="py-12 flex flex-col items-center gap-2 text-(--color-muted)">
-                  <Loader2 size={18} className="animate-spin" />
-                  <p className="text-[11px]">Loading employees…</p>
-                </div>
+                Array.from({ length: 6 }).map((_, i) => (
+                  <EmployeeRowSkeleton key={i} />
+                ))
               )}
               {!isLoading && filteredEmployees.length === 0 && (
                 <div className="py-12 flex flex-col items-center gap-2 text-(--color-muted)">

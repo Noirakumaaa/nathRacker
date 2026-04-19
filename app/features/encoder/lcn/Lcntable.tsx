@@ -50,9 +50,9 @@ export function LcnRecentTable() {
           <button
             onClick={() => navigator.clipboard.writeText(r.hhId)}
             className="opacity-0 group-hover:opacity-100 transition-opacity text-(--color-placeholder) hover:text-(--color-muted) cursor-pointer bg-transparent border-none"
-            title="Copy HH ID"
+            title="Copy HH ID" aria-label="Copy HH ID"
           >
-            <Copy size={11} />
+            <Copy size={11} aria-hidden="true" />
           </button>
         </div>
       ),

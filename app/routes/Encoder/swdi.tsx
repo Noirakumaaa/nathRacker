@@ -5,8 +5,8 @@ import { useAuth } from "~/components/authGuard";
 
 export function meta() {
   return [
-    { title: "SWDI" },
-    { name: "description", content: "View your dashboard" },
+    { title: "SWDI Encoder | NathRacker" },
+    { name: "description", content: "Encode SWDI household assessment records" },
   ];
 }
 

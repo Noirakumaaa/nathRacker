@@ -49,7 +49,7 @@ APIFETCH.interceptors.response.use(
     }
 
     if (error.response?.status === 403 && typeof window !== "undefined") {
-      window.location.href = "/unauthorized"
+      window.location.href = "/404"
     }
 
     return Promise.reject(error)

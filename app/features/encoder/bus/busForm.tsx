@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from "react";
-import type { BusFormFields, BusRecord, BusResponse } from "~/types/busTypes";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { BusRecord, BusResponse } from "~/types/busTypes";
 import { UPDATE_TYPE_KEYMAP } from "~/types/busTypes";
 import { labelCls, inputCls } from "~/components/styleConfig";
 import { useToastStore } from "~/lib/zustand/ToastStore";
@@ -7,22 +9,29 @@ import APIFETCH from "~/lib/axios/axiosConfig";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Opt, Req } from "~/components/LabelStyle";
 import { useSelectedID } from "~/lib/zustand/selectedId";
-
-interface Option {
-  value: string | number;
-  label: string;
-}
+import { BusFormSchema, type BusFormValues } from "~/lib/validation/schemas";
 
 interface LGU {
   id: string | number;
   name: string;
-  barangay: BARANGAY[];
+  barangay: { id: string | number; name: string }[];
 }
 
-interface BARANGAY {
-  id: string | number;
-  name: string;
+interface Option {
+  value: string;
+  label: string;
 }
+
+function FieldError({ message }: { message?: string }) {
+  if (!message) return null;
+  return <p className="mt-1 text-[11px] text-red-500">{message}</p>;
+}
+
+const EMPTY_FORM: BusFormValues = {
+  lgu: "", barangay: "", hhId: "", granteeName: "",
+  subjectOfChange: "", typeOfUpdate: "", updateInfo: "",
+  remarks: "ENCODED", cl: "", issue: "", drn: "", note: "",
+};
 
 export default function BusForm() {
   const queryClient = useQueryClient();
@@ -30,33 +39,28 @@ export default function BusForm() {
   const clearSelectedId = useSelectedID((s) => s.clearSelectedId);
   const { show } = useToastStore();
 
-  const [buttonLoading, setButtonLoading] = useState(false);
-  const [today, setToday] = useState("");
-
-  const [LguOption, setLguOption] = useState<Option[]>([]);
+  const [today] = useState(() => new Date().toISOString().slice(0, 10));
+  const [bdmAvailable, setBdmAvailable] = useState(true);
   const [barangayOptions, setBarangayOptions] = useState<Option[]>([]);
 
-  const [formData, setFormData] = useState<BusFormFields>({
-    lgu: "",
-    barangay: "",
-    hhId: "",
-    granteeName: "",
-    subjectOfChange: "",
-    typeOfUpdate: "",
-    updateInfo: "",
-    issue: "",
-    remarks: "",
-    drn: "",
-    cl: "",
-    note: "",
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    setValue,
+    watch,
+    reset,
+    setError,
+  } = useForm<BusFormValues>({
+    resolver: zodResolver(BusFormSchema),
+    defaultValues: EMPTY_FORM,
+    mode: "onBlur",
   });
 
-  // Set today's date
-  useEffect(() => {
-    setToday(new Date().toISOString().slice(0, 10));
-  }, []);
+  const selectedLgu = watch("lgu");
+  const selectedRemarks = watch("remarks");
 
-  // Fetch selected bus record
+  // ── Fetch selected record for edit ──────────────────────────────
   const { data } = useQuery({
     queryKey: ["SelectedBus", busId],
     queryFn: async () => {
@@ -67,136 +71,82 @@ export default function BusForm() {
     retry: false,
   });
 
-  // Fetch LGU list
-  const { data: lgu } = useQuery({
+  // ── Fetch LGU list ──────────────────────────────────────────────
+  const { data: lguList } = useQuery<LGU[]>({
     queryKey: ["LGU"],
-    queryFn: async () => {
-      const res = await APIFETCH.get<LGU[]>("/bus/lgu");
-      return res.data;
-    },
+    queryFn: () => APIFETCH.get<LGU[]>("/bus/lgu").then((r) => r.data),
   });
 
-  // Format LGU options
+  const lguOptions: Option[] =
+    lguList?.map((l) => ({ value: l.name, label: l.name })) ?? [];
+
+  // ── Cascade: update barangay options when LGU changes ───────────
   useEffect(() => {
-    if (!lgu) return;
-    const formattedOptions: Option[] = lgu.map((item) => ({
-      value: item.id.toString(),
-      label: item.name,
-    }));
-    setLguOption(formattedOptions);
-  }, [lgu]);
+    if (!lguList) return;
+    const found = lguList.find((l) => l.name === selectedLgu);
+    const opts = found?.barangay.map((b) => ({ value: b.name, label: b.name })) ?? [];
+    setBarangayOptions(opts);
+    setValue("barangay", "");
+  }, [selectedLgu, lguList, setValue]);
 
-  // Update Barangay options when LGU changes
+  // ── Populate form when editing an existing record ───────────────
   useEffect(() => {
-    if (!lgu) return;
-
-    // Log LGU names
-    lgu.forEach((l) => console.log("LGU name:", l.name));
-
-    const selectedLgu = lgu.find(
-      (l) => l.name.toString() === formData.lgu.toString(),
-    );
-    console.log("Selected LGU:", selectedLgu?.name);
-
-    const options =
-      selectedLgu?.barangay.map((b) => ({
-        value: b.id.toString(),
-        label: b.name,
-      })) || [];
-
-    setBarangayOptions(options);
-
-    // Reset barangay if LGU changes
-    setFormData((prev) => ({ ...prev, barangay: "" }));
-  }, [formData.lgu, lgu]);
-
-  // Populate form data when bus record loads
-  useEffect(() => {
-    if (data) {
-      setFormData({
-        lgu: data.lgu ?? "",
-        barangay: data.barangay ?? "",
-        hhId: data.hhId ?? "",
-        granteeName: data.granteeName ?? "",
-        subjectOfChange: data.subjectOfChange ?? "",
-        typeOfUpdate: data.typeOfUpdate ?? "",
-        updateInfo: data.updateInfo ?? "",
-        issue: data.issue ?? "",
-        remarks: data.remarks ?? "",
-        drn: data.drn ?? "",
-        cl: data.cl ?? "",
-        note: data.note ?? "",
-      });
-    }
-  }, [data]);
-
-  // AUTO SET BARANGAY
-  useEffect(() => {
-    if (!data || !barangayOptions.length) return
-
-    setFormData((prev) => ({
-      ...prev,
-      barangay: data.barangay?.toString() ?? "",
-    }))
-  }, [barangayOptions, data])
-
-  // Generic input handler
-  const handleInputChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >,
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  // Letters only input
-  const handleLettersOnly = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    e.target.value = e.target.value.replace(/[^a-zA-Z.,' ]/g, "");
-    handleInputChange(e);
-  };
-
-  // Submit form
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setButtonLoading(true);
-    const res = await APIFETCH.post<BusResponse>("/bus/upload", formData);
-    if (res.data.upload) {
-      show(res.data.message, "success");
-      queryClient.invalidateQueries({ queryKey: ["recentBus"] });
-      queryClient.invalidateQueries({ queryKey: ["allDocuments"] });
-      setButtonLoading(false);
-      handleReset();
-    } else {
-      show(res.data.message, "error");
-      setButtonLoading(false);
-    }
-  };
-
-  // Reset form
-  const handleReset = () => {
-    setFormData({
-      lgu: "",
-      barangay: "",
-      hhId: "",
-      granteeName: "",
-      subjectOfChange: "",
-      typeOfUpdate: "",
-      updateInfo: "",
-      issue: "",
-      remarks: "",
-      drn: "",
-      cl: "",
-      note: "",
+    if (!data) return;
+    reset({
+      lgu: data.lgu ?? "",
+      barangay: data.barangay ?? "",
+      hhId: data.hhId ?? "",
+      granteeName: data.granteeName ?? "",
+      subjectOfChange: data.subjectOfChange ?? "",
+      typeOfUpdate: data.typeOfUpdate ?? "",
+      updateInfo: data.updateInfo ?? "",
+      remarks: (data.remarks as BusFormValues["remarks"]) ?? "ENCODED",
+      cl: data.cl ?? "",
+      issue: data.issue ?? "",
+      drn: data.drn ?? "",
+      note: data.note ?? "",
     });
+    setBdmAvailable(!!(data.drn && data.drn.length > 0));
+  }, [data, reset]);
+
+  // ── Re-set barangay after options load on edit ──────────────────
+  useEffect(() => {
+    if (!data || !barangayOptions.length) return;
+    setValue("barangay", data.barangay?.toString() ?? "");
+  }, [barangayOptions, data, setValue]);
+
+  // ── Submit ──────────────────────────────────────────────────────
+  const onSubmit = async (values: BusFormValues) => {
+    if (bdmAvailable && !values.drn?.replace("BDM-", "").trim()) {
+      setError("drn", { message: "DRN is required when BDM is available" });
+      return;
+    }
+    try {
+      const res = await APIFETCH.post<BusResponse>("/bus/upload", values);
+      if (res.data.upload) {
+        show(res.data.message, "success");
+        queryClient.invalidateQueries({ queryKey: ["recentBus"] });
+        queryClient.invalidateQueries({ queryKey: ["allDocuments"] });
+        handleReset();
+      } else {
+        show(res.data.message, "error");
+      }
+    } catch {
+      show("An unexpected error occurred. Please try again.", "error");
+    }
+  };
+
+  const handleReset = () => {
+    reset(EMPTY_FORM);
+    setBdmAvailable(true);
     clearSelectedId("bus");
   };
 
+  const drnValue = watch("drn") ?? "";
+
   return (
     <form
-      onSubmit={handleSubmit}
+      onSubmit={handleSubmit(onSubmit)}
       className="bg-(--color-surface) rounded-xl border border-(--color-border) overflow-hidden"
     >
       {/* Header */}
@@ -204,130 +154,103 @@ export default function BusForm() {
         <p className="text-[11px] font-medium text-(--color-muted) uppercase tracking-wider">
           Fill in the form below
         </p>
-        <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-red-600 bg-red-50 border border-red-200 px-2 py-1 rounded-md uppercase tracking-wide">
-            <span className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block shrink-0" />
-            Selected Item : {busId ?? "NONE"}
-          </span>
-        </div>
+        <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-red-600 bg-red-50 border border-red-200 px-2 py-1 rounded-md uppercase tracking-wide">
+          <span className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block shrink-0" />
+          Selected Item : {busId ?? "NONE"}
+        </span>
       </div>
 
       <div className="p-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
           {/* Column 1 — Basic Info */}
           <div className="space-y-4">
             <div className="pb-2 border-b border-(--color-border)">
-              <h3 className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">
-                Basic Information
-              </h3>
+              <h3 className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">Basic Information</h3>
             </div>
             <div className="space-y-3.5">
+
               {/* LGU */}
               <div>
-                <label htmlFor="lgu" className={labelCls}>
-                  LGU <Req />
-                </label>
-                <select
-                  id="lgu"
-                  name="lgu"
-                  value={formData.lgu}
-                  onChange={handleInputChange}
-                  className={inputCls}
-                  required
-                >
+                <label htmlFor="lgu" className={labelCls}>LGU <Req /></label>
+                <select id="lgu" className={inputCls} {...register("lgu")}>
                   <option value="">--Select LGU--</option>
-                  {LguOption.map((item) => (
-                    <option key={item.value} value={item.label}>
-                      {item.label}
-                    </option>
+                  {lguOptions.map((o) => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
                   ))}
                 </select>
+                <FieldError message={errors.lgu?.message} />
               </div>
 
               {/* Barangay */}
               <div>
-                <label htmlFor="barangay" className={labelCls}>
-                  Barangay <Req />
-                </label>
+                <label htmlFor="barangay" className={labelCls}>Barangay <Req /></label>
                 <select
                   id="barangay"
-                  name="barangay"
-                  value={formData.barangay}
-                  onChange={handleInputChange}
-                  className={
-                    inputCls +
-                    (formData.lgu ? "" : " opacity-70 cursor-not-allowed")
-                  }
-                  required
-                  disabled={!formData.lgu}
+                  className={inputCls + (!selectedLgu ? " opacity-70 cursor-not-allowed" : "")}
+                  disabled={!selectedLgu}
+                  {...register("barangay")}
                 >
                   <option value="">--Select Barangay--</option>
                   {barangayOptions.map((b) => (
-                    <option key={b.value} value={b.value}>
-                      {b.label}
-                    </option>
+                    <option key={b.value} value={b.value}>{b.label}</option>
                   ))}
                 </select>
+                <FieldError message={errors.barangay?.message} />
               </div>
 
               {/* HH ID */}
               <div>
-                <label htmlFor="hhId" className={labelCls}>
-                  HH ID Number <Req />
-                </label>
+                <label htmlFor="hhId" className={labelCls}>HH ID Number <Req /></label>
                 <input
                   type="text"
                   id="hhId"
-                  name="hhId"
-                  value={formData.hhId}
-                  onChange={(e) => {
-                    e.target.value = e.target.value.replace(/[^0-9-]/g, "");
-                    handleInputChange(e);
-                  }}
                   className={inputCls}
                   placeholder="Enter HH ID"
-                  required
                   maxLength={25}
-                  minLength={6}
+                  {...register("hhId", {
+                    onChange: (e) => {
+                      e.target.value = e.target.value.replace(/[^0-9-]/g, "");
+                    },
+                  })}
                 />
+                <FieldError message={errors.hhId?.message} />
               </div>
 
               {/* Grantee Name */}
               <div>
-                <label htmlFor="granteeName" className={labelCls}>
-                  Grantee Name <Req />
-                </label>
+                <label htmlFor="granteeName" className={labelCls}>Grantee Name <Req /></label>
                 <input
                   type="text"
                   id="granteeName"
-                  name="granteeName"
-                  value={formData.granteeName}
-                  onChange={handleLettersOnly}
                   className={inputCls}
                   placeholder="Enter Name"
-                  required
                   maxLength={40}
-                  minLength={6}
+                  {...register("granteeName", {
+                    onChange: (e) => {
+                      e.target.value = e.target.value.replace(/[^a-zA-Z.,' ]/g, "");
+                    },
+                  })}
                 />
+                <FieldError message={errors.granteeName?.message} />
               </div>
 
               {/* Subject of Change */}
               <div>
-                <label htmlFor="subjectOfChange" className={labelCls}>
-                  Subject of Change <Req />
-                </label>
+                <label htmlFor="subjectOfChange" className={labelCls}>Subject of Change <Req /></label>
                 <input
                   type="text"
                   id="subjectOfChange"
-                  name="subjectOfChange"
-                  value={formData.subjectOfChange}
-                  onChange={handleLettersOnly}
                   className={inputCls}
                   placeholder="Enter Subject"
-                  required
                   maxLength={40}
-                  minLength={6}
+                  {...register("subjectOfChange", {
+                    onChange: (e) => {
+                      e.target.value = e.target.value.replace(/[^a-zA-Z.,' ]/g, "");
+                    },
+                  })}
                 />
+                <FieldError message={errors.subjectOfChange?.message} />
               </div>
             </div>
           </div>
@@ -335,104 +258,80 @@ export default function BusForm() {
           {/* Column 2 — Update Details */}
           <div className="space-y-4">
             <div className="pb-2 border-b border-(--color-border)">
-              <h3 className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">
-                Update Details
-              </h3>
+              <h3 className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">Update Details</h3>
             </div>
             <div className="space-y-3.5">
+
               {/* Type of Update */}
               <div>
-                <label htmlFor="typeOfUpdate" className={labelCls}>
-                  Type of Update <Req />
-                </label>
-                <select
-                  id="typeOfUpdate"
-                  name="typeOfUpdate"
-                  value={formData.typeOfUpdate}
-                  onChange={handleInputChange}
-                  required
-                  className={inputCls}
-                >
+                <label htmlFor="typeOfUpdate" className={labelCls}>Type of Update <Req /></label>
+                <select id="typeOfUpdate" className={inputCls} {...register("typeOfUpdate")}>
                   <option value="">Select Type</option>
                   {Object.entries(UPDATE_TYPE_KEYMAP).map(([key, value]) => (
-                    <option key={key} value={key}>
-                      {key} - {value}
-                    </option>
+                    <option key={key} value={key}>{key} - {value}</option>
                   ))}
                 </select>
+                <FieldError message={errors.typeOfUpdate?.message} />
               </div>
 
               {/* Update Info */}
               <div>
-                <label htmlFor="updateInfo" className={labelCls}>
-                  Update Info <Req />
-                </label>
+                <label htmlFor="updateInfo" className={labelCls}>Update Info <Req /></label>
                 <input
                   type="text"
                   id="updateInfo"
-                  name="updateInfo"
-                  value={formData.updateInfo}
-                  onChange={handleLettersOnly}
-                  required
                   className={inputCls}
                   placeholder="Enter Update Info"
                   maxLength={50}
-                  minLength={6}
+                  {...register("updateInfo", {
+                    onChange: (e) => {
+                      e.target.value = e.target.value.replace(/[^a-zA-Z.,' ]/g, "");
+                    },
+                  })}
                 />
+                <FieldError message={errors.updateInfo?.message} />
               </div>
 
               {/* Remarks */}
               <div>
-                <label htmlFor="remarks" className={labelCls}>
-                  REMARKS <Req />
-                </label>
-                <select
-                  id="remarks"
-                  name="remarks"
-                  required
-                  value={formData.remarks}
-                  onChange={handleInputChange}
-                  className={inputCls}
-                >
+                <label htmlFor="remarks" className={labelCls}>REMARKS <Req /></label>
+                <select id="remarks" className={inputCls} {...register("remarks")}>
                   <option value="">Select</option>
                   <option value="ENCODED">ENCODED</option>
                   <option value="ISSUE">ISSUE</option>
                   <option value="UPDATED">UPDATED</option>
                 </select>
+                <FieldError message={errors.remarks?.message} />
               </div>
 
               {/* City Link */}
               <div>
-                <label htmlFor="cl" className={labelCls}>
-                  Assigned City Link or SWA <Req />
-                </label>
+                <label htmlFor="cl" className={labelCls}>Assigned City Link or SWA <Req /></label>
                 <input
                   type="text"
                   id="cl"
-                  name="cl"
-                  value={formData.cl}
-                  onChange={handleLettersOnly}
-                  required
                   className={inputCls}
                   placeholder="Enter City Link or SWA"
                   maxLength={50}
-                  minLength={6}
+                  {...register("cl", {
+                    onChange: (e) => {
+                      e.target.value = e.target.value.replace(/[^a-zA-Z.,' ]/g, "");
+                    },
+                  })}
                 />
+                <FieldError message={errors.cl?.message} />
               </div>
 
               {/* Date */}
               <div>
-                <label htmlFor="date" className={labelCls}>
-                  Date Accomplished <Req />
-                </label>
+                <label htmlFor="date" className={labelCls}>Date Accomplished <Req /></label>
                 <input
                   type="date"
                   id="date"
-                  name="date"
-                  required
                   readOnly
                   value={today}
                   className={inputCls + " cursor-default"}
+                  onChange={() => { }}
                 />
               </div>
             </div>
@@ -441,80 +340,111 @@ export default function BusForm() {
           {/* Column 3 — Additional Info */}
           <div className="space-y-4">
             <div className="pb-2 border-b border-(--color-border)">
-              <h3 className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">
-                Additional Info
-              </h3>
+              <h3 className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">Additional Info</h3>
             </div>
             <div className="space-y-3.5">
+
               {/* Issue */}
               <div>
                 <label htmlFor="issue" className={labelCls}>
-                  Issues <Opt />
+                  Issues {selectedRemarks === "ISSUE" ? <Req /> : <Opt />}
                 </label>
                 <textarea
                   id="issue"
-                  name="issue"
-                  value={formData.issue}
-                  onChange={(e) => {
-                    e.target.value = e.target.value.replace(
-                      /[^a-zA-Z0-9. ]/g,
-                      "",
-                    );
-                    handleInputChange(e);
-                  }}
                   rows={2}
-                  className={inputCls + " resize-none"}
-                  placeholder="Enter issues..."
+                  disabled={selectedRemarks !== "ISSUE"}
+                  className={
+                    inputCls +
+                    " resize-none transition-opacity duration-200" +
+                    (selectedRemarks !== "ISSUE" ? " opacity-50 cursor-not-allowed" : "")
+                  }
+                  placeholder={
+                    selectedRemarks === "ISSUE"
+                      ? "Enter issues..."
+                      : "Select ISSUE in Remarks to enable"
+                  }
                   maxLength={80}
-                  minLength={6}
+                  {...register("issue", {
+                    onChange: (e) => {
+                      e.target.value = e.target.value.replace(/[^a-zA-Z0-9. ]/g, "");
+                    },
+                  })}
                 />
+                <FieldError message={errors.issue?.message} />
               </div>
 
               {/* DRN */}
-              <div>
-                <label htmlFor="drn" className={labelCls}>
-                  DRN <Req />
-                </label>
-                <div className="flex rounded-lg overflow-hidden border border-(--color-border) focus-within:ring-2 focus-within:ring-(--color-ink) focus-within:border-transparent hover:border-(--color-border-hover) transition-colors">
-                  <span className="px-3 flex items-center bg-(--color-subtle) text-(--color-muted) text-[13px] font-mono font-semibold border-r border-(--color-border) select-none shrink-0">
-                    BDM-
-                  </span>
-                  <input
-                    type="text"
-                    id="drn"
-                    name="drn"
-                    value={formData.drn.startsWith("BDM-") ? formData.drn.slice(4) : formData.drn}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, drn: "BDM-" + e.target.value }))}
-                    required
-                    className="flex-1 px-3 py-2 text-[13px] text-(--color-ink) bg-(--color-surface) focus:outline-none placeholder-(--color-placeholder)"
-                    placeholder="0000"
-                    maxLength={4}
-                    minLength={4}
-                  />
+              <div
+                className="rounded-lg border border-(--color-border) p-3 space-y-3 transition-colors duration-200"
+                style={{ backgroundColor: bdmAvailable ? "var(--color-surface)" : "var(--color-subtle)" }}
+              >
+                <div className="flex items-center justify-between">
+                  <label htmlFor="drn" className={labelCls + " !mb-0"}>
+                    DRN {bdmAvailable ? <Req /> : <Opt />}
+                  </label>
+                  <label className="inline-flex items-center gap-2 cursor-pointer select-none group">
+                    <span className="text-[11px] font-medium uppercase tracking-wide text-(--color-muted) group-hover:text-(--color-ink) transition-colors">
+                      BDM
+                    </span>
+                    <input
+                      type="checkbox"
+                      checked={bdmAvailable}
+                      onChange={(e) => {
+                        const checked = e.target.checked;
+                        setBdmAvailable(checked);
+                        if (!checked) setValue("drn", "");
+                      }}
+                      className="sr-only peer"
+                    />
+                    <div className="relative w-9 h-5 rounded-full transition-colors duration-200 bg-gray-300 peer-checked:bg-emerald-500 peer-focus-visible:ring-2 peer-focus-visible:ring-offset-1 peer-focus-visible:ring-(--color-ink)">
+                      <div className={"absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 " + (bdmAvailable ? "translate-x-4" : "translate-x-0")} />
+                    </div>
+                  </label>
                 </div>
+
+                <div
+                  className="overflow-hidden transition-all duration-200 ease-in-out"
+                  style={{ maxHeight: bdmAvailable ? "60px" : "0px", opacity: bdmAvailable ? 1 : 0 }}
+                >
+                  <div className="flex rounded-lg overflow-hidden border border-(--color-border) focus-within:ring-2 focus-within:ring-(--color-ink) focus-within:border-transparent hover:border-(--color-border-hover) transition-colors bg-(--color-surface)">
+                    <span className="px-3 flex items-center bg-(--color-subtle) text-(--color-muted) text-[13px] font-mono font-semibold border-r border-(--color-border) select-none shrink-0">
+                      BDM-
+                    </span>
+                    <input
+                      type="text"
+                      id="drn"
+                      disabled={!bdmAvailable}
+                      className="flex-1 px-3 py-2 text-[13px] text-(--color-ink) bg-(--color-surface) focus:outline-none placeholder-(--color-placeholder)"
+                      placeholder="0000"
+                      maxLength={4}
+                      value={drnValue.startsWith("BDM-") ? drnValue.slice(4) : drnValue}
+                      onChange={(e) => setValue("drn", "BDM-" + e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                {!bdmAvailable && (
+                  <p className="text-[11px] text-(--color-muted) italic">
+                    No BDM document — DRN will be skipped.
+                  </p>
+                )}
+                <FieldError message={errors.drn?.message} />
               </div>
 
               {/* Note */}
               <div>
-                <label htmlFor="note" className={labelCls}>
-                  Note <Opt />
-                </label>
+                <label htmlFor="note" className={labelCls}>Note <Opt /></label>
                 <textarea
                   id="note"
-                  name="note"
-                  value={formData.note}
-                  onChange={(e) => {
-                    e.target.value = e.target.value.replace(
-                      /[^a-zA-Z0-9. ]/g,
-                      "",
-                    );
-                    handleInputChange(e);
-                  }}
                   rows={2}
                   className={inputCls + " resize-none"}
                   placeholder="Enter note..."
                   maxLength={80}
-                  minLength={6}
+                  {...register("note", {
+                    onChange: (e) => {
+                      e.target.value = e.target.value.replace(/[^a-zA-Z0-9. ]/g, "");
+                    },
+                  })}
                 />
               </div>
 
@@ -522,15 +452,15 @@ export default function BusForm() {
               <div className="flex gap-2.5 pt-1">
                 <button
                   type="submit"
-                  disabled={buttonLoading}
+                  disabled={isSubmitting}
                   className="flex-1 h-10 bg-(--color-ink) text-(--color-bg) text-[13px] font-medium rounded-lg hover:opacity-85 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
-                  {buttonLoading ? "Submitting…" : "Submit →"}
+                  {isSubmitting ? "Submitting…" : "Submit →"}
                 </button>
                 <button
                   type="button"
                   onClick={handleReset}
-                  disabled={buttonLoading}
+                  disabled={isSubmitting}
                   className="flex-1 h-10 bg-transparent text-(--color-ink) text-[13px] font-medium rounded-lg border border-(--color-border) hover:border-(--color-ink) transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                   Reset
@@ -538,6 +468,7 @@ export default function BusForm() {
               </div>
             </div>
           </div>
+
         </div>
       </div>
     </form>

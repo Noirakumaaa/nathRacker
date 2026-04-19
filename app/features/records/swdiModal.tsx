@@ -1,8 +1,9 @@
-import type { SwdiFormFields } from "~/types/swdiTypes";
+import type { SwdiRecord } from "~/types/swdiTypes";
 import { getEncodedBadgeClass } from "~/types/swdiTypes";
+import { useModalFocusTrap } from "~/hooks/useModalFocusTrap";
 
 type SwdiViewModalProps = {
-  item: SwdiFormFields | null;
+  item: SwdiRecord | null;
   onClose: () => void;
 };
 
@@ -49,6 +50,8 @@ function SwdiScoreBadge({ score, level }: { score: number; level: string }) {
 }
 
 export function SwdiViewModal({ item, onClose }: SwdiViewModalProps) {
+  const dialogRef = useModalFocusTrap(onClose);
+
   if (!item) return null;
 
   const formattedDate = item.date
@@ -78,10 +81,18 @@ export function SwdiViewModal({ item, onClose }: SwdiViewModalProps) {
       <div
         className="absolute inset-0 bg-(--color-ink)/50 backdrop-blur-sm"
         onClick={onClose}
+        aria-hidden="true"
       />
 
       {/* Modal */}
-      <div className="relative bg-(--color-surface) rounded-2xl w-full max-w-2xl z-10 flex flex-col max-h-[90vh] overflow-hidden border border-(--color-border) shadow-[0_24px_60px_rgba(0,0,0,0.15)]">
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="swdi-modal-title"
+        tabIndex={-1}
+        className="relative bg-(--color-surface) rounded-2xl w-full max-w-2xl z-10 flex flex-col max-h-[90vh] overflow-hidden border border-(--color-border) shadow-[0_24px_60px_rgba(0,0,0,0.15)] outline-none"
+      >
 
         {/* Top accent line */}
         <div className="h-px w-full bg-gradient-to-r from-emerald-400 via-teal-400 to-transparent" />
@@ -93,15 +104,17 @@ export function SwdiViewModal({ item, onClose }: SwdiViewModalProps) {
               SWDI
             </span>
             <div>
-              <h2 className="text-[15px] font-semibold tracking-tight text-(--color-ink)">Record Details</h2>
+              <h2 id="swdi-modal-title" className="text-[15px] font-semibold tracking-tight text-(--color-ink)">Record Details</h2>
               <p className="text-[12px] text-(--color-muted) mt-0.5 font-mono">{item.hhId}</p>
             </div>
           </div>
           <button
+            type="button"
             onClick={onClose}
+            aria-label="Close dialog"
             className="w-8 h-8 flex items-center justify-center rounded-lg border border-(--color-border) text-(--color-muted) hover:border-(--color-ink) hover:text-(--color-ink) transition-colors cursor-pointer bg-(--color-surface)"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>

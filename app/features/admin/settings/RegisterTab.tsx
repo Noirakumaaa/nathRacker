@@ -6,7 +6,7 @@ import { labelCls, inputCls } from "~/components/styleConfig";
 import { Req, Opt } from "~/components/LabelStyle";
 import { SectionHeader, PanelHeader, SubmitRow } from "./shared";
 import type { Lgu, Barangay, OperationsOffice } from "./types";
-
+import { ROLE_OPTIONS as ROLES } from "~/constants/roles";
 const empty = {
   firstName: "",
   lastName: "",
@@ -23,13 +23,7 @@ const empty = {
 
 const numberFields = ["assignedOperationId", "assignedLGUID", "assignedBarangayId"];
 
-const ROLES = [
-  { value: "ENCODER",  label: "ENCODER",  desc: "Can input and manage records" },
-  { value: "ADMIN",    label: "ADMIN",     desc: "Full system access" },
-  { value: "VERIFIER", label: "VERIFIER",  desc: "Can verify records" },
-  { value: "AC",       label: "AC",        desc: "Area coordinator" },
-  { value: "SWOII",    label: "SWOII",     desc: "Social welfare officer" },
-];
+
 
 export default function RegisterTab() {
   const { show } = useToastStore();
@@ -52,7 +46,7 @@ export default function RegisterTab() {
     (b: Barangay) => form.assignedLGUID === "" || b.lguId === form.assignedLGUID,
   );
   const officeName = (id: number | "") => offices.find(o => o.id === id)?.name ?? "";
-  const lguName    = (id: number | "") => (data?.lgu ?? []).find((l: Lgu) => l.id === id)?.name ?? "";
+  const lguName = (id: number | "") => (data?.lgu ?? []).find((l: Lgu) => l.id === id)?.name ?? "";
 
   const handle = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;

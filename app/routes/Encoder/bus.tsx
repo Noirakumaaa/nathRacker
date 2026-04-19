@@ -5,8 +5,8 @@ import { useAuth } from "~/components/authGuard";
 
 export function meta() {
   return [
-    { title: "BUS" },
-    { name: "description", content: "Encoding Bus Forms" },
+    { title: "BUS Encoder | NathRacker" },
+    { name: "description", content: "Encode BUS household update forms" },
   ];
 }
 

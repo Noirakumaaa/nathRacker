@@ -27,9 +27,9 @@ export function Login() {
       queryClient.setQueryData(['me'], res.data.token);
       show(`${res.data.message}`, 'success');
       navigate('/dashboard');
-    } catch (error: any) {
-      const msg = error?.response?.data?.message;
-      const message = Array.isArray(msg) ? msg[0] : (typeof msg === 'string' ? msg : 'Invalid email or password');
+    } catch (error) {
+      const msg = (error as { response?: { data?: { message?: unknown } } })?.response?.data?.message;
+      const message = Array.isArray(msg) ? String(msg[0]) : (typeof msg === 'string' ? msg : 'Invalid email or password');
       setErrorMessage(message);
       show(message, 'error');
     } finally {

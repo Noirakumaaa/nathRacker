@@ -7,6 +7,7 @@ import { useToastStore } from "~/lib/zustand/ToastStore";
 import { labelCls, inputCls } from "~/components/styleConfig";
 import { Req } from "~/components/LabelStyle";
 import { SectionHeader, PanelHeader, SubmitRow, ListItem } from "./shared";
+import { ListItemSkeleton } from "~/components/Skeleton";
 import type { OperationsOffice } from "./types";
 
 export default function OfficeTab() {
@@ -20,7 +21,7 @@ export default function OfficeTab() {
   const [dragOver, setDragOver] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const { data, refetch } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ["assignedArea"],
     queryFn: async () => (await APIFETCH.get("/admin/get/assignedArea")).data,
   });
@@ -171,9 +172,9 @@ export default function OfficeTab() {
                     <p className="text-[12px] font-medium text-(--color-ink) truncate">{fileName}</p>
                     <p className="text-[10px] text-(--color-muted)">{importRows.length} row{importRows.length !== 1 ? "s" : ""} found</p>
                   </div>
-                  <button type="button" onClick={clearImport} disabled={importing}
+                  <button type="button" onClick={clearImport} disabled={importing} aria-label="Clear import file"
                     className="p-1 rounded-md hover:bg-(--color-border) transition-colors text-(--color-muted) hover:text-(--color-ink) cursor-pointer border-none bg-transparent disabled:opacity-50">
-                    <X size={13} />
+                    <X size={13} aria-hidden="true" />
                   </button>
                 </div>
                 <div className="max-h-44 overflow-y-auto space-y-1 rounded-lg border border-(--color-border) p-2">
@@ -201,9 +202,11 @@ export default function OfficeTab() {
 
         {/* ── List ── */}
         <div className="bg-(--color-surface) rounded-xl border border-(--color-border) overflow-hidden lg:col-span-2">
-          <PanelHeader label={`Operations Offices (${offices.length})`} legend={false} />
+          <PanelHeader label={isLoading ? "Operations Offices" : `Operations Offices (${offices.length})`} legend={false} />
           <div className="p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 max-h-80 overflow-y-auto">
-            {offices.length === 0
+            {isLoading
+              ? Array.from({ length: 6 }).map((_, i) => <ListItemSkeleton key={i} />)
+              : offices.length === 0
               ? <p className="text-[12px] text-(--color-muted) text-center py-8 col-span-full">No offices added yet.</p>
               : offices.map(o => <ListItem key={o.id} label={o.name} sub={`ID: ${o.id}`} onDelete={() => remove(o.id)} />)
             }

@@ -5,6 +5,7 @@ import {
   InboxIcon, RefreshCw, SlidersHorizontal,
   Eye, FileDown, Trash2, Search, X, Pencil,
   ChevronDown, ChevronLeft, ChevronRight,
+  Verified,
 } from "lucide-react";
 import { BusViewModal } from "./busModal";
 import { PcnViewModal } from "./pcnModal";
@@ -15,8 +16,8 @@ import { DeleteModal } from "./deleteModal";
 import { EditModal } from "./editModal";
 import { TableSkeleton } from "~/components/Skeleton";
 import type { EditModalItem } from "./editModal";
-import type { BusFormFields } from "~/types/busTypes";
-import type { SwdiFormFields } from "~/types/swdiTypes";
+import type { BusRecord } from "~/types/busTypes";
+import type { SwdiRecord } from "~/types/swdiTypes";
 import type { LcnFormFields } from "~/types/lcnTypes";
 import type { MiscFormFields } from "~/types/miscTypes";
 import type { CvsFormFields } from "~/types/cvsTypes";
@@ -25,7 +26,7 @@ import { inputCls, labelCls, moduleStyle, encodedStyle } from "~/components/styl
 import { EncodedBadge } from "~/components/StyleBadge";
 import { useToastStore } from "~/lib/zustand/ToastStore";
 import { useQueryClient } from "@tanstack/react-query";
-
+import { UPDATE_TYPE_KEYMAP } from "~/types/busTypes";
 // ── Types ──────────────────────────────────────────────────────────────────────
 
 type DocType = "BUS" | "SWDI" | "PCN" | "CVS" | "MISC";
@@ -39,6 +40,8 @@ type AllDocuments = {
   remarks: string;
   userId: number;
   govUsername: string;
+  typeOfUpdate: string;
+  verified: string;
   subjectOfChange?: string;
   drn?: string;
   date: string;
@@ -65,7 +68,7 @@ const PAGE_SIZE_OPTIONS = [10, 25, 50];
 
 const FETCH_ENDPOINT: Record<DocType, string> = {
   BUS: "/bus/records", SWDI: "/swdi/record", PCN: "/lcn/record",
-  CVS: "/cvs/record",  MISC: "/miscellaneous/record",
+  CVS: "/cvs/record", MISC: "/miscellaneous/record",
 };
 
 const LOAD_PATH: Record<DocType, string> = {
@@ -82,11 +85,13 @@ const DOC_COLOR: Record<string, string> = {
   PCN: "bg-rose-50 text-rose-600 border-rose-100",
   CVS: "bg-sky-50 text-sky-600 border-sky-100",
   MISC: "bg-amber-50 text-amber-600 border-amber-100",
+  VERIFIED: "bg-emerald-500 text-white",
+  "NOT VERIFIED": "bg-red-50 text-red-600 border-red-100",
 };
 
 const DOC_DOT: Record<string, string> = {
   BUS: "bg-indigo-400", SWDI: "bg-emerald-400",
-  PCN: "bg-rose-400",   CVS: "bg-sky-400", MISC: "bg-amber-400",
+  PCN: "bg-rose-400", CVS: "bg-sky-400", MISC: "bg-amber-400",
 };
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
@@ -99,18 +104,18 @@ export function MyRecordsTable() {
   const queryClient = useQueryClient();
 
   // view modals
-  const [selectedBusItem,  setSelectedBusItem]  = useState<BusFormFields  | null>(null);
-  const [selectedPcnItem,  setSelectedPcnItem]  = useState<LcnFormFields  | null>(null);
-  const [selectedSwdiItem, setSelectedSwdiItem] = useState<SwdiFormFields | null>(null);
+  const [selectedBusItem, setSelectedBusItem] = useState<BusRecord | null>(null);
+  const [selectedPcnItem, setSelectedPcnItem] = useState<LcnFormFields | null>(null);
+  const [selectedSwdiItem, setSelectedSwdiItem] = useState<SwdiRecord | null>(null);
   const [selectedMiscItem, setSelectedMiscItem] = useState<MiscFormFields | null>(null);
-  const [selectedCVSItem,  setSelectedCVSItem]  = useState<CvsFormFields  | null>(null);
+  const [selectedCVSItem, setSelectedCVSItem] = useState<CvsFormFields | null>(null);
 
   const [deleteModal, setDeleteModal] = useState<{ open: boolean; id: number | null }>({ open: false, id: null });
-  const [editItem,    setEditItem]    = useState<EditModalItem | null>(null);
+  const [editItem, setEditItem] = useState<EditModalItem | null>(null);
 
-  const [filters,      setFilters]      = useState<FilterState>(EMPTY_FILTERS);
-  const [currentPage,  setCurrentPage]  = useState(1);
-  const [pageSize,     setPageSize]     = useState(10);
+  const [filters, setFilters] = useState<FilterState>(EMPTY_FILTERS);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [expandedDrns, setExpandedDrns] = useState<Set<string>>(new Set());
 
@@ -135,7 +140,7 @@ export function MyRecordsTable() {
       if (filters.docType && item.documentType !== filters.docType) return false;
       const d = new Date(item.date);
       if (filters.dateFrom && d < new Date(filters.dateFrom + "T00:00:00")) return false;
-      if (filters.dateTo   && d > new Date(filters.dateTo   + "T23:59:59")) return false;
+      if (filters.dateTo && d > new Date(filters.dateTo + "T23:59:59")) return false;
       return true;
     });
   }, [myDocuments, filters]);
@@ -157,7 +162,7 @@ export function MyRecordsTable() {
       .sort((a, b) => b.latestDate.getTime() - a.latestDate.getTime());
   }, [filteredDocs]);
 
-  const totalPages    = Math.ceil(bundles.length / pageSize);
+  const totalPages = Math.ceil(bundles.length / pageSize);
   const paginatedBundles = bundles.slice((currentPage - 1) * pageSize, currentPage * pageSize);
   const activeFilters = Object.values(filters).filter(Boolean).length;
 
@@ -187,14 +192,14 @@ export function MyRecordsTable() {
   };
 
   const handleView = async (item: AllDocuments) => {
-    const type     = item.documentType as DocType;
+    const type = item.documentType as DocType;
     const endpoint = FETCH_ENDPOINT[type];
     if (!endpoint) return;
     const { data } = await APIFETCH.get(`${endpoint}/${item.documentId}`);
-    if (type === "BUS")  setSelectedBusItem(data);
+    if (type === "BUS") setSelectedBusItem(data);
     if (type === "SWDI") setSelectedSwdiItem(data);
-    if (type === "PCN")  setSelectedPcnItem(data);
-    if (type === "CVS")  setSelectedCVSItem(data);
+    if (type === "PCN") setSelectedPcnItem(data);
+    if (type === "CVS") setSelectedCVSItem(data);
     if (type === "MISC") setSelectedMiscItem(data);
   };
 
@@ -225,11 +230,11 @@ export function MyRecordsTable() {
       {/* ── Modals ── */}
       <DeleteModal open={deleteModal.open} onConfirm={handleDeleteConfirm} onCancel={() => setDeleteModal({ open: false, id: null })} />
       <EditModal item={editItem} onClose={() => setEditItem(null)} onSaved={() => refetch()} />
-      <BusViewModal  item={selectedBusItem}  onClose={() => setSelectedBusItem(null)} />
-      <PcnViewModal  item={selectedPcnItem}  onClose={() => setSelectedPcnItem(null)} />
+      <BusViewModal item={selectedBusItem} onClose={() => setSelectedBusItem(null)} />
+      <PcnViewModal item={selectedPcnItem} onClose={() => setSelectedPcnItem(null)} />
       <SwdiViewModal item={selectedSwdiItem} onClose={() => setSelectedSwdiItem(null)} />
       <MiscViewModal item={selectedMiscItem} onClose={() => setSelectedMiscItem(null)} />
-      <CvsViewModal  item={selectedCVSItem}  onClose={() => setSelectedCVSItem(null)} />
+      <CvsViewModal item={selectedCVSItem} onClose={() => setSelectedCVSItem(null)} />
 
       {/* ── Header ── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -251,11 +256,10 @@ export function MyRecordsTable() {
       <div className="flex flex-wrap gap-2">
         <button
           onClick={() => setFilter("docType", "")}
-          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-medium border transition-colors cursor-pointer ${
-            !filters.docType
-              ? "bg-(--color-ink) text-(--color-bg) border-(--color-ink)"
-              : "bg-(--color-surface) text-(--color-muted) border-(--color-border) hover:border-(--color-ink) hover:text-(--color-ink)"
-          }`}
+          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-medium border transition-colors cursor-pointer ${!filters.docType
+            ? "bg-(--color-ink) text-(--color-bg) border-(--color-ink)"
+            : "bg-(--color-surface) text-(--color-muted) border-(--color-border) hover:border-(--color-ink) hover:text-(--color-ink)"
+            }`}
         >
           All
           <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${!filters.docType ? "bg-white/20 text-(--color-bg)" : "bg-(--color-subtle) text-(--color-muted)"}`}>
@@ -266,11 +270,10 @@ export function MyRecordsTable() {
           <button
             key={t}
             onClick={() => setFilter("docType", filters.docType === t ? "" : t)}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-medium border transition-colors cursor-pointer ${
-              filters.docType === t
-                ? "bg-(--color-ink) text-(--color-bg) border-(--color-ink)"
-                : "bg-(--color-surface) text-(--color-muted) border-(--color-border) hover:border-(--color-ink) hover:text-(--color-ink)"
-            }`}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-medium border transition-colors cursor-pointer ${filters.docType === t
+              ? "bg-(--color-ink) text-(--color-bg) border-(--color-ink)"
+              : "bg-(--color-surface) text-(--color-muted) border-(--color-border) hover:border-(--color-ink) hover:text-(--color-ink)"
+              }`}
           >
             <span className={`w-2 h-2 rounded-full ${DOC_DOT[t]}`} />
             {t}
@@ -291,21 +294,21 @@ export function MyRecordsTable() {
               value={filters.search}
               onChange={(e) => setFilter("search", e.target.value)}
               placeholder="Search by DRN, name, ID…"
+              aria-label="Search my records"
               className="w-full pl-9 pr-3 py-2 text-[13px] border border-(--color-border) rounded-lg text-(--color-ink) placeholder-(--color-placeholder) bg-(--color-surface) focus:outline-none focus:ring-2 focus:ring-(--color-ink) focus:border-transparent hover:border-(--color-border-hover) transition-colors"
             />
             {filters.search && (
-              <button onClick={() => setFilter("search", "")} className="absolute right-3 top-1/2 -translate-y-1/2 text-(--color-placeholder) hover:text-(--color-muted) cursor-pointer bg-transparent border-none">
-                <X size={13} />
+              <button onClick={() => setFilter("search", "")} aria-label="Clear search" className="absolute right-3 top-1/2 -translate-y-1/2 text-(--color-placeholder) hover:text-(--color-muted) cursor-pointer bg-transparent border-none">
+                <X size={13} aria-hidden="true" />
               </button>
             )}
           </div>
           <button
             onClick={() => setShowAdvanced(!showAdvanced)}
-            className={`inline-flex items-center gap-2 px-3.5 py-2 text-[13px] font-medium rounded-lg border transition-colors cursor-pointer shrink-0 ${
-              showAdvanced || activeFilters > 1
-                ? "bg-(--color-ink) text-(--color-bg) border-(--color-ink)"
-                : "bg-(--color-surface) text-(--color-ink) border-(--color-border) hover:border-(--color-ink)"
-            }`}
+            className={`inline-flex items-center gap-2 px-3.5 py-2 text-[13px] font-medium rounded-lg border transition-colors cursor-pointer shrink-0 ${showAdvanced || activeFilters > 1
+              ? "bg-(--color-ink) text-(--color-bg) border-(--color-ink)"
+              : "bg-(--color-surface) text-(--color-ink) border-(--color-border) hover:border-(--color-ink)"
+              }`}
           >
             <SlidersHorizontal size={13} />
             Filters
@@ -325,11 +328,10 @@ export function MyRecordsTable() {
             <button
               key={s}
               onClick={() => setFilter("encoded", filters.encoded === s ? "" : s)}
-              className={`px-2.5 py-1 rounded-md text-[11px] font-medium border transition-colors cursor-pointer ${
-                filters.encoded === s
-                  ? encodedStyle(s) + " border-current"
-                  : "bg-(--color-subtle) text-(--color-muted) border-(--color-border) hover:border-(--color-border-hover)"
-              }`}
+              className={`px-2.5 py-1 rounded-md text-[11px] font-medium border transition-colors cursor-pointer ${filters.encoded === s
+                ? encodedStyle(s) + " border-current"
+                : "bg-(--color-subtle) text-(--color-muted) border-(--color-border) hover:border-(--color-border-hover)"
+                }`}
             >
               {s}
             </button>
@@ -401,7 +403,7 @@ export function MyRecordsTable() {
         <div className="space-y-2">
           {paginatedBundles.map((bundle) => {
             const isExpanded = expandedDrns.has(bundle.drn);
-            const isNoDrn    = bundle.drn === "__NO_DRN__";
+            const isNoDrn = bundle.drn === "__NO_DRN__";
 
             return (
               <div key={bundle.drn} className="bg-(--color-surface) border border-(--color-border) rounded-xl overflow-hidden transition-shadow hover:shadow-sm">
@@ -431,6 +433,27 @@ export function MyRecordsTable() {
                     ))}
                   </div>
 
+                  {/* Verification status chips */}
+                  <div className="hidden sm:flex items-center gap-2 shrink-0">
+                    {[...new Set(bundle.docs.map((d) => d.verified))].map((verified) => {
+                      const isVerified = verified === "YES";
+                      return (
+                        <div
+                          key={verified}
+                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold shadow-sm border tracking-wide ${
+                            isVerified 
+                              ? "bg-emerald-500 text-white border-emerald-600" 
+                              : "bg-red-500 text-white border-red-600"
+                          }`}
+                        >
+                          {isVerified ? <Verified size={14} /> : <X size={14} strokeWidth={3} />}
+                          {isVerified ? "VERIFIED" : "NOT VERIFIED"}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+
                   {/* Meta + toggle */}
                   <div className="flex items-center gap-3 shrink-0">
                     <div className="text-right hidden md:block">
@@ -455,10 +478,10 @@ export function MyRecordsTable() {
                   <div className="border-t border-(--color-border) bg-(--color-bg) divide-y divide-(--color-border)">
                     {bundle.docs.map((doc) => {
                       const borderColor =
-                        doc.documentType === "BUS"  ? "border-indigo-400" :
-                        doc.documentType === "SWDI" ? "border-emerald-400" :
-                        doc.documentType === "PCN"  ? "border-rose-400" :
-                        doc.documentType === "CVS"  ? "border-sky-400" : "border-amber-400";
+                        doc.documentType === "BUS" ? "border-indigo-400" :
+                          doc.documentType === "SWDI" ? "border-emerald-400" :
+                            doc.documentType === "PCN" ? "border-rose-400" :
+                              doc.documentType === "CVS" ? "border-sky-400" : "border-amber-400";
 
                       return (
                         <div key={doc.id} className={`flex flex-col gap-4 px-5 py-5 border-l-4 ${borderColor} hover:bg-(--color-surface) transition-colors`}>
@@ -480,6 +503,11 @@ export function MyRecordsTable() {
                               <span className="font-mono text-[15px] font-semibold text-(--color-ink) leading-none">{doc.idNumber}</span>
                             </div>
 
+                            <div className="flex flex-col gap-1.5">
+                              <span className="text-[10px] font-semibold text-(--color-placeholder) uppercase tracking-widest">Type Of Update</span>
+                              <span className="font-mono text-[15px] font-semibold text-(--color-ink) leading-none">{doc.typeOfUpdate + " - " + UPDATE_TYPE_KEYMAP[doc.typeOfUpdate]}</span>
+                            </div>
+
                             {/* Subject of Change */}
                             <div className="flex flex-col gap-1.5 flex-1 min-w-40">
                               <span className="text-[10px] font-semibold text-(--color-placeholder) uppercase tracking-widest">Subject of Change</span>
@@ -487,6 +515,7 @@ export function MyRecordsTable() {
                                 {doc.subjectOfChange || <span className="text-(--color-placeholder) italic font-normal text-[13px]">None</span>}
                               </span>
                             </div>
+
 
                             {/* Date */}
                             <div className="flex flex-col gap-1.5">
@@ -500,6 +529,26 @@ export function MyRecordsTable() {
                             <div className="flex flex-col gap-1.5">
                               <span className="text-[10px] font-semibold text-(--color-placeholder) uppercase tracking-widest">Status</span>
                               <EncodedBadge value={doc.remarks} />
+                            </div>
+
+                            {/* Verification */}
+                            <div className="flex flex-col gap-1.5">
+                              <span className="text-[10px] font-semibold text-(--color-placeholder) uppercase tracking-widest">Verification</span>
+                              {(() => {
+                                const isVerified = doc.verified === "YES";
+                                return (
+                                  <div
+                                    className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold shadow-sm border tracking-wide w-fit ${
+                                      isVerified 
+                                        ? "bg-emerald-500 text-white border-emerald-600" 
+                                        : "bg-red-500 text-white border-red-600"
+                                    }`}
+                                  >
+                                    {isVerified ? <Verified size={14} /> : <X size={14} strokeWidth={3} />}
+                                    {isVerified ? "VERIFIED" : "NOT VERIFIED"}
+                                  </div>
+                                );
+                              })()}
                             </div>
                           </div>
 
@@ -576,11 +625,10 @@ export function MyRecordsTable() {
                   <span key={`dots-${i}`} className="w-8 h-8 flex items-center justify-center text-(--color-placeholder) text-[12px]">…</span>
                 ) : (
                   <button key={p} onClick={() => setCurrentPage(p as number)}
-                    className={`w-8 h-8 flex items-center justify-center rounded-lg text-[12px] font-medium border transition-colors cursor-pointer ${
-                      currentPage === p
-                        ? "bg-(--color-ink) text-(--color-bg) border-(--color-ink)"
-                        : "bg-(--color-surface) text-(--color-muted) border-(--color-border) hover:border-(--color-ink) hover:text-(--color-ink)"
-                    }`}>
+                    className={`w-8 h-8 flex items-center justify-center rounded-lg text-[12px] font-medium border transition-colors cursor-pointer ${currentPage === p
+                      ? "bg-(--color-ink) text-(--color-bg) border-(--color-ink)"
+                      : "bg-(--color-surface) text-(--color-muted) border-(--color-border) hover:border-(--color-ink) hover:text-(--color-ink)"
+                      }`}>
                     {p}
                   </button>
                 )

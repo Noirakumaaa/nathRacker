@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { ArrowUpRight, Copy, Trash2 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
-import type { BusRecord } from "./../../types/busTypes";
+import type { BusRecord } from "~/types/busTypes";
 import RecentTable from "~/components/recentTables";
 import type { ColumnDef } from "~/components/recentTables";
 import { useNavigate } from "react-router";
@@ -60,9 +60,9 @@ export default function BusRecentTable() {
           <button
             onClick={() => navigator.clipboard.writeText(r.hhId)}
             className="opacity-0 group-hover:opacity-100 transition-opacity text-(--color-placeholder) hover:text-(--color-muted) cursor-pointer bg-transparent border-none"
-            title="Copy HH ID"
+            title="Copy HH ID" aria-label="Copy HH ID"
           >
-            <Copy size={11} />
+            <Copy size={11} aria-hidden="true" />
           </button>
         </div>
       ),

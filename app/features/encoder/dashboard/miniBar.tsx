@@ -1,4 +1,6 @@
-export function MiniBar({
+import { memo } from "react";
+
+export const MiniBar = memo(function MiniBar({
   values = [],
   color,
 }: {
@@ -21,4 +23,4 @@ export function MiniBar({
       ))}
     </div>
   );
-}
+});

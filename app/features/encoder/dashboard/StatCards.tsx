@@ -1,8 +1,9 @@
+import { memo } from "react";
 import { MiniBar } from "./miniBar";
 import type { StatCard } from "~/types/dashboardTypes";
 import { sparkColor } from "~/components/styleConfig";
 
-export function StatCards({
+export const StatCards = memo(function StatCards({
   stats,
   sparklines,
   isLoading,
@@ -48,4 +49,4 @@ export function StatCards({
       })}
     </div>
   );
-}
+});

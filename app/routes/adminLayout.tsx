@@ -4,8 +4,9 @@ import { Loader2 } from "lucide-react";
 import LayoutWrapper from "~/layouts/navLayout";
 import { useAuth } from "~/components/authGuard";
 import UnauthorizedPage from "~/features/not-authorized/not-authorized";
+import { ADMIN_ROLES } from "~/constants/roles";
 
-const authorizedUser = ["ADMIN"];
+const authorizedUser = ADMIN_ROLES;
 
 export default function AppLayout() {
   const navigate = useNavigate();

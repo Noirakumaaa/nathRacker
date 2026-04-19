@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Download, Loader2, AlertCircle, RefreshCw, BarChart3 } from "lucide-react";
+import { Download, AlertCircle, RefreshCw, BarChart3 } from "lucide-react";
 import { MONTHS, DOC_TYPES } from "~/types/SummaryType";
 import { useMonthlySummary } from "~/components/Usemonthlysummary";
 import { downloadAccomplishment } from "./summaryHelpers";
 import { StatCard } from "./StatCard";
 import { DocSection } from "./docSection";
+import { StatCardSkeleton } from "~/components/Skeleton";
 
 const selectCls =
   "text-[13px] text-(--color-ink) px-3 py-1.5 rounded-lg border border-(--color-border) bg-(--color-surface) hover:border-(--color-ink) transition-colors outline-none cursor-pointer focus:ring-2 focus:ring-(--color-ink)";
@@ -57,9 +58,22 @@ export default function SummaryPage() {
 
       {/* ── Loading ── */}
       {isLoading && (
-        <div className="flex flex-col items-center justify-center py-24 gap-3 text-(--color-muted)">
-          <Loader2 size={22} className="animate-spin" />
-          <span className="text-[13px]">Loading summary…</span>
+        <div className="space-y-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <StatCardSkeleton key={i} />
+            ))}
+          </div>
+          <div className="bg-(--color-surface) rounded-xl border border-(--color-border) overflow-hidden">
+            <div className="px-5 py-4 border-b border-(--color-border)">
+              <div className="h-4 w-40 bg-gray-200 rounded animate-pulse" />
+            </div>
+            <div className="p-4 space-y-2">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="h-12 bg-gray-100 rounded-xl animate-pulse" />
+              ))}
+            </div>
+          </div>
         </div>
       )}
 

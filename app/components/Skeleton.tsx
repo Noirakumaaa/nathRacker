@@ -103,6 +103,76 @@ export function RecordCardSkeleton() {
   );
 }
 
+// ── Metric card skeleton (for dashboard/office metric cards) ─────────────────
+
+export function MetricCardSkeleton() {
+  return (
+    <div className="bg-(--color-surface) border border-(--color-border) rounded-xl p-5 flex flex-col gap-3">
+      <Pulse className="h-9 w-9 rounded-lg" />
+      <div className="space-y-1.5">
+        <Pulse className="h-8 w-16" />
+        <Pulse className="h-4 w-28" />
+        <Pulse className="h-3 w-20" />
+      </div>
+    </div>
+  );
+}
+
+// ── Employee row skeleton (for employees list) ────────────────────────────────
+
+export function EmployeeRowSkeleton() {
+  return (
+    <div className="px-5 py-3.5 flex items-center justify-between border-b border-(--color-border)">
+      <div className="flex items-center gap-3">
+        <Pulse className="w-9 h-9 rounded-full shrink-0" />
+        <div className="space-y-1.5">
+          <Pulse className="h-4 w-36" />
+          <Pulse className="h-3 w-24" />
+        </div>
+      </div>
+      <Pulse className="h-5 w-20 rounded-full" />
+    </div>
+  );
+}
+
+// ── List item skeleton (for admin tabs: LGU / Barangay / Office lists) ───────
+
+export function ListItemSkeleton() {
+  return (
+    <div className="flex items-center justify-between px-3 py-2.5 rounded-lg border border-(--color-border) bg-(--color-surface)">
+      <div className="space-y-1.5 flex-1 mr-2">
+        <Pulse className="h-3.5 w-28" />
+        <Pulse className="h-3 w-20" />
+      </div>
+      <Pulse className="h-6 w-6 rounded-md shrink-0" />
+    </div>
+  );
+}
+
+// ── Staff card skeleton (for staff grid in StaffPage) ────────────────────────
+
+export function StaffCardSkeleton() {
+  return (
+    <div className="bg-(--color-surface) border border-(--color-border) rounded-xl p-4 space-y-3">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <Pulse className="w-10 h-10 rounded-full shrink-0" />
+          <div className="space-y-1.5">
+            <Pulse className="h-4 w-28" />
+            <Pulse className="h-3 w-20" />
+          </div>
+        </div>
+        <Pulse className="w-3.5 h-3.5 rounded" />
+      </div>
+      <Pulse className="h-5 w-20 rounded-full" />
+      <div className="space-y-1">
+        <Pulse className="h-3.5 w-32" />
+        <Pulse className="h-3.5 w-24" />
+      </div>
+    </div>
+  );
+}
+
 // ── Progress card skeleton ────────────────────────────────────────────────────
 
 export function ProgressCardSkeleton() {

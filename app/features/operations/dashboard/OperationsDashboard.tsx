@@ -13,6 +13,7 @@ import {
 import APIFETCH from "~/lib/axios/axiosConfig";
 import type { OperationsOffice, Lgu, Barangay, Employee } from "~/features/admin/settings/types";
 import type { me } from "~/types/authTypes";
+import { StatCardSkeleton } from "~/components/Skeleton";
 import { moduleStyle } from "~/components/styleConfig";
 
 type AreaData = {
@@ -172,7 +173,7 @@ function LguCard({
 export default function OperationsDashboard({ userData }: { userData: me }) {
   const [selectedOffice, setSelectedOffice] = useState<number | "all">("all");
 
-  const { data: areaData } = useQuery<AreaData>({
+  const { data: areaData, isLoading: areaLoading } = useQuery<AreaData>({
     queryKey: ["assignedArea"],
     queryFn: async () => {
       const res = await APIFETCH.get("/admin/get/assignedArea");
@@ -180,7 +181,7 @@ export default function OperationsDashboard({ userData }: { userData: me }) {
     },
   });
 
-  const { data: counts = [] } = useQuery<CountItem[]>({
+  const { data: counts = [], isLoading: countsLoading } = useQuery<CountItem[]>({
     queryKey: ["documentCounts", selectedOffice],
     queryFn: async () => {
       const url =
@@ -193,13 +194,15 @@ export default function OperationsDashboard({ userData }: { userData: me }) {
     placeholderData: keepPreviousData,
   });
 
-  const { data: employees = [] } = useQuery<Employee[]>({
+  const { data: employees = [], isLoading: empLoading } = useQuery<Employee[]>({
     queryKey: ["employees"],
     queryFn: async () => {
       const res = await APIFETCH.get("/admin/employees");
       return res.data;
     },
   });
+
+  const isLoading = areaLoading || countsLoading || empLoading;
 
   const offices = areaData?.operations ?? [];
   const allLgus = areaData?.lgu ?? [];
@@ -269,39 +272,45 @@ export default function OperationsDashboard({ userData }: { userData: me }) {
 
         {/* ── Overview stat cards ───────────────────────────────────────────── */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          <OverviewCard
-            label="Total LGUs"
-            value={filteredLgus.length}
-            icon={Landmark}
-            iconBg="bg-indigo-50 text-indigo-600"
-            sub="Local govt units"
-          />
-          <OverviewCard
-            label="Barangays"
-            value={totalBarangays}
-            icon={MapPin}
-            iconBg="bg-emerald-50 text-emerald-600"
-            sub="Registered barangays"
-          />
-          <OverviewCard
-            label="Total Encoded"
-            value={totalRecords}
-            icon={FileText}
-            iconBg="bg-amber-50 text-amber-600"
-            sub="All document records"
-          />
-          <OverviewCard
-            label="Encoders"
-            value={employees.filter(
-              (e) =>
-                e.role === "ENCODER" &&
-                (selectedOffice === "all" ||
-                  e.userInfo?.assignedOperationId === selectedOffice),
-            ).length}
-            icon={Users}
-            iconBg="bg-sky-50 text-sky-600"
-            sub="Active encoder staff"
-          />
+          {isLoading ? (
+            Array.from({ length: 4 }).map((_, i) => <StatCardSkeleton key={i} />)
+          ) : (
+            <>
+              <OverviewCard
+                label="Total LGUs"
+                value={filteredLgus.length}
+                icon={Landmark}
+                iconBg="bg-indigo-50 text-indigo-600"
+                sub="Local govt units"
+              />
+              <OverviewCard
+                label="Barangays"
+                value={totalBarangays}
+                icon={MapPin}
+                iconBg="bg-emerald-50 text-emerald-600"
+                sub="Registered barangays"
+              />
+              <OverviewCard
+                label="Total Encoded"
+                value={totalRecords}
+                icon={FileText}
+                iconBg="bg-amber-50 text-amber-600"
+                sub="All document records"
+              />
+              <OverviewCard
+                label="Encoders"
+                value={employees.filter(
+                  (e) =>
+                    e.role === "ENCODER" &&
+                    (selectedOffice === "all" ||
+                      e.userInfo?.assignedOperationId === selectedOffice),
+                ).length}
+                icon={Users}
+                iconBg="bg-sky-50 text-sky-600"
+                sub="Active encoder staff"
+              />
+            </>
+          )}
         </div>
 
         {/* ── Document type totals ──────────────────────────────────────────── */}

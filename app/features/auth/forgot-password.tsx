@@ -37,8 +37,8 @@ export function ForgotPassword() {
       show('Reset code sent to your email.', 'success');
       setCountdown(180);
       setStep('reset');
-    } catch (error: any) {
-      const message = error?.response?.data?.message ?? 'Something went wrong.';
+    } catch (error) {
+      const message = (error as { response?: { data?: { message?: string } } })?.response?.data?.message ?? 'Something went wrong.';
       setErrorMessage(message);
       show(message, 'error');
     } finally {
@@ -60,8 +60,8 @@ export function ForgotPassword() {
       await APIFETCH.post('/auth/reset-password', { email, code, newPassword });
       show('Password reset successfully. Please sign in.', 'success');
       navigate('/login');
-    } catch (error: any) {
-      const message = error?.response?.data?.message ?? 'Something went wrong.';
+    } catch (error) {
+      const message = (error as { response?: { data?: { message?: string } } })?.response?.data?.message ?? 'Something went wrong.';
       setErrorMessage(message);
       show(message, 'error');
     } finally {

@@ -28,10 +28,10 @@ export async function loader({ request }: Route.LoaderArgs) {
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 0,
-      refetchOnMount: true,
-      refetchOnWindowFocus: true,
+      staleTime: 1000 * 60,
+      refetchOnWindowFocus: false,
       refetchOnReconnect: true,
+      retry: 1,
     },
   },
 });

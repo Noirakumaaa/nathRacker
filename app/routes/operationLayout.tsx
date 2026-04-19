@@ -4,9 +4,9 @@ import { Loader2 } from "lucide-react";
 import LayoutWrapper from "~/layouts/navLayout";
 import { useAuth } from "~/components/authGuard";
 import UnauthorizedPage from "~/features/not-authorized/not-authorized";
+import { OPERATIONS_ROLES } from "~/constants/roles";
 
-
-const authorizedUser = ["AC", "SWOIII", "ADMIN"]
+const authorizedUser = OPERATIONS_ROLES;
 
 export default function operationLayout() {
   const navigate = useNavigate();

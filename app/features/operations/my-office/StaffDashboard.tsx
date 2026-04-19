@@ -3,7 +3,6 @@ import { useState, useMemo } from "react";
 import { useNavigate } from "react-router";
 import {
   ArrowLeft,
-  Loader2,
   AlertCircle,
   FileText,
   MapPin,
@@ -15,6 +14,7 @@ import APIFETCH from "~/lib/axios/axiosConfig";
 import type { Lgu, Barangay, Employee, OperationsOffice } from "~/features/admin/settings/types";
 import { moduleStyle } from "~/components/styleConfig";
 import { MONTHS } from "~/types/SummaryType";
+import { TableSkeleton } from "~/components/Skeleton";
 
 type AreaData = {
   operations: OperationsOffice[];
@@ -415,9 +415,21 @@ export default function StaffDashboard({ govUsername }: { govUsername: string })
           </div>
 
           {recordsLoading ? (
-            <div className="py-12 flex items-center justify-center gap-2 text-[#b8b8b0]">
-              <Loader2 size={15} className="animate-spin" />
-              <span className="text-[12px]">Loading records…</span>
+            <div className="overflow-x-auto">
+              <table className="min-w-full text-xs">
+                <thead className="bg-(--color-bg) border-b border-(--color-border)">
+                  <tr>
+                    {["ID Number", "Name", "Doc Type", "Status", "DRN", "Date"].map((h) => (
+                      <th key={h} className="px-4 py-3 text-center text-[10px] font-semibold text-(--color-muted) uppercase tracking-widest whitespace-nowrap">
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-(--color-subtle)">
+                  <TableSkeleton rows={6} cols={6} />
+                </tbody>
+              </table>
             </div>
           ) : tableRecords.length === 0 ? (
             <div className="py-12 flex flex-col items-center gap-2 text-(--color-placeholder)">

@@ -1,8 +1,10 @@
-import { Clock, Copy, Loader2, InboxIcon } from "lucide-react";
+import { memo } from "react";
+import { Clock, Copy, InboxIcon } from "lucide-react";
 import type { RecentEntry } from "~/types/dashboardTypes";
 import { moduleStyle, encodedStyle } from "~/components/styleConfig";
+import { TableRowSkeleton } from "~/components/Skeleton";
 
-export function RecentActivity({
+export const RecentActivity = memo(function RecentActivity({
   recentAll,
   isLoading,
 }: {
@@ -24,10 +26,22 @@ export function RecentActivity({
       </div>
       <div className="overflow-y-auto max-h-90">
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-12 gap-2 text-(--color-placeholder)">
-            <Loader2 size={18} className="animate-spin" />
-            <span className="text-[12px]">Loading activity…</span>
-          </div>
+          <table className="min-w-full text-xs">
+            <thead className="bg-(--color-bg) border-b border-(--color-border)">
+              <tr>
+                {["Module", "HH ID", "Grantee", "Status", "Date"].map((h) => (
+                  <th key={h} className="px-4 py-2.5 text-left text-[10px] font-semibold text-(--color-muted) uppercase tracking-widest whitespace-nowrap">
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-(--color-subtle)">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <TableRowSkeleton key={i} cols={5} />
+              ))}
+            </tbody>
+          </table>
         ) : recentAll.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-14 gap-2">
             <InboxIcon size={22} className="text-[#d4d4cc]" />
@@ -71,9 +85,11 @@ export function RecentActivity({
                         onClick={() =>
                           navigator.clipboard.writeText(entry.idNumber)
                         }
+                        aria-label="Copy HH ID"
+                        title="Copy HH ID"
                         className="opacity-0 group-hover:opacity-100 transition-opacity text-(--color-placeholder) hover:text-(--color-muted) cursor-pointer bg-transparent border-none"
                       >
-                        <Copy size={10} />
+                        <Copy size={10} aria-hidden="true" />
                       </button>
                     </div>
                   </td>
@@ -101,4 +117,4 @@ export function RecentActivity({
       </div>
     </div>
   );
-}
+});

@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import {
@@ -14,8 +14,8 @@ import { CvsViewModal } from "./cvsModal";
 import { DeleteModal } from "./deleteModal";
 import { EditModal } from "./editModal";
 import type { EditModalItem } from "./editModal";
-import type { BusFormFields } from "~/types/busTypes";
-import type { SwdiFormFields } from "~/types/swdiTypes";
+import type { BusRecord } from "~/types/busTypes";
+import type { SwdiRecord } from "~/types/swdiTypes";
 import type { LcnFormFields } from "~/types/lcnTypes";
 import type { MiscFormFields } from "~/types/miscTypes";
 import type { CvsFormFields } from "~/types/cvsTypes";
@@ -70,6 +70,9 @@ const FETCH_ENDPOINT: Record<DocType, string> = {
 const DOC_TYPES: DocType[] = ["BUS", "SWDI", "PCN", "CVS", "MISC"];
 const STATUS_OPTIONS = ["YES", "NO", "UPDATED", "PENDING"];
 const EMPTY_FILTERS: FilterState = { search: "", encoded: "", docType: "", dateFrom: "", dateTo: "", username: "" };
+const DOC_TYPE_KEY: Record<DocType, keyof SelectedIds> = {
+  BUS: "bus", SWDI: "swdi", PCN: "lcn", CVS: "cvs", MISC: "misc",
+};
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -86,9 +89,9 @@ export function RecordsTable() {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
   // view modals
-  const [selectedBusItem, setSelectedBusItem] = useState<BusFormFields | null>(null);
+  const [selectedBusItem, setSelectedBusItem] = useState<BusRecord | null>(null);
   const [selectedPcnItem, setSelectedPcnItem] = useState<LcnFormFields | null>(null);
-  const [selectedSwdiItem, setSelectedSwdiItem] = useState<SwdiFormFields | null>(null);
+  const [selectedSwdiItem, setSelectedSwdiItem] = useState<SwdiRecord | null>(null);
   const [selectedMiscItem, setSelectedMiscItem] = useState<MiscFormFields | null>(null);
   const [selectedCVSItem, setSelectedCVSItem] = useState<CvsFormFields | null>(null);
 
@@ -106,7 +109,7 @@ export function RecordsTable() {
 
   // ── Data ──────────────────────────────────────────────────────────────────────
 
-  const { data: allDocuments = [], isLoading, refetch } = useQuery<AllDocuments[]>({
+  const { data: allDocuments = [], isLoading, isError, refetch } = useQuery<AllDocuments[]>({
     queryKey: ["allDocuments"],
     queryFn: async () => (await APIFETCH.get("alldocuments/globalRecords")).data,
   });
@@ -141,36 +144,40 @@ export function RecordsTable() {
 
   // ── Handlers ──────────────────────────────────────────────────────────────────
 
-  const setFilter = (key: keyof FilterState, value: string) => {
+  const setFilter = useCallback((key: keyof FilterState, value: string) => {
     setFilters((p) => ({ ...p, [key]: value }));
     setCurrentPage(1);
-  };
+  }, []);
 
-  const clearFilters = () => { setFilters(EMPTY_FILTERS); setCurrentPage(1); };
+  const clearFilters = useCallback(() => { setFilters(EMPTY_FILTERS); setCurrentPage(1); }, []);
 
-  const handleView = async (item: AllDocuments) => {
+  const handleView = useCallback(async (item: AllDocuments) => {
     const type = item.documentType as DocType;
     const endpoint = FETCH_ENDPOINT[type];
     if (!endpoint) return;
-    const { data } = await APIFETCH.get(`${endpoint}/${item.documentId}`);
-    if (type === "BUS") setSelectedBusItem(data);
-    if (type === "SWDI") setSelectedSwdiItem(data);
-    if (type === "PCN") setSelectedPcnItem(data);
-    if (type === "CVS") setSelectedCVSItem(data);
-    if (type === "MISC") setSelectedMiscItem(data);
-  };
+    try {
+      const { data } = await APIFETCH.get(`${endpoint}/${item.documentId}`);
+      if (type === "BUS") setSelectedBusItem(data);
+      if (type === "SWDI") setSelectedSwdiItem(data);
+      if (type === "PCN") setSelectedPcnItem(data);
+      if (type === "CVS") setSelectedCVSItem(data);
+      if (type === "MISC") setSelectedMiscItem(data);
+    } catch {
+      show("Failed to load record details.", "error");
+    }
+  }, [show]);
 
-  const DOC_TYPE_KEY: Record<DocType, keyof SelectedIds> = {
-    BUS: "bus", SWDI: "swdi", PCN: "lcn", CVS: "cvs", MISC: "misc",
-  };
-
-  const handleLoad = async (item: AllDocuments) => {
+  const handleLoad = useCallback(async (item: AllDocuments) => {
     const type = item.documentType as DocType;
-    await setDocumentID(DOC_TYPE_KEY[type], item.documentId);
-    navigate(`/${item.documentType.toLowerCase()}`)
-  };
+    try {
+      setDocumentID(DOC_TYPE_KEY[type], item.documentId);
+      navigate(`/${item.documentType.toLowerCase()}`);
+    } catch {
+      show("Failed to load record into form.", "error");
+    }
+  }, [setDocumentID, navigate, show]);
 
-  const handleDeleteConfirm = async () => {
+  const handleDeleteConfirm = useCallback(async () => {
     if (!deleteModal.id) return;
     try {
       const res = await APIFETCH.delete(`/alldocuments/delete/${deleteModal.id}`);
@@ -182,7 +189,7 @@ export function RecordsTable() {
     } finally {
       setDeleteModal({ open: false, id: null });
     }
-  };
+  }, [deleteModal.id, show, queryClient, refetch]);
 
   // ── Render ────────────────────────────────────────────────────────────────────
 
@@ -197,6 +204,16 @@ export function RecordsTable() {
       <SwdiViewModal item={selectedSwdiItem} onClose={() => setSelectedSwdiItem(null)} />
       <MiscViewModal item={selectedMiscItem} onClose={() => setSelectedMiscItem(null)} />
       <CvsViewModal item={selectedCVSItem} onClose={() => setSelectedCVSItem(null)} />
+
+      {/* ── Error banner ── */}
+      {isError && (
+        <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-[13px]">
+          <span className="font-medium">Failed to load records.</span>
+          <button type="button" onClick={() => refetch()} className="ml-auto text-[12px] underline underline-offset-2 cursor-pointer bg-transparent border-none text-red-700 hover:text-red-900">
+            Retry
+          </button>
+        </div>
+      )}
 
       {/* ── Header ── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -263,11 +280,12 @@ export function RecordsTable() {
               value={filters.search}
               onChange={(e) => setFilter("search", e.target.value)}
               placeholder="Search by ID, name, username, DRN…"
+              aria-label="Search records"
               className="w-full pl-9 pr-3 py-2 text-[13px] border border-(--color-border) rounded-lg text-(--color-ink) placeholder-(--color-placeholder) bg-(--color-surface) focus:outline-none focus:ring-2 focus:ring-(--color-ink) focus:border-transparent hover:border-(--color-border-hover) transition-colors"
             />
             {filters.search && (
-              <button onClick={() => setFilter("search", "")} className="absolute right-3 top-1/2 -translate-y-1/2 text-(--color-placeholder) hover:text-(--color-muted) cursor-pointer bg-transparent border-none">
-                <X size={13} />
+              <button onClick={() => setFilter("search", "")} aria-label="Clear search" className="absolute right-3 top-1/2 -translate-y-1/2 text-(--color-placeholder) hover:text-(--color-muted) cursor-pointer bg-transparent border-none">
+                <X size={13} aria-hidden="true" />
               </button>
             )}
           </div>
@@ -287,8 +305,8 @@ export function RecordsTable() {
           </button>
 
           {activeFilters > 0 && (
-            <button onClick={clearFilters} className="inline-flex items-center gap-1.5 px-3 py-2 text-[12px] font-medium text-(--color-muted) hover:text-(--color-ink) border border-(--color-border) hover:border-(--color-ink) rounded-lg transition-colors cursor-pointer bg-transparent shrink-0">
-              <X size={12} /> Clear
+            <button onClick={clearFilters} aria-label="Clear all filters" className="inline-flex items-center gap-1.5 px-3 py-2 text-[12px] font-medium text-(--color-muted) hover:text-(--color-ink) border border-(--color-border) hover:border-(--color-ink) rounded-lg transition-colors cursor-pointer bg-transparent shrink-0">
+              <X size={12} aria-hidden="true" /> Clear
             </button>
           )}
         </div>
@@ -353,11 +371,11 @@ export function RecordsTable() {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="min-w-full">
+          <table className="min-w-full" aria-label="Global records table">
             <thead>
               <tr className="bg-(--color-bg) border-b border-(--color-border)">
                 {["ID Number", "Name", "Type", "Subject of Change", "DRN", "Status", "Username", "Date", "Actions"].map((col) => (
-                  <th key={col} className="px-4 py-3 text-left text-[10px] font-bold text-(--color-muted) uppercase tracking-widest whitespace-nowrap first:pl-5 last:pr-5">
+                  <th key={col} scope="col" className="px-4 py-3 text-left text-[10px] font-bold text-(--color-muted) uppercase tracking-widest whitespace-nowrap first:pl-5 last:pr-5">
                     {col}
                   </th>
                 ))}
@@ -393,9 +411,10 @@ export function RecordsTable() {
                         <button
                           onClick={() => navigator.clipboard.writeText(item.idNumber)}
                           title="Copy ID"
+                          aria-label="Copy ID number"
                           className="opacity-0 group-hover:opacity-100 transition-opacity text-(--color-placeholder) hover:text-(--color-muted) cursor-pointer bg-transparent border-none p-0"
                         >
-                          <Copy size={11} />
+                          <Copy size={11} aria-hidden="true" />
                         </button>
                       </div>
                     </td>
@@ -505,9 +524,10 @@ export function RecordsTable() {
               <button
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
+                aria-label="Previous page"
                 className="w-8 h-8 flex items-center justify-center rounded-lg border border-(--color-border) text-(--color-muted) hover:border-(--color-ink) hover:text-(--color-ink) disabled:opacity-35 disabled:cursor-not-allowed transition-colors cursor-pointer bg-(--color-surface)"
               >
-                <ChevronLeft size={14} />
+                <ChevronLeft size={14} aria-hidden="true" />
               </button>
 
               {Array.from({ length: totalPages }, (_, i) => i + 1)
@@ -537,9 +557,10 @@ export function RecordsTable() {
               <button
                 onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                 disabled={currentPage === totalPages}
+                aria-label="Next page"
                 className="w-8 h-8 flex items-center justify-center rounded-lg border border-(--color-border) text-(--color-muted) hover:border-(--color-ink) hover:text-(--color-ink) disabled:opacity-35 disabled:cursor-not-allowed transition-colors cursor-pointer bg-(--color-surface)"
               >
-                <ChevronRight size={14} />
+                <ChevronRight size={14} aria-hidden="true" />
               </button>
               <button
                 onClick={() => setCurrentPage(totalPages)}

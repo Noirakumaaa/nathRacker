@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useModalFocusTrap } from "~/hooks/useModalFocusTrap";
 import { X, Save, Loader2 } from "lucide-react";
 import APIFETCH from "~/lib/axios/axiosConfig";
 import { inputCls, labelCls } from "~/components/styleConfig";
@@ -186,37 +187,44 @@ export function EditModal({ item, onClose, onSaved }: Props) {
   const [formData, setFormData] = useState<AnyFormFields | null>(null);
   const [loading,  setLoading]  = useState(false);
   const [fetching, setFetching] = useState(false);
+  const dialogRef = useModalFocusTrap(onClose);
 
   // fetch the full record when the modal opens
-useEffect(() => {
-  if (!item) return;
+  useEffect(() => {
+    if (!item) return;
 
-  setFormData(null);
-  setFetching(true);
+    const controller = new AbortController();
+    setFormData(null);
+    setFetching(true);
 
-  const endpoint = FETCH_ENDPOINT[item.documentType as DocType];
+    const endpoint = FETCH_ENDPOINT[item.documentType as DocType];
 
-  APIFETCH.get(`${endpoint}/${item.documentId}`)
-    .then((res) => {
-      const data = res.data;
+    APIFETCH.get(`${endpoint}/${item.documentId}`, { signal: controller.signal })
+      .then((res) => {
+        const {
+          date: _date,
+          encodedBy: _encodedBy,
+          verifiedBy: _verifiedBy,
+          verified: _verified,
+          userId: _userId,
+          operationsOfficeNumId: _opId,
+          createdAt: _createdAt,
+          updatedAt: _updatedAt,
+          ...cleanedData
+        } = res.data;
+        setFormData(cleanedData);
+      })
+      .catch((err) => {
+        if (!controller.signal.aborted) {
+          useToastStore.getState().show("Failed to load record.", "error");
+        }
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setFetching(false);
+      });
 
-      const {
-        date,
-        encodedBy,
-        verifiedBy,
-        verified,
-        userId,
-        operationsOfficeNumId,
-        createdAt,
-        updatedAt,
-        ...cleanedData
-      } = data;
-
-      setFormData(cleanedData);
-      console.log("FORM DATA AFTER FETCHING : ",cleanedData)
-    })
-    .finally(() => setFetching(false));
-}, [item]);
+    return () => controller.abort();
+  }, [item]);
 
   if (!item) return null;
 
@@ -231,14 +239,12 @@ useEffect(() => {
     e.preventDefault();
     if (!formData) return;
     setLoading(true);
-    console.log("FORM DATA : ",formData)
     try {
       const res = await APIFETCH.patch(SAVE_ENDPOINT[type], formData);
       if (res.data.update) {
         show(res.data.message ?? "Saved successfully.", "success");
         onSaved();
         onClose();
-        console.log("FORM DATA : ",formData)
         queryClient.invalidateQueries({queryKey : ["allDocuments"]})
       } else {
         show(res.data.message ?? "Failed to save.", "error");
@@ -261,10 +267,17 @@ useEffect(() => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-(--color-ink)/50 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-(--color-ink)/50 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
 
       {/* Modal */}
-      <div className="relative bg-(--color-surface) rounded-2xl w-full max-w-2xl z-10 flex flex-col max-h-[90vh] overflow-hidden border border-(--color-border) shadow-[0_24px_60px_rgba(0,0,0,0.15)]">
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="edit-modal-title"
+        tabIndex={-1}
+        className="relative bg-(--color-surface) rounded-2xl w-full max-w-2xl z-10 flex flex-col max-h-[90vh] overflow-hidden border border-(--color-border) shadow-[0_24px_60px_rgba(0,0,0,0.15)] outline-none"
+      >
 
         {/* Top accent */}
         <div className="h-px w-full bg-linear-to-r from-violet-400 via-purple-400 to-transparent" />
@@ -276,16 +289,17 @@ useEffect(() => {
               {type}
             </span>
             <div>
-              <h2 className="text-[15px] font-semibold tracking-tight text-(--color-ink)">Edit Record</h2>
+              <h2 id="edit-modal-title" className="text-[15px] font-semibold tracking-tight text-(--color-ink)">Edit Record</h2>
               <p className="text-[11px] text-(--color-muted) mt-0.5">Changes will be saved immediately</p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
+            aria-label="Close dialog"
             className="w-8 h-8 flex items-center justify-center rounded-lg border border-(--color-border) text-(--color-muted) hover:border-(--color-ink) hover:text-(--color-ink) transition-colors cursor-pointer bg-(--color-surface)"
           >
-            <X size={14} />
+            <X size={14} aria-hidden="true" />
           </button>
         </div>
 

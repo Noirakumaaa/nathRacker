@@ -87,10 +87,10 @@ export default function BusVerificationList() {
   }, [bdmGroups, activeTab, search]);
 
   const tabs: { id: ListTab; label: string; color: string }[] = [
-    { id: "all",          label: "All",          color: "text-gray-600" },
-    { id: "needs-review", label: "Needs Review",  color: "text-amber-600" },
-    { id: "has-issues",   label: "Has Issues",    color: "text-red-500" },
-    { id: "completed",    label: "Completed",     color: "text-emerald-600" },
+    { id: "all", label: "All", color: "text-gray-600" },
+    { id: "needs-review", label: "Needs Review", color: "text-amber-600" },
+    { id: "has-issues", label: "Has Issues", color: "text-red-500" },
+    { id: "completed", label: "Completed", color: "text-emerald-600" },
   ];
 
   if (isLoading) {
@@ -195,18 +195,16 @@ export default function BusVerificationList() {
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-150 cursor-pointer border-none whitespace-nowrap ${
-                activeTab === tab.id
-                  ? "bg-(--color-ink) text-(--color-bg)"
-                  : `${tab.color} hover:bg-(--color-subtle)`
-              }`}
+              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-150 cursor-pointer border-none whitespace-nowrap ${activeTab === tab.id
+                ? "bg-(--color-ink) text-(--color-bg)"
+                : `${tab.color} hover:bg-(--color-subtle)`
+                }`}
             >
               {tab.label}
-              <span className={`text-[11px] px-1.5 py-0.5 rounded-full font-bold ${
-                activeTab === tab.id
-                  ? "bg-white/20 text-white"
-                  : "bg-(--color-subtle) text-(--color-muted)"
-              }`}>
+              <span className={`text-[11px] px-1.5 py-0.5 rounded-full font-bold ${activeTab === tab.id
+                ? "bg-white/20 text-white"
+                : "bg-(--color-subtle) text-(--color-muted)"
+                }`}>
                 {tabCounts[tab.id]}
               </span>
             </button>
@@ -243,8 +241,8 @@ export default function BusVerificationList() {
             {search
               ? `No BDM matches "${search}"`
               : activeTab !== "all"
-              ? "No BDMs in this category"
-              : "No BUS records found"}
+                ? "No BDMs in this category"
+                : "No BUS records found"}
           </p>
           {(search || activeTab !== "all") && (
             <button
@@ -279,14 +277,14 @@ export default function BusVerificationList() {
               const statusDot = isComplete
                 ? "bg-emerald-400"
                 : hasIssues
-                ? "bg-red-400"
-                : "bg-amber-300";
+                  ? "bg-red-400"
+                  : "bg-amber-300";
 
               const rowBg = isComplete
                 ? "hover:bg-emerald-50/40"
                 : hasIssues
-                ? "hover:bg-red-50/30"
-                : "hover:bg-(--color-subtle)";
+                  ? "hover:bg-red-50/30"
+                  : "hover:bg-(--color-subtle)";
 
               return (
                 <button

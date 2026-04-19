@@ -7,6 +7,7 @@ import { useToastStore } from "~/lib/zustand/ToastStore";
 import { labelCls, inputCls } from "~/components/styleConfig";
 import { Req } from "~/components/LabelStyle";
 import { SectionHeader, PanelHeader, SubmitRow, ListItem } from "./shared";
+import { ListItemSkeleton } from "~/components/Skeleton";
 import type { OperationsOffice, Lgu, Barangay } from "./types";
 
 export default function BarangayTab() {
@@ -20,7 +21,7 @@ export default function BarangayTab() {
   const [dragOver, setDragOver] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const { data, refetch } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ["assignedArea"],
     queryFn: async () => (await APIFETCH.get("/admin/get/assignedArea")).data,
   });
@@ -202,9 +203,9 @@ export default function BarangayTab() {
                       {importRows.length - matchable > 0 && <span className="text-red-500">, {importRows.length - matchable} unmatched</span>}
                     </p>
                   </div>
-                  <button type="button" onClick={clearImport} disabled={importing}
+                  <button type="button" onClick={clearImport} disabled={importing} aria-label="Clear import file"
                     className="p-1 rounded-md hover:bg-(--color-border) transition-colors text-(--color-muted) hover:text-(--color-ink) cursor-pointer border-none bg-transparent disabled:opacity-50">
-                    <X size={13} />
+                    <X size={13} aria-hidden="true" />
                   </button>
                 </div>
                 <div className="max-h-44 overflow-y-auto space-y-1 rounded-lg border border-(--color-border) p-2">
@@ -241,9 +242,11 @@ export default function BarangayTab() {
 
         {/* ── List ── */}
         <div className="bg-(--color-surface) rounded-xl border border-(--color-border) overflow-hidden lg:col-span-2">
-          <PanelHeader label={`Barangays (${barangays.length})`} legend={false} />
+          <PanelHeader label={isLoading ? "Barangays" : `Barangays (${barangays.length})`} legend={false} />
           <div className="p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 max-h-80 overflow-y-auto">
-            {barangays.length === 0
+            {isLoading
+              ? Array.from({ length: 6 }).map((_, i) => <ListItemSkeleton key={i} />)
+              : barangays.length === 0
               ? <p className="text-[12px] text-(--color-muted) text-center py-8 col-span-full">No barangays added yet.</p>
               : barangays.map(b => (
                 <ListItem

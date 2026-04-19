@@ -21,6 +21,7 @@ export default [
     route("admin/office",                    "routes/admin/office.tsx"),
     route("admin/lgu",                       "routes/admin/lgu.tsx"),
     route("admin/barangay",                  "routes/admin/barangay.tsx"),
+    route("admin/delete-table",              "routes/admin/delete-table.tsx"),
   ]),
   
   layout("routes/authLayout.tsx", [

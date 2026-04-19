@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import type { MonthlySummaryResponse } from './../app/types/SummaryType'; // or copy the types inline
+import type { MonthlySummaryResponse } from '~/types/SummaryType';
 import APIFETCH from '~/lib/axios/axiosConfig';
 
 

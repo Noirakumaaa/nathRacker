@@ -5,8 +5,8 @@ import { useAuth } from "~/components/authGuard";
 
 export function meta() {
   return [
-    { title: "Settings" },
-    { name: "description", content: "User settings page" },
+    { title: "Settings | NathRacker" },
+    { name: "description", content: "Manage your account and preferences" },
   ];
 }
 

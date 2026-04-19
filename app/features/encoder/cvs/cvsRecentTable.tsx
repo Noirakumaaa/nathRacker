@@ -54,9 +54,9 @@ export default function CvsRecentTable() {
           <button
             onClick={() => navigator.clipboard.writeText(r.idNumber)}
             className="opacity-0 group-hover:opacity-100 transition-opacity text-(--color-placeholder) hover:text-(--color-muted) cursor-pointer bg-transparent border-none p-0"
-            title="Copy ID Number"
+            title="Copy ID Number" aria-label="Copy ID number"
           >
-            <Copy size={10} />
+            <Copy size={10} aria-hidden="true" />
           </button>
         </div>
       ),

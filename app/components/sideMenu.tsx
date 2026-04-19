@@ -8,20 +8,23 @@ import {
   BookText,
   ClipboardCheck,
   FileIcon,
-  ChevronRight,
+  ChevronDown,
   Construction,
   UserPlus,
   Users,
   Building2,
   MapPin,
   Landmark,
+  Database,
+  Shield,
+  Layers,
 } from "lucide-react";
 import { useState, useRef, useLayoutEffect } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import APIFETCH from "~/lib/axios/axiosConfig";
-import { useToastStore } from "~/lib/zustand/ToastStore";
 import { queryClient } from "~/root";
+import { ROLES, ENCODER_ROLES, VERIFIER_ROLES, OPERATIONS_ROLES } from "~/constants/roles";
 
 type SidebarProps = {
   isOpen: boolean;
@@ -35,26 +38,26 @@ const menuItems = [
     id: "bus",
     label: "BUS",
     icon: FileText,
-    tag: "bg-indigo-50 text-indigo-500",
+    tag: "bg-indigo-100 text-indigo-600",
   },
   {
     id: "swdi",
     label: "SWDI",
     icon: FileInput,
-    tag: "bg-emerald-50 text-emerald-600",
+    tag: "bg-emerald-100 text-emerald-700",
   },
-  { id: "LCN", label: "LCN", icon: IdCard, tag: "bg-rose-50 text-rose-500" },
+  { id: "LCN", label: "LCN", icon: IdCard, tag: "bg-rose-100 text-rose-600" },
   {
     id: "cvs",
     label: "CVS",
     icon: FileText,
-    tag: "bg-violet-50 text-violet-500",
+    tag: "bg-violet-100 text-violet-600",
   },
   {
     id: "msc",
     label: "Miscellaneous",
     icon: FileIcon,
-    tag: "bg-sky-50 text-sky-500",
+    tag: "bg-sky-100 text-sky-600",
   },
 ];
 
@@ -65,13 +68,12 @@ const verificationMenuItems = [
     icon: FileText,
     enabled: true,
   },
-  { id: "cvsVer", label: "CVS Verification", icon: FileText, enabled: false },
 ];
 
 const bottomItems = [
-  { id: "records",    label: "Global Records", icon: BookText },
-  { id: "my-records", label: "My Records",     icon: FileText },
-  { id: "summary",    label: "Summary",        icon: ClipboardCheck },
+  { id: "records", label: "Global Records", icon: BookText },
+  { id: "my-records", label: "My Records", icon: FileText },
+  { id: "summary", label: "Summary", icon: ClipboardCheck },
 ];
 
 const adminItems = [
@@ -81,6 +83,7 @@ const adminItems = [
   { id: "admin/office", label: "Operations Office", icon: Building2 },
   { id: "admin/lgu", label: "LGU", icon: Landmark },
   { id: "admin/barangay", label: "Barangay", icon: MapPin },
+  { id: "admin/delete-table", label: "Delete Table", icon: Database },
 ];
 
 const operationsItems = [
@@ -93,12 +96,57 @@ const AccountItems = [
   { id: "logout", label: "Logout", icon: LogOut },
 ];
 
-// ── Section label ─────────────────────────────────────────────
-function SectionLabel({ label }: { label: string }) {
+// ── Section header with accordion ────────────────────────────
+function NavSection({
+  label,
+  icon: SectionIcon,
+  children,
+  defaultExpanded = false,
+}: {
+  label: string;
+  icon?: React.ElementType;
+  children: React.ReactNode;
+  defaultExpanded?: boolean;
+}) {
+  const [expanded, setExpanded] = useState(defaultExpanded);
+
+  useLayoutEffect(() => {
+    if (defaultExpanded) setExpanded(true);
+  }, [defaultExpanded]);
+
   return (
-    <p className="text-[9.5px] font-semibold text-(--color-placeholder) uppercase tracking-widest px-3 pt-5 pb-1.5 select-none">
-      {label}
-    </p>
+    <div className="pt-1">
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="w-full flex items-center justify-between px-3 py-2 rounded-lg focus:outline-none cursor-pointer hover:bg-(--color-subtle) transition-colors"
+        aria-expanded={expanded}
+      >
+        <div className="flex items-center gap-2">
+          {SectionIcon && (
+            <SectionIcon size={13} className="text-(--color-placeholder) shrink-0" />
+          )}
+          <span className="text-[11px] font-bold text-(--color-muted) uppercase tracking-widest select-none">
+            {label}
+          </span>
+        </div>
+        <ChevronDown
+          size={14}
+          className={`text-(--color-placeholder) transition-transform duration-200 ${expanded ? "rotate-0" : "-rotate-90"
+            }`}
+        />
+      </button>
+
+      <div
+        className={`grid transition-all duration-200 ease-in-out ${expanded
+            ? "grid-rows-[1fr] opacity-100 mt-0.5"
+            : "grid-rows-[0fr] opacity-0"
+          }`}
+      >
+        <div className="overflow-hidden space-y-0.5 px-1">
+          {children}
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -120,35 +168,38 @@ function NavItem({
       onClick={onClick}
       disabled={disabled}
       className={`
-        w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-left
-        text-[13px] font-medium transition-all duration-150 cursor-pointer
-        ${disabled ? "opacity-40 cursor-not-allowed" : ""}
+        w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left
+        text-[14px] font-medium transition-all duration-150 cursor-pointer
+        ${disabled ? "opacity-35 cursor-not-allowed" : ""}
         ${isActive
-          ? "bg-(--color-ink) text-(--color-bg)"
-          : "text-(--color-muted) hover:text-(--color-ink) hover:bg-(--color-subtle)"
+          ? "bg-(--color-ink) text-(--color-bg) shadow-sm"
+          : "text-(--color-ink) hover:bg-(--color-subtle)"
         }
       `}
     >
       <Icon
-        size={14}
-        className={`shrink-0 ${isActive ? "opacity-90" : "opacity-60"}`}
+        size={17}
+        className={`shrink-0 ${isActive ? "opacity-90" : "opacity-50"}`}
       />
-      <span className="flex-1 leading-none truncate">{item.label}</span>
+      <span className="flex-1 leading-snug truncate">{item.label}</span>
       {item.tag && !isActive && (
         <span
-          className={`font-mono text-[9px] font-semibold px-1.5 py-0.5 rounded tracking-wider ${item.tag}`}
+          className={`font-mono text-[10px] font-bold px-1.5 py-0.5 rounded-md tracking-wide ${item.tag}`}
         >
           {item.id.toUpperCase()}
         </span>
       )}
-      {isActive && <ChevronRight size={11} className="opacity-30 shrink-0" />}
     </button>
   );
 }
 
+// ── Divider ───────────────────────────────────────────────────
+function NavDivider() {
+  return <div className="my-1.5 mx-3 border-t border-(--color-border)" />;
+}
+
 // ── Sidebar ───────────────────────────────────────────────────
 const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
-  const { show } = useToastStore();
   const location = useLocation();
   const [activeItem, setActiveItem] = useState(
     location.pathname.replace("/", ""),
@@ -168,6 +219,7 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
       return res.data;
     },
     retry: false,
+    staleTime: 1000 * 60 * 5,
   });
 
   const updateSidebar = (option: string) => {
@@ -183,28 +235,38 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
     updateSidebarOption(option);
   };
 
-  const authorizedEncoderModule = ["ADMIN", "ENCODER"];
-  const authorizedVerifiedModule = ["ADMIN", "VERIFIER"];
-  const authorizedOpsStaffModule = ["AC", "SWOIII", "ADMIN"];
-  const authorizedVerifierModule = ["ADMIN", "VERIFIER"];
+  const authorizedEncoderModule = ENCODER_ROLES;
+  const authorizedOpsStaffModule = OPERATIONS_ROLES;
+  const authorizedVerifierModule = VERIFIER_ROLES;
 
   const logout = async () => {
     const res = await APIFETCH.get("/auth/logout");
     if (res.data.logout) {
       queryClient.clear();
       window.location.href = "/login";
-
     }
   };
 
   const initials = (User?.govUsername?.[0] ?? "U").toUpperCase();
+
+  const roleColors: Record<string, string> = {
+    ADMIN: "bg-rose-100 text-rose-700",
+    ENCODER: "bg-indigo-100 text-indigo-700",
+    VERIFIER: "bg-emerald-100 text-emerald-700",
+    SWA: "bg-violet-100 text-violet-700",
+    AC: "bg-sky-100 text-sky-700",
+    SWOIII: "bg-amber-100 text-amber-700",
+  };
+
+  const roleBadge =
+    roleColors[User?.role] ?? "bg-(--color-subtle) text-(--color-muted)";
 
   return (
     <>
       {/* Mobile overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-(--color-ink)/25 backdrop-blur-[2px] z-30 lg:hidden"
+          className="fixed inset-0 bg-(--color-ink)/30 backdrop-blur-[2px] z-30 lg:hidden"
           onClick={onClose}
         />
       )}
@@ -212,36 +274,44 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
       {/* Sidebar */}
       <aside
         className={`
-          fixed top-0 left-0 h-screen w-55 bg-(--color-bg) border-r border-(--color-border)
+          fixed top-0 left-0 h-screen w-62 bg-(--color-bg) border-r border-(--color-border)
           z-40 flex flex-col transform transition-transform duration-300 ease-in-out
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
           lg:translate-x-0 lg:relative lg:z-0
         `}
       >
         {/* Logo */}
-        <div className="h-15 flex items-center px-5 border-b border-(--color-border) shrink-0">
-          <a href="/" className="flex items-center gap-2.5 no-underline group">
+        <div className="h-16 flex items-center px-5 border-b border-(--color-border) shrink-0">
+          <a href="/" className="flex items-center gap-3 no-underline group">
             <img
               src="/nathracker_icon_v9.svg"
               alt="NathRacker"
-              className="w-10 h-10"
+              className="w-9 h-9"
             />
-            <span className="text-[15px] font-semibold tracking-tight text-(--color-ink)">
-              NathRacker
-            </span>
+            <div>
+              <span className="block text-[15px] font-bold tracking-tight text-(--color-ink) leading-tight">
+                NathRacker
+              </span>
+              <span className="block text-[11px] text-(--color-muted) leading-tight">
+                Case Management
+              </span>
+            </div>
           </a>
         </div>
 
         {/* Nav */}
         <div
           ref={navRef}
-          className="flex-1 overflow-y-auto py-2 px-2.5 space-y-0"
+          className="flex-1 overflow-y-auto py-3 px-2 space-y-0"
           style={{ overflowAnchor: "none" }}
         >
           {authorizedEncoderModule.includes(User?.role) && (
             <>
-              <SectionLabel label="Encoders Modules" />
-              <nav className="space-y-0.5">
+              <NavSection
+                label="Encoder Modules"
+                icon={Layers}
+                defaultExpanded={menuItems.some((i) => activeItem === i.id)}
+              >
                 {menuItems.map((item) => (
                   <NavItem
                     key={item.id}
@@ -250,14 +320,20 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
                     onClick={() => updateSidebar(item.id)}
                   />
                 ))}
-              </nav>
+              </NavSection>
+              <NavDivider />
             </>
           )}
 
-          {authorizedVerifiedModule.includes(User?.role) && (
+          {authorizedVerifierModule.includes(User?.role) && (
             <>
-              <SectionLabel label="Verification Modules" />
-              <nav className="space-y-0.5">
+              <NavSection
+                label="Verification"
+                icon={Shield}
+                defaultExpanded={verificationMenuItems.some(
+                  (i) => activeItem === i.id,
+                )}
+              >
                 {verificationMenuItems.map((item) => (
                   <NavItem
                     key={item.id}
@@ -272,22 +348,26 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
                   />
                 ))}
                 {verificationMenuItems.some((i) => !i.enabled) && (
-                  <div className="flex items-center gap-1.5 px-3 py-1">
+                  <div className="flex items-center gap-2 px-3 py-2">
                     <Construction
-                      size={10}
-                      className="text-(--color-placeholder)"
+                      size={12}
+                      className="text-(--color-placeholder) shrink-0"
                     />
-                    <span className="text-[10px] text-(--color-placeholder)">
-                      Some modules under development
+                    <span className="text-[11px] text-(--color-placeholder) leading-snug">
+                      Some modules are under development
                     </span>
                   </div>
                 )}
-              </nav>
+              </NavSection>
+              <NavDivider />
             </>
           )}
 
-          <SectionLabel label="Reports" />
-          <nav className="space-y-0.5">
+          <NavSection
+            label="Reports"
+            icon={BookText}
+            defaultExpanded={bottomItems.some((i) => activeItem === i.id)}
+          >
             {bottomItems.map((item) => (
               <NavItem
                 key={item.id}
@@ -296,12 +376,18 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
                 onClick={() => updateSidebar(item.id)}
               />
             ))}
-          </nav>
+          </NavSection>
 
           {authorizedOpsStaffModule.includes(User?.role) && (
             <>
-              <SectionLabel label="Operations" />
-              <nav className="space-y-0.5">
+              <NavDivider />
+              <NavSection
+                label="Operations"
+                icon={Building2}
+                defaultExpanded={operationsItems.some(
+                  (i) => activeItem === i.id,
+                )}
+              >
                 {operationsItems.map((item) => (
                   <NavItem
                     key={item.id}
@@ -310,14 +396,18 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
                     onClick={() => updateSidebar(item.id)}
                   />
                 ))}
-              </nav>
+              </NavSection>
             </>
           )}
 
-          {User?.role === "ADMIN" && (
+          {User?.role === ROLES.ADMIN && (
             <>
-              <SectionLabel label="Admin" />
-              <nav className="space-y-0.5">
+              <NavDivider />
+              <NavSection
+                label="Admin"
+                icon={Shield}
+                defaultExpanded={adminItems.some((i) => activeItem === i.id)}
+              >
                 {adminItems.map((item) => (
                   <NavItem
                     key={item.id}
@@ -326,12 +416,17 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
                     onClick={() => updateSidebar(item.id)}
                   />
                 ))}
-              </nav>
+              </NavSection>
             </>
           )}
 
-          <SectionLabel label="Account" />
-          <nav className="space-y-0.5">
+          <NavDivider />
+
+          <NavSection
+            label="Account"
+            icon={Settings}
+            defaultExpanded={AccountItems.some((i) => activeItem === i.id)}
+          >
             {AccountItems.map((item) => (
               <NavItem
                 key={item.id}
@@ -340,25 +435,27 @@ const Sidebar = ({ isOpen, onClose, updateSidebarOption }: SidebarProps) => {
                 onClick={() => updateSidebar(item.id)}
               />
             ))}
-          </nav>
+          </NavSection>
         </div>
 
         {/* Footer — user card */}
-        <div className="border-t border-(--color-border) p-2.5 shrink-0">
+        <div className="border-t border-(--color-border) p-3 shrink-0">
           {User && (
-            <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg bg-(--color-surface) border border-(--color-border)">
-              <div className="w-7 h-7 rounded-full bg-(--color-ink) flex items-center justify-center shrink-0">
-                <span className="text-[11px] font-bold text-(--color-bg)">
+            <div className="flex items-center gap-3 px-3 py-3 rounded-xl bg-(--color-surface) border border-(--color-border)">
+              <div className="w-9 h-9 rounded-full bg-(--color-ink) flex items-center justify-center shrink-0">
+                <span className="text-[13px] font-bold text-(--color-bg)">
                   {initials}
                 </span>
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-[12px] font-semibold text-(--color-ink) truncate leading-tight">
+                <p className="text-[13px] font-semibold text-(--color-ink) truncate leading-tight">
                   {User.govUsername}
                 </p>
-                <p className="text-[10px] text-(--color-muted) font-mono uppercase tracking-wide">
+                <span
+                  className={`inline-block mt-0.5 text-[10px] font-bold px-1.5 py-0.5 rounded-md uppercase tracking-wide ${roleBadge}`}
+                >
                   {User.role ?? "ENCODER"}
-                </p>
+                </span>
               </div>
             </div>
           )}

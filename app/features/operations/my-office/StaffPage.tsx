@@ -4,7 +4,6 @@ import { useNavigate } from "react-router";
 import {
   Users,
   ArrowUpRight,
-  Loader2,
   AlertCircle,
   MapPin,
   Landmark,
@@ -14,6 +13,7 @@ import {
 import APIFETCH from "~/lib/axios/axiosConfig";
 import type { Lgu, Barangay, Employee, OperationsOffice } from "~/features/admin/settings/types";
 import type { me } from "~/types/authTypes";
+import { StaffCardSkeleton } from "~/components/Skeleton";
 
 type AreaData = {
   operations: OperationsOffice[];
@@ -181,10 +181,22 @@ export default function StaffPage({ userData }: { userData: me }) {
 
   if (isLoading) {
     return (
-      <main className="p-6 bg-(--color-bg) min-h-screen flex items-center justify-center">
-        <div className="flex items-center gap-2 text-(--color-muted)">
-          <Loader2 size={16} className="animate-spin" />
-          <span className="text-[13px]">Loading staff…</span>
+      <main className="p-6 bg-(--color-bg) min-h-screen font-sans antialiased">
+        <div className="max-w-full mx-auto flex flex-col gap-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="space-y-2">
+              <div className="h-3 w-32 bg-gray-200 rounded animate-pulse" />
+              <div className="h-6 w-20 bg-gray-200 rounded animate-pulse" />
+              <div className="h-3 w-28 bg-gray-200 rounded animate-pulse" />
+            </div>
+            <div className="h-10 w-32 bg-gray-200 rounded-xl animate-pulse" />
+          </div>
+          <div className="h-10 w-full bg-gray-100 rounded-xl animate-pulse" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <StaffCardSkeleton key={i} />
+            ))}
+          </div>
         </div>
       </main>
     );

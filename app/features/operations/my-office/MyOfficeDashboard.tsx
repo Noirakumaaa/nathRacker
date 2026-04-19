@@ -16,6 +16,7 @@ import {
   CalendarDays,
   FileStack,
 } from "lucide-react";
+import { MetricCardSkeleton, EmployeeRowSkeleton } from "~/components/Skeleton";
 import APIFETCH from "~/lib/axios/axiosConfig";
 import type {
   OperationsOffice,
@@ -354,9 +355,55 @@ export default function MyOfficeDashboard({ userData }: { userData: me }) {
   if (isLoading) {
     return (
       <main className="p-6 bg-(--color-bg) font-sans antialiased">
-        <div className="flex items-center gap-2 text-(--color-muted)">
-          <Loader2 size={16} className="animate-spin" />
-          <span className="text-[13px]">Loading office data…</span>
+        <div className="max-w-full mx-auto flex flex-col gap-6">
+          {/* Header */}
+          <div className="flex flex-col gap-2">
+            <div className="h-4 w-24 bg-gray-200 rounded-full animate-pulse" />
+            <div className="h-7 w-32 bg-gray-200 rounded animate-pulse" />
+            <div className="h-4 w-48 bg-gray-200 rounded animate-pulse" />
+          </div>
+          {/* Area stats */}
+          <div className="grid grid-cols-3 gap-3">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="bg-(--color-surface) border border-(--color-border) rounded-xl px-4 py-3.5 flex items-center gap-3">
+                <div className="w-8 h-8 bg-gray-200 rounded-lg animate-pulse shrink-0" />
+                <div className="space-y-1.5">
+                  <div className="h-5 w-10 bg-gray-200 rounded animate-pulse" />
+                  <div className="h-3 w-16 bg-gray-200 rounded animate-pulse" />
+                </div>
+              </div>
+            ))}
+          </div>
+          {/* Metric cards */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <MetricCardSkeleton key={i} />
+            ))}
+          </div>
+          {/* LGU cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="bg-(--color-surface) border border-(--color-border) rounded-xl p-4 space-y-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 bg-gray-200 rounded-lg animate-pulse" />
+                  <div className="space-y-1.5">
+                    <div className="h-4 w-32 bg-gray-200 rounded animate-pulse" />
+                    <div className="h-3 w-16 bg-gray-200 rounded animate-pulse" />
+                  </div>
+                </div>
+                <div className="h-8 w-full bg-gray-100 rounded animate-pulse" />
+              </div>
+            ))}
+          </div>
+          {/* Staff list */}
+          <div className="bg-(--color-surface) border border-(--color-border) rounded-xl overflow-hidden">
+            <div className="px-5 py-3.5 border-b border-(--color-border)">
+              <div className="h-4 w-16 bg-gray-200 rounded animate-pulse" />
+            </div>
+            {Array.from({ length: 4 }).map((_, i) => (
+              <EmployeeRowSkeleton key={i} />
+            ))}
+          </div>
         </div>
       </main>
     );

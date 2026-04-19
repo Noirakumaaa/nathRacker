@@ -5,8 +5,8 @@ import { useAuth } from "~/components/authGuard";
 
 export function meta() {
   return [
-    { title: "LCN" },
-    { name: "description", content: "View your dashboard" },
+    { title: "LCN Encoder | NathRacker" },
+    { name: "description", content: "Encode LCN change notification records" },
   ];
 }
 

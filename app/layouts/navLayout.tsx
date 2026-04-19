@@ -1,6 +1,6 @@
-import { useState, type ReactNode } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigation } from "react-router";
-import { Loader2 } from "lucide-react";
+import type { ReactNode } from "react";
 import Sidebar from "~/components/sideMenu";
 import TopNavbar from "~/components/navigation";
 import { ErrorBoundary } from "~/components/ErrorBoundary";
@@ -9,11 +9,49 @@ type LayoutWrapperProps = {
   children: ReactNode;
 };
 
+function TopProgressBar() {
+  const navigation = useNavigation();
+  const isNavigating = navigation.state === "loading";
+  const [width, setWidth] = useState(0);
+  const [visible, setVisible] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    if (isNavigating) {
+      setVisible(true);
+      setWidth(20);
+      timerRef.current = setInterval(() => {
+        setWidth((w) => (w < 85 ? w + Math.random() * 8 : w));
+      }, 200);
+    } else {
+      if (timerRef.current) clearInterval(timerRef.current);
+      setWidth(100);
+      const hide = setTimeout(() => {
+        setVisible(false);
+        setWidth(0);
+      }, 300);
+      return () => clearTimeout(hide);
+    }
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [isNavigating]);
+
+  if (!visible) return null;
+
+  return (
+    <div className="fixed top-0 left-0 right-0 z-[9999] h-[2px] bg-(--color-border)">
+      <div
+        className="h-full bg-(--color-ink) transition-all duration-200 ease-out"
+        style={{ width: `${width}%` }}
+      />
+    </div>
+  );
+}
+
 const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("dashboard");
-  const navigation = useNavigation();
-  const isNavigating = navigation.state === "loading";
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -25,6 +63,8 @@ const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
 
   return (
     <div className="h-screen flex flex-col overflow-hidden bg-(--color-bg)">
+      <TopProgressBar />
+
       {/* Fixed Top Navigation */}
       <TopNavbar onMenuToggle={toggleSidebar} isSidebarOpen={isSidebarOpen} />
 
@@ -38,16 +78,7 @@ const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
 
         {/* Scrollable Main Content */}
         <main className="flex-1 overflow-y-auto pt-16">
-          {isNavigating ? (
-            <div className="flex items-center justify-center h-full">
-              <div className="flex flex-col items-center gap-3">
-                <Loader2 size={24} className="animate-spin text-(--color-ink)" />
-                <p className="text-[13px] text-(--color-muted)">Loading...</p>
-              </div>
-            </div>
-          ) : (
-            <ErrorBoundary>{children}</ErrorBoundary>
-          )}
+          <ErrorBoundary>{children}</ErrorBoundary>
         </main>
       </div>
     </div>

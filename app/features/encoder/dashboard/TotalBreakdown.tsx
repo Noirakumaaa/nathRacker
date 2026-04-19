@@ -1,6 +1,7 @@
+import { memo } from "react";
 import type { StatCard } from "~/types/dashboardTypes";
 
-export function TotalBreakdown({
+export const TotalBreakdown = memo(function TotalBreakdown({
   stats,
   total,
   isLoading,
@@ -45,4 +46,4 @@ export function TotalBreakdown({
       </div>
     </div>
   );
-}
+});
