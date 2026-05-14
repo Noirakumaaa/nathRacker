@@ -1,47 +1,59 @@
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import type { BusRecord, BusResponse } from "~/types/busTypes";
-import { UPDATE_TYPE_KEYMAP } from "~/types/busTypes";
-import { labelCls, inputCls } from "~/components/styleConfig";
-import { useToastStore } from "~/lib/zustand/ToastStore";
-import APIFETCH from "~/lib/axios/axiosConfig";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Opt, Req } from "~/components/LabelStyle";
-import { useSelectedID } from "~/lib/zustand/selectedId";
-import { BusFormSchema, type BusFormValues } from "~/lib/validation/schemas";
+import { useEffect, useState, useCallback } from "react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Loader2, CheckCircle2, XCircle } from "lucide-react"
+import type { BusRecord, BusResponse } from "~/types/busTypes"
+import { UPDATE_TYPE_KEYMAP } from "~/types/busTypes"
+import { labelCls, inputCls } from "~/components/styleConfig"
+import { useToastStore } from "~/lib/zustand/ToastStore"
+import APIFETCH from "~/lib/axios/axiosConfig"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { Opt, Req } from "~/components/LabelStyle"
+import { useSelectedID } from "~/lib/zustand/selectedId"
+import { BusFormSchema, type BusFormValues } from "~/lib/validation/schemas"
 
 interface LGU {
-  id: string | number;
-  name: string;
-  barangay: { id: string | number; name: string }[];
+  id: string | number
+  name: string
+  barangay: { id: string | number; name: string }[]
 }
 
 interface Option {
-  value: string;
-  label: string;
+  value: string
+  label: string
 }
 
 function FieldError({ message }: { message?: string }) {
-  if (!message) return null;
-  return <p className="mt-1 text-[11px] text-red-500">{message}</p>;
+  if (!message) return null
+  return <p className="mt-1 text-[11px] text-red-500">{message}</p>
 }
 
 const EMPTY_FORM: BusFormValues = {
-  lgu: "", barangay: "", hhId: "", granteeName: "",
-  subjectOfChange: "", typeOfUpdate: "", updateInfo: "",
-  remarks: "ENCODED", cl: "", issue: "", drn: "", note: "",
-};
+  lgu: "",
+  barangay: "",
+  hhId: "",
+  granteeName: "",
+  subjectOfChange: "",
+  typeOfUpdate: "",
+  updateInfo: "",
+  remarks: "ENCODED",
+  cl: "",
+  issue: "",
+  drn: "",
+  note: "",
+}
 
 export default function BusForm() {
-  const queryClient = useQueryClient();
-  const busId = useSelectedID((s) => s.selectedIds.bus);
-  const clearSelectedId = useSelectedID((s) => s.clearSelectedId);
-  const { show } = useToastStore();
+  const queryClient = useQueryClient()
+  const busId = useSelectedID((s) => s.selectedIds.bus)
+  const clearSelectedId = useSelectedID((s) => s.clearSelectedId)
+  const { show } = useToastStore()
 
-  const [today] = useState(() => new Date().toISOString().slice(0, 10));
-  const [bdmAvailable, setBdmAvailable] = useState(true);
-  const [barangayOptions, setBarangayOptions] = useState<Option[]>([]);
+  const [today] = useState(() => new Date().toISOString().slice(0, 10))
+  const [bdmAvailable, setBdmAvailable] = useState(true)
+  const [barangayOptions, setBarangayOptions] = useState<Option[]>([])
+  const [drnStatus, setDrnStatus] = useState<"idle" | "checking" | "valid" | "invalid">("idle")
+  const [drnTimer, setDrnTimer] = useState<ReturnType<typeof setTimeout> | null>(null)
 
   const {
     register,
@@ -55,43 +67,42 @@ export default function BusForm() {
     resolver: zodResolver(BusFormSchema),
     defaultValues: EMPTY_FORM,
     mode: "onBlur",
-  });
+  })
 
-  const selectedLgu = watch("lgu");
-  const selectedRemarks = watch("remarks");
+  const selectedLgu = watch("lgu")
+  const selectedRemarks = watch("remarks")
 
   // ── Fetch selected record for edit ──────────────────────────────
   const { data } = useQuery({
     queryKey: ["SelectedBus", busId],
     queryFn: async () => {
-      const res = await APIFETCH.get<BusRecord>(`/bus/records/${busId}`);
-      return res.data ?? null;
+      const res = await APIFETCH.get<BusRecord>(`/bus/records/${busId}`)
+      return res.data ?? null
     },
     enabled: !!busId,
     retry: false,
-  });
+  })
 
   // ── Fetch LGU list ──────────────────────────────────────────────
   const { data: lguList } = useQuery<LGU[]>({
     queryKey: ["LGU"],
     queryFn: () => APIFETCH.get<LGU[]>("/bus/lgu").then((r) => r.data),
-  });
+  })
 
-  const lguOptions: Option[] =
-    lguList?.map((l) => ({ value: l.name, label: l.name })) ?? [];
+  const lguOptions: Option[] = lguList?.map((l) => ({ value: l.name, label: l.name })) ?? []
 
   // ── Cascade: update barangay options when LGU changes ───────────
   useEffect(() => {
-    if (!lguList) return;
-    const found = lguList.find((l) => l.name === selectedLgu);
-    const opts = found?.barangay.map((b) => ({ value: b.name, label: b.name })) ?? [];
-    setBarangayOptions(opts);
-    setValue("barangay", "");
-  }, [selectedLgu, lguList, setValue]);
+    if (!lguList) return
+    const found = lguList.find((l) => l.name === selectedLgu)
+    const opts = found?.barangay.map((b) => ({ value: b.name, label: b.name })) ?? []
+    setBarangayOptions(opts)
+    setValue("barangay", "")
+  }, [selectedLgu, lguList, setValue])
 
   // ── Populate form when editing an existing record ───────────────
   useEffect(() => {
-    if (!data) return;
+    if (!data) return
     reset({
       lgu: data.lgu ?? "",
       barangay: data.barangay ?? "",
@@ -105,44 +116,91 @@ export default function BusForm() {
       issue: data.issue ?? "",
       drn: data.drn ?? "",
       note: data.note ?? "",
-    });
-    setBdmAvailable(!!(data.drn && data.drn.length > 0));
-  }, [data, reset]);
+    })
+    const hasDrn = !!(data.drn && data.drn.length > 0)
+    setBdmAvailable(hasDrn)
+    if (hasDrn) {
+      const digits = (data.drn ?? "").replace("BDM-", "")
+      checkDrn(digits)
+    }
+  }, [data, reset]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Re-set barangay after options load on edit ──────────────────
   useEffect(() => {
-    if (!data || !barangayOptions.length) return;
-    setValue("barangay", data.barangay?.toString() ?? "");
-  }, [barangayOptions, data, setValue]);
+    if (!data || !barangayOptions.length) return
+    setValue("barangay", data.barangay?.toString() ?? "")
+  }, [barangayOptions, data, setValue])
 
   // ── Submit ──────────────────────────────────────────────────────
   const onSubmit = async (values: BusFormValues) => {
-    if (bdmAvailable && !values.drn?.replace("BDM-", "").trim()) {
-      setError("drn", { message: "DRN is required when BDM is available" });
-      return;
+    const drnDigits = (values.drn ?? "").replace("BDM-", "").trim()
+    if (bdmAvailable && !drnDigits) {
+      setError("drn", { message: "DRN is required when BDM is available." })
+      return
+    }
+    if (bdmAvailable && drnDigits) {
+      if (drnStatus === "checking") {
+        show("Please wait — still verifying the DRN.", "error")
+        return
+      }
+      if (drnStatus !== "valid") {
+        setError("drn", {
+          message: "This DRN was not found in the AA tracking system. Please check the number.",
+        })
+        return
+      }
     }
     try {
-      const res = await APIFETCH.post<BusResponse>("/bus/upload", values);
+      const res = await APIFETCH.post<BusResponse>("/bus/upload", values)
       if (res.data.upload) {
-        show(res.data.message, "success");
-        queryClient.invalidateQueries({ queryKey: ["recentBus"] });
-        queryClient.invalidateQueries({ queryKey: ["allDocuments"] });
-        handleReset();
+        show(res.data.message, "success")
+        queryClient.invalidateQueries({ queryKey: ["recentBus"] })
+        queryClient.invalidateQueries({ queryKey: ["allDocuments"] })
+        handleReset()
       } else {
-        show(res.data.message, "error");
+        show(res.data.message, "error")
       }
-    } catch {
-      show("An unexpected error occurred. Please try again.", "error");
+    } catch (err: any) {
+      const msg = err?.response?.data?.message
+      show(
+        typeof msg === "string" ? msg : "An unexpected error occurred. Please try again.",
+        "error"
+      )
     }
-  };
+  }
 
   const handleReset = () => {
-    reset(EMPTY_FORM);
-    setBdmAvailable(true);
-    clearSelectedId("bus");
-  };
+    reset(EMPTY_FORM)
+    setBdmAvailable(true)
+    setDrnStatus("idle")
+    clearSelectedId("bus")
+  }
 
-  const drnValue = watch("drn") ?? "";
+  const checkDrn = useCallback(
+    (rawDigits: string) => {
+      const full = `BDM-${rawDigits}`
+      if (!rawDigits.trim()) {
+        setDrnStatus("idle")
+        return
+      }
+      setDrnStatus("checking")
+      if (drnTimer) clearTimeout(drnTimer)
+      const t = setTimeout(async () => {
+        try {
+          const res = await APIFETCH.get<{ exists: boolean }>("/aa-documents/check-drn", {
+            params: { trackingNo: full },
+          })
+          setDrnStatus(res.data.exists ? "valid" : "invalid")
+        } catch {
+          setDrnStatus("idle")
+        }
+      }, 500)
+      setDrnTimer(t)
+    },
+    [drnTimer]
+  )
+
+  const drnValue = watch("drn") ?? ""
 
   return (
     <form
@@ -162,21 +220,25 @@ export default function BusForm() {
 
       <div className="p-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
           {/* Column 1 — Basic Info */}
           <div className="space-y-4">
             <div className="pb-2 border-b border-(--color-border)">
-              <h3 className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">Basic Information</h3>
+              <h3 className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">
+                Basic Information
+              </h3>
             </div>
             <div className="space-y-3.5">
-
               {/* LGU */}
               <div>
-                <label htmlFor="lgu" className={labelCls}>LGU <Req /></label>
+                <label htmlFor="lgu" className={labelCls}>
+                  LGU <Req />
+                </label>
                 <select id="lgu" className={inputCls} {...register("lgu")}>
                   <option value="">--Select LGU--</option>
                   {lguOptions.map((o) => (
-                    <option key={o.value} value={o.value}>{o.label}</option>
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
                   ))}
                 </select>
                 <FieldError message={errors.lgu?.message} />
@@ -184,7 +246,9 @@ export default function BusForm() {
 
               {/* Barangay */}
               <div>
-                <label htmlFor="barangay" className={labelCls}>Barangay <Req /></label>
+                <label htmlFor="barangay" className={labelCls}>
+                  Barangay <Req />
+                </label>
                 <select
                   id="barangay"
                   className={inputCls + (!selectedLgu ? " opacity-70 cursor-not-allowed" : "")}
@@ -193,7 +257,9 @@ export default function BusForm() {
                 >
                   <option value="">--Select Barangay--</option>
                   {barangayOptions.map((b) => (
-                    <option key={b.value} value={b.value}>{b.label}</option>
+                    <option key={b.value} value={b.value}>
+                      {b.label}
+                    </option>
                   ))}
                 </select>
                 <FieldError message={errors.barangay?.message} />
@@ -201,7 +267,9 @@ export default function BusForm() {
 
               {/* HH ID */}
               <div>
-                <label htmlFor="hhId" className={labelCls}>HH ID Number <Req /></label>
+                <label htmlFor="hhId" className={labelCls}>
+                  HH ID Number <Req />
+                </label>
                 <input
                   type="text"
                   id="hhId"
@@ -210,7 +278,7 @@ export default function BusForm() {
                   maxLength={25}
                   {...register("hhId", {
                     onChange: (e) => {
-                      e.target.value = e.target.value.replace(/[^0-9-]/g, "");
+                      e.target.value = e.target.value.replace(/[^0-9-]/g, "")
                     },
                   })}
                 />
@@ -219,7 +287,9 @@ export default function BusForm() {
 
               {/* Grantee Name */}
               <div>
-                <label htmlFor="granteeName" className={labelCls}>Grantee Name <Req /></label>
+                <label htmlFor="granteeName" className={labelCls}>
+                  Grantee Name <Req />
+                </label>
                 <input
                   type="text"
                   id="granteeName"
@@ -228,7 +298,7 @@ export default function BusForm() {
                   maxLength={40}
                   {...register("granteeName", {
                     onChange: (e) => {
-                      e.target.value = e.target.value.replace(/[^a-zA-Z.,' ]/g, "");
+                      e.target.value = e.target.value.replace(/[^a-zA-Z.,' ]/g, "")
                     },
                   })}
                 />
@@ -237,7 +307,9 @@ export default function BusForm() {
 
               {/* Subject of Change */}
               <div>
-                <label htmlFor="subjectOfChange" className={labelCls}>Subject of Change <Req /></label>
+                <label htmlFor="subjectOfChange" className={labelCls}>
+                  Subject of Change <Req />
+                </label>
                 <input
                   type="text"
                   id="subjectOfChange"
@@ -246,7 +318,7 @@ export default function BusForm() {
                   maxLength={40}
                   {...register("subjectOfChange", {
                     onChange: (e) => {
-                      e.target.value = e.target.value.replace(/[^a-zA-Z.,' ]/g, "");
+                      e.target.value = e.target.value.replace(/[^a-zA-Z.,' ]/g, "")
                     },
                   })}
                 />
@@ -258,17 +330,22 @@ export default function BusForm() {
           {/* Column 2 — Update Details */}
           <div className="space-y-4">
             <div className="pb-2 border-b border-(--color-border)">
-              <h3 className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">Update Details</h3>
+              <h3 className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">
+                Update Details
+              </h3>
             </div>
             <div className="space-y-3.5">
-
               {/* Type of Update */}
               <div>
-                <label htmlFor="typeOfUpdate" className={labelCls}>Type of Update <Req /></label>
+                <label htmlFor="typeOfUpdate" className={labelCls}>
+                  Type of Update <Req />
+                </label>
                 <select id="typeOfUpdate" className={inputCls} {...register("typeOfUpdate")}>
                   <option value="">Select Type</option>
                   {Object.entries(UPDATE_TYPE_KEYMAP).map(([key, value]) => (
-                    <option key={key} value={key}>{key} - {value}</option>
+                    <option key={key} value={key}>
+                      {key} - {value}
+                    </option>
                   ))}
                 </select>
                 <FieldError message={errors.typeOfUpdate?.message} />
@@ -276,7 +353,9 @@ export default function BusForm() {
 
               {/* Update Info */}
               <div>
-                <label htmlFor="updateInfo" className={labelCls}>Update Info <Req /></label>
+                <label htmlFor="updateInfo" className={labelCls}>
+                  Update Info <Req />
+                </label>
                 <input
                   type="text"
                   id="updateInfo"
@@ -285,7 +364,7 @@ export default function BusForm() {
                   maxLength={50}
                   {...register("updateInfo", {
                     onChange: (e) => {
-                      e.target.value = e.target.value.replace(/[^a-zA-Z.,' ]/g, "");
+                      e.target.value = e.target.value.replace(/[^a-zA-Z.,' ]/g, "")
                     },
                   })}
                 />
@@ -294,7 +373,9 @@ export default function BusForm() {
 
               {/* Remarks */}
               <div>
-                <label htmlFor="remarks" className={labelCls}>REMARKS <Req /></label>
+                <label htmlFor="remarks" className={labelCls}>
+                  REMARKS <Req />
+                </label>
                 <select id="remarks" className={inputCls} {...register("remarks")}>
                   <option value="">Select</option>
                   <option value="ENCODED">ENCODED</option>
@@ -306,7 +387,9 @@ export default function BusForm() {
 
               {/* City Link */}
               <div>
-                <label htmlFor="cl" className={labelCls}>Assigned City Link or SWA <Req /></label>
+                <label htmlFor="cl" className={labelCls}>
+                  Assigned City Link or SWA <Req />
+                </label>
                 <input
                   type="text"
                   id="cl"
@@ -315,7 +398,7 @@ export default function BusForm() {
                   maxLength={50}
                   {...register("cl", {
                     onChange: (e) => {
-                      e.target.value = e.target.value.replace(/[^a-zA-Z.,' ]/g, "");
+                      e.target.value = e.target.value.replace(/[^a-zA-Z.,' ]/g, "")
                     },
                   })}
                 />
@@ -324,14 +407,16 @@ export default function BusForm() {
 
               {/* Date */}
               <div>
-                <label htmlFor="date" className={labelCls}>Date Accomplished <Req /></label>
+                <label htmlFor="date" className={labelCls}>
+                  Date Accomplished <Req />
+                </label>
                 <input
                   type="date"
                   id="date"
                   readOnly
                   value={today}
                   className={inputCls + " cursor-default"}
-                  onChange={() => { }}
+                  onChange={() => {}}
                 />
               </div>
             </div>
@@ -340,10 +425,11 @@ export default function BusForm() {
           {/* Column 3 — Additional Info */}
           <div className="space-y-4">
             <div className="pb-2 border-b border-(--color-border)">
-              <h3 className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">Additional Info</h3>
+              <h3 className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">
+                Additional Info
+              </h3>
             </div>
             <div className="space-y-3.5">
-
               {/* Issue */}
               <div>
                 <label htmlFor="issue" className={labelCls}>
@@ -366,7 +452,7 @@ export default function BusForm() {
                   maxLength={80}
                   {...register("issue", {
                     onChange: (e) => {
-                      e.target.value = e.target.value.replace(/[^a-zA-Z0-9. ]/g, "");
+                      e.target.value = e.target.value.replace(/[^a-zA-Z0-9. ]/g, "")
                     },
                   })}
                 />
@@ -376,7 +462,9 @@ export default function BusForm() {
               {/* DRN */}
               <div
                 className="rounded-lg border border-(--color-border) p-3 space-y-3 transition-colors duration-200"
-                style={{ backgroundColor: bdmAvailable ? "var(--color-surface)" : "var(--color-subtle)" }}
+                style={{
+                  backgroundColor: bdmAvailable ? "var(--color-surface)" : "var(--color-subtle)",
+                }}
               >
                 <div className="flex items-center justify-between">
                   <label htmlFor="drn" className={labelCls + " !mb-0"}>
@@ -390,23 +478,39 @@ export default function BusForm() {
                       type="checkbox"
                       checked={bdmAvailable}
                       onChange={(e) => {
-                        const checked = e.target.checked;
-                        setBdmAvailable(checked);
-                        if (!checked) setValue("drn", "");
+                        const checked = e.target.checked
+                        setBdmAvailable(checked)
+                        if (!checked) setValue("drn", "")
                       }}
                       className="sr-only peer"
                     />
                     <div className="relative w-9 h-5 rounded-full transition-colors duration-200 bg-gray-300 peer-checked:bg-emerald-500 peer-focus-visible:ring-2 peer-focus-visible:ring-offset-1 peer-focus-visible:ring-(--color-ink)">
-                      <div className={"absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 " + (bdmAvailable ? "translate-x-4" : "translate-x-0")} />
+                      <div
+                        className={
+                          "absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 " +
+                          (bdmAvailable ? "translate-x-4" : "translate-x-0")
+                        }
+                      />
                     </div>
                   </label>
                 </div>
 
                 <div
                   className="overflow-hidden transition-all duration-200 ease-in-out"
-                  style={{ maxHeight: bdmAvailable ? "60px" : "0px", opacity: bdmAvailable ? 1 : 0 }}
+                  style={{
+                    maxHeight: bdmAvailable ? "60px" : "0px",
+                    opacity: bdmAvailable ? 1 : 0,
+                  }}
                 >
-                  <div className="flex rounded-lg overflow-hidden border border-(--color-border) focus-within:ring-2 focus-within:ring-(--color-ink) focus-within:border-transparent hover:border-(--color-border-hover) transition-colors bg-(--color-surface)">
+                  <div
+                    className={`flex rounded-lg overflow-hidden border focus-within:ring-2 focus-within:border-transparent hover:border-(--color-border-hover) transition-colors bg-(--color-surface) ${
+                      drnStatus === "valid"
+                        ? "border-emerald-400 focus-within:ring-emerald-400"
+                        : drnStatus === "invalid"
+                          ? "border-red-400 focus-within:ring-red-400"
+                          : "border-(--color-border) focus-within:ring-(--color-ink)"
+                    }`}
+                  >
                     <span className="px-3 flex items-center bg-(--color-subtle) text-(--color-muted) text-[13px] font-mono font-semibold border-r border-(--color-border) select-none shrink-0">
                       BDM-
                     </span>
@@ -418,9 +522,30 @@ export default function BusForm() {
                       placeholder="0000"
                       maxLength={4}
                       value={drnValue.startsWith("BDM-") ? drnValue.slice(4) : drnValue}
-                      onChange={(e) => setValue("drn", "BDM-" + e.target.value)}
+                      onChange={(e) => {
+                        const digits = e.target.value
+                        setValue("drn", "BDM-" + digits)
+                        checkDrn(digits)
+                      }}
                     />
+                    <span className="px-3 flex items-center shrink-0">
+                      {drnStatus === "checking" && (
+                        <Loader2 size={14} className="animate-spin text-(--color-muted)" />
+                      )}
+                      {drnStatus === "valid" && (
+                        <CheckCircle2 size={14} className="text-emerald-500" />
+                      )}
+                      {drnStatus === "invalid" && <XCircle size={14} className="text-red-500" />}
+                    </span>
                   </div>
+                  {drnStatus === "invalid" && (
+                    <p className="mt-1 text-[11px] text-red-500">
+                      This DRN was not found in the AA tracking system.
+                    </p>
+                  )}
+                  {drnStatus === "valid" && (
+                    <p className="mt-1 text-[11px] text-emerald-600">DRN found in AA tracking.</p>
+                  )}
                 </div>
 
                 {!bdmAvailable && (
@@ -433,7 +558,9 @@ export default function BusForm() {
 
               {/* Note */}
               <div>
-                <label htmlFor="note" className={labelCls}>Note <Opt /></label>
+                <label htmlFor="note" className={labelCls}>
+                  Note <Opt />
+                </label>
                 <textarea
                   id="note"
                   rows={2}
@@ -442,7 +569,7 @@ export default function BusForm() {
                   maxLength={80}
                   {...register("note", {
                     onChange: (e) => {
-                      e.target.value = e.target.value.replace(/[^a-zA-Z0-9. ]/g, "");
+                      e.target.value = e.target.value.replace(/[^a-zA-Z0-9. ]/g, "")
                     },
                   })}
                 />
@@ -468,9 +595,8 @@ export default function BusForm() {
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </form>
-  );
+  )
 }

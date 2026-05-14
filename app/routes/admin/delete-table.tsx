@@ -1,21 +1,26 @@
-import DeleteTableTab from "~/features/admin/settings/DeleteTableTab";
-import UnauthorizedPage from "~/features/not-authorized/not-authorized";
-import { AuthorizedUser } from "~/types/authorizedUser";
-import { useAuth } from "~/components/authGuard";
+import type { MetaFunction } from "react-router"
+import DeleteTableTab from "~/features/admin/settings/DeleteTableTab"
+import UnauthorizedPage from "~/features/not-authorized/not-authorized"
+import { AUTHORIZED_ROLES } from "~/types/authorizedUser"
+import { useAuth } from "~/components/authGuard"
+import { LoadingScreen } from "~/components/LoadingScreen"
+import { ErrorBoundary } from "~/components/ErrorBoundary"
 
-export function meta() {
-  return [
-    { title: "Delete Table" },
-    { name: "description", content: "Delete database tables" },
-  ];
-}
+export const meta: MetaFunction = () => [
+  { title: "Delete Table | NathRacker" },
+  { name: "description", content: "Delete database tables" },
+]
 
 export default function AdminDeleteTableRoute() {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading } = useAuth()
 
-  if (isLoading) return null;
-  if (!user) return <UnauthorizedPage />;
-  if (!AuthorizedUser.includes(user.role)) return <UnauthorizedPage />;
+  if (isLoading) return <LoadingScreen />
+  if (!user) return <UnauthorizedPage statusCode={401} />
+  if (!AUTHORIZED_ROLES.includes(user.role)) return <UnauthorizedPage statusCode={403} />
 
-  return <DeleteTableTab />;
+  return (
+    <ErrorBoundary>
+      <DeleteTableTab />
+    </ErrorBoundary>
+  )
 }

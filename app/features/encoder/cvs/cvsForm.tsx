@@ -1,45 +1,52 @@
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import APIFETCH from "~/lib/axios/axiosConfig";
-import type { CvsRecord } from "~/types/cvsTypes";
-import { labelCls, inputCls } from "~/components/styleConfig";
-import { useToastStore } from "~/lib/zustand/ToastStore";
-import { Opt, Req } from "~/components/LabelStyle";
-import { useSelectedID } from "~/lib/zustand/selectedId";
-import { CvsFormSchema, type CvsFormValues } from "~/lib/validation/schemas";
+import { useEffect, useState } from "react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
+import APIFETCH from "~/lib/axios/axiosConfig"
+import type { CvsRecord } from "~/types/cvsTypes"
+import { labelCls, inputCls } from "~/components/styleConfig"
+import { useToastStore } from "~/lib/zustand/ToastStore"
+import { Opt, Req } from "~/components/LabelStyle"
+import { useSelectedID } from "~/lib/zustand/selectedId"
+import { CvsFormSchema, type CvsFormValues } from "~/lib/validation/schemas"
 
 interface LGU {
-  id: string | number;
-  name: string;
-  barangay: { id: string | number; name: string }[];
+  id: string | number
+  name: string
+  barangay: { id: string | number; name: string }[]
 }
 
 interface Option {
-  value: string;
-  label: string;
+  value: string
+  label: string
 }
 
 function FieldError({ message }: { message?: string }) {
-  if (!message) return null;
-  return <p className="mt-1 text-[11px] text-red-500">{message}</p>;
+  if (!message) return null
+  return <p className="mt-1 text-[11px] text-red-500">{message}</p>
 }
 
-const today = new Date().toISOString().slice(0, 10);
+const today = new Date().toISOString().slice(0, 10)
 
 const EMPTY_FORM: CvsFormValues = {
-  idNumber: "", lgu: "", barangay: "", facilityName: "",
-  formType: "", remarks: "ENCODED", period: "", issue: "", date: today,
-};
+  idNumber: "",
+  lgu: "",
+  barangay: "",
+  facilityName: "",
+  formType: "",
+  remarks: "ENCODED",
+  period: "",
+  issue: "",
+  date: today,
+}
 
 export function CvsForm() {
-  const queryClient = useQueryClient();
-  const cvsId = useSelectedID((s) => s.selectedIds.cvs);
-  const clearSelectedId = useSelectedID((s) => s.clearSelectedId);
-  const { show } = useToastStore();
+  const queryClient = useQueryClient()
+  const cvsId = useSelectedID((s) => s.selectedIds.cvs)
+  const clearSelectedId = useSelectedID((s) => s.clearSelectedId)
+  const { show } = useToastStore()
 
-  const [barangayOptions, setBarangayOptions] = useState<Option[]>([]);
+  const [barangayOptions, setBarangayOptions] = useState<Option[]>([])
 
   const {
     register,
@@ -52,38 +59,38 @@ export function CvsForm() {
     resolver: zodResolver(CvsFormSchema),
     defaultValues: EMPTY_FORM,
     mode: "onBlur",
-  });
+  })
 
-  const selectedLgu = watch("lgu");
+  const selectedLgu = watch("lgu")
 
   // ── Fetch selected record ────────────────────────────────────
   const { data } = useQuery({
     queryKey: ["SelectedCVS", cvsId],
     queryFn: () => APIFETCH.get<CvsRecord>(`/cvs/record/${cvsId}`).then((r) => r.data),
     enabled: !!cvsId,
-  });
+  })
 
   // ── Fetch LGU list ───────────────────────────────────────────
   const { data: lguList } = useQuery<LGU[]>({
     queryKey: ["LGU"],
     queryFn: () => APIFETCH.get<LGU[]>("/bus/lgu").then((r) => r.data),
-  });
+  })
 
   const lguOptions: Option[] =
-    lguList?.map((l) => ({ value: l.id.toString(), label: l.name })) ?? [];
+    lguList?.map((l) => ({ value: l.id.toString(), label: l.name })) ?? []
 
   // ── Cascade ──────────────────────────────────────────────────
   useEffect(() => {
-    if (!lguList) return;
-    const found = lguList.find((l) => l.id.toString() === selectedLgu);
-    const opts = found?.barangay.map((b) => ({ value: b.id.toString(), label: b.name })) ?? [];
-    setBarangayOptions(opts);
-    setValue("barangay", "");
-  }, [selectedLgu, lguList, setValue]);
+    if (!lguList) return
+    const found = lguList.find((l) => l.id.toString() === selectedLgu)
+    const opts = found?.barangay.map((b) => ({ value: b.id.toString(), label: b.name })) ?? []
+    setBarangayOptions(opts)
+    setValue("barangay", "")
+  }, [selectedLgu, lguList, setValue])
 
   // ── Populate on edit ─────────────────────────────────────────
   useEffect(() => {
-    if (!data) return;
+    if (!data) return
     reset({
       idNumber: data.idNumber ?? "",
       lgu: data.lgu ?? "",
@@ -94,30 +101,30 @@ export function CvsForm() {
       period: data.period ?? "",
       issue: data.issue ?? "",
       date: today,
-    });
-  }, [data, reset]);
+    })
+  }, [data, reset])
 
   // ── Submit ───────────────────────────────────────────────────
   const onSubmit = async (values: CvsFormValues) => {
     try {
-      const res = await APIFETCH.post("/cvs/upload", values);
+      const res = await APIFETCH.post("/cvs/upload", values)
       if (res.data.upload) {
-        show(res.data.message, "success");
-        queryClient.invalidateQueries({ queryKey: ["recentCvs"] });
-        queryClient.invalidateQueries({ queryKey: ["allDocuments"] });
-        handleReset();
+        show(res.data.message, "success")
+        queryClient.invalidateQueries({ queryKey: ["recentCvs"] })
+        queryClient.invalidateQueries({ queryKey: ["allDocuments"] })
+        handleReset()
       } else {
-        show(res.data.message, "error");
+        show(res.data.message, "error")
       }
     } catch {
-      show("An unexpected error occurred. Please try again.", "error");
+      show("An unexpected error occurred. Please try again.", "error")
     }
-  };
+  }
 
   const handleReset = () => {
-    reset(EMPTY_FORM);
-    clearSelectedId("cvs");
-  };
+    reset(EMPTY_FORM)
+    clearSelectedId("cvs")
+  }
 
   return (
     <form
@@ -136,29 +143,33 @@ export function CvsForm() {
 
       <div className="p-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
           {/* Column 1 — Basic Information */}
           <div className="space-y-4">
             <div className="pb-2 border-b border-(--color-border)">
-              <h3 className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">Basic Information</h3>
+              <h3 className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">
+                Basic Information
+              </h3>
             </div>
             <div className="space-y-3.5">
-
-
-
               <div>
-                <label htmlFor="lgu" className={labelCls}>LGU <Req /></label>
+                <label htmlFor="lgu" className={labelCls}>
+                  LGU <Req />
+                </label>
                 <select id="lgu" className={inputCls} {...register("lgu")}>
                   <option value="">--Select LGU--</option>
                   {lguOptions.map((o) => (
-                    <option key={o.value} value={o.value}>{o.label}</option>
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
                   ))}
                 </select>
                 <FieldError message={errors.lgu?.message} />
               </div>
 
               <div>
-                <label htmlFor="barangay" className={labelCls}>Barangay <Req /></label>
+                <label htmlFor="barangay" className={labelCls}>
+                  Barangay <Req />
+                </label>
                 <select
                   id="barangay"
                   className={inputCls + (!selectedLgu ? " opacity-80 cursor-not-allowed" : "")}
@@ -167,15 +178,20 @@ export function CvsForm() {
                 >
                   <option value="">--Select Barangay--</option>
                   {barangayOptions.map((b) => (
-                    <option key={b.value} value={b.value}>{b.label}</option>
+                    <option key={b.value} value={b.value}>
+                      {b.label}
+                    </option>
                   ))}
                 </select>
                 <FieldError message={errors.barangay?.message} />
               </div>
 
               <div>
-                <label className={labelCls}>ID Number <Req /></label>
+                <label htmlFor="cvs-id-number" className={labelCls}>
+                  ID Number <Req />
+                </label>
                 <input
+                  id="cvs-id-number"
                   type="text"
                   className={inputCls}
                   placeholder="Enter ID Number"
@@ -189,13 +205,17 @@ export function CvsForm() {
           {/* Column 2 — Facility Details */}
           <div className="space-y-4">
             <div className="pb-2 border-b border-(--color-border)">
-              <h3 className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">Facility Details</h3>
+              <h3 className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">
+                Facility Details
+              </h3>
             </div>
             <div className="space-y-3.5">
-
               <div>
-                <label className={labelCls}>Facility Name <Req /></label>
+                <label htmlFor="cvs-facility-name" className={labelCls}>
+                  Facility Name <Req />
+                </label>
                 <input
+                  id="cvs-facility-name"
                   type="text"
                   className={inputCls}
                   placeholder="Enter Facility Name"
@@ -205,8 +225,10 @@ export function CvsForm() {
               </div>
 
               <div>
-                <label className={labelCls}>FORM TYPE <Req /></label>
-                <select className={inputCls} {...register("formType")}>
+                <label htmlFor="cvs-form-type" className={labelCls}>
+                  FORM TYPE <Req />
+                </label>
+                <select id="cvs-form-type" className={inputCls} {...register("formType")}>
                   <option value="">Select</option>
                   <option value="F2">FORM 2 - Education</option>
                   <option value="F3">FORM 3 - HEALTH</option>
@@ -217,13 +239,16 @@ export function CvsForm() {
               </div>
 
               <div>
-                <label className={labelCls}>Date Accomplished</label>
+                <label htmlFor="cvs-date" className={labelCls}>
+                  Date Accomplished
+                </label>
                 <input
+                  id="cvs-date"
                   type="date"
                   readOnly
                   value={today}
                   className={inputCls + " cursor-default"}
-                  onChange={() => { }}
+                  onChange={() => {}}
                 />
               </div>
             </div>
@@ -232,13 +257,16 @@ export function CvsForm() {
           {/* Column 3 — Remarks & Submit */}
           <div className="space-y-4">
             <div className="pb-2 border-b border-(--color-border)">
-              <h3 className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">Remarks</h3>
+              <h3 className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">
+                Remarks
+              </h3>
             </div>
             <div className="space-y-3.5">
-
               <div>
-                <label className={labelCls}>Remarks <Req /></label>
-                <select className={inputCls} {...register("remarks")}>
+                <label htmlFor="cvs-remarks" className={labelCls}>
+                  Remarks <Req />
+                </label>
+                <select id="cvs-remarks" className={inputCls} {...register("remarks")}>
                   <option value="">Select</option>
                   <option value="ENCODED">ENCODED</option>
                   <option value="UPDATED">UPDATED</option>
@@ -248,8 +276,11 @@ export function CvsForm() {
               </div>
 
               <div>
-                <label className={labelCls}>Period <Req /></label>
+                <label htmlFor="cvs-period" className={labelCls}>
+                  Period <Req />
+                </label>
                 <input
+                  id="cvs-period"
                   type="text"
                   className={inputCls}
                   placeholder="Enter CVS PERIOD"
@@ -259,8 +290,11 @@ export function CvsForm() {
               </div>
 
               <div>
-                <label className={labelCls}>Issue <Opt /></label>
+                <label htmlFor="cvs-issue" className={labelCls}>
+                  Issue <Opt />
+                </label>
                 <input
+                  id="cvs-issue"
                   type="text"
                   className={inputCls}
                   placeholder="Enter ISSUE"
@@ -288,9 +322,8 @@ export function CvsForm() {
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </form>
-  );
+  )
 }

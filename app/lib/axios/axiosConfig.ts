@@ -1,12 +1,11 @@
 import axios, { AxiosError } from "axios"
-import type { AxiosResponse, InternalAxiosRequestConfig } from "axios"
-import { QueryClient } from "@tanstack/react-query"
-
-const queryClient = new QueryClient()
+import type { AxiosResponse } from "axios"
+import { getQueryClient } from "~/lib/queryClient"
 
 const APIFETCH = axios.create({
   baseURL: import.meta.env.VITE_API_URL ?? "/api",
   withCredentials: true,
+  timeout: 10_000,
   headers: {
     "Content-Type": "application/json",
   },
@@ -22,7 +21,7 @@ const APIFETCH = axios.create({
 //   (error: AxiosError) => Promise.reject(error)
 // )
 
-let isLoggingOut = false
+let sessionCheckPromise: Promise<void> | null = null
 
 APIFETCH.interceptors.response.use(
   (response: AxiosResponse) => response,
@@ -34,17 +33,27 @@ APIFETCH.interceptors.response.use(
         return Promise.reject(error)
       }
 
-      if (!url.includes("/auth/") && typeof window !== "undefined" && !isLoggingOut) {
-        try {
-          await APIFETCH.get("/auth/check-auth")
-          // session is still valid — just this request failed, don't logout
-        } catch {
-          // session is truly dead — logout
-          isLoggingOut = true
-          queryClient.removeQueries({ queryKey: ["me"] })
-          await APIFETCH.post("/auth/logout")
-          window.location.href = "/login"
+      if (!url.includes("/auth/") && typeof window !== "undefined") {
+        if (!sessionCheckPromise) {
+          sessionCheckPromise = APIFETCH.get("/auth/check-auth")
+            .then(() => {
+              // session still valid — this request just failed, don't logout
+            })
+            .catch(async () => {
+              // session is truly dead — logout
+              getQueryClient().clear()
+              try {
+                await APIFETCH.get("/auth/logout")
+              } catch {
+                /* best-effort */
+              }
+              window.location.replace("/login")
+            })
+            .finally(() => {
+              sessionCheckPromise = null
+            })
         }
+        await sessionCheckPromise
       }
     }
 

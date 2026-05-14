@@ -1,43 +1,45 @@
-import { useState } from "react";
-import { ArrowUpRight, Copy, Trash2 } from "lucide-react";
-import { useQueryClient } from "@tanstack/react-query";
-import RecentTable from "~/components/recentTables";
-import type { ColumnDef } from "~/components/recentTables";
-import type { LcnRecord } from "~/types/lcnTypes";
-import { useNavigate } from "react-router";
-import { EncodedBadge } from "~/components/StyleBadge";
-import { DeleteModal } from "~/features/records/deleteModal";
-import APIFETCH from "~/lib/axios/axiosConfig";
-import { useToastStore } from "~/lib/zustand/ToastStore";
-import { useSelectedID } from "~/lib/zustand/selectedId";
+import { useState } from "react"
+import { ArrowUpRight, Copy, Trash2 } from "lucide-react"
+import { useQueryClient } from "@tanstack/react-query"
+import RecentTable from "~/components/recentTables"
+import type { ColumnDef } from "~/components/recentTables"
+import type { LcnRecord } from "~/types/lcnTypes"
+import { EncodedBadge } from "~/components/StyleBadge"
+import { DeleteModal } from "~/features/records/deleteModal"
+import APIFETCH from "~/lib/axios/axiosConfig"
+import { useToastStore } from "~/lib/zustand/ToastStore"
+import { useSelectedID } from "~/lib/zustand/selectedId"
 
 export function LcnRecentTable() {
-  const queryClient = useQueryClient();
-  const { show } = useToastStore();
-  const [deleteModal, setDeleteModal] = useState<{ open: boolean; id: string | null }>({ open: false, id: null });
-  const setID = useSelectedID((state)=>state.setSelectedId)
-  
-    const handleLoad = (r : LcnRecord) => {
-      setID("lcn", Number(r.id))
-    }
+  const queryClient = useQueryClient()
+  const { show } = useToastStore()
+  const [deleteModal, setDeleteModal] = useState<{ open: boolean; id: string | null }>({
+    open: false,
+    id: null,
+  })
+  const setID = useSelectedID((state) => state.setSelectedId)
+
+  const handleLoad = (r: LcnRecord) => {
+    setID("lcn", Number(r.id))
+  }
 
   const handleDelete = async () => {
-    if (!deleteModal.id) return;
+    if (!deleteModal.id) return
     try {
-      const res = await APIFETCH.delete(`/lcn/delete/${deleteModal.id}`);
+      const res = await APIFETCH.delete(`/lcn/delete/${deleteModal.id}`)
       if (res.data.deleted ?? res.status === 200) {
-        show(res.data.message ?? "Record deleted", "success");
-        queryClient.invalidateQueries({ queryKey: ["recentLcn"] });
-        queryClient.invalidateQueries({ queryKey: ["allDocuments"] });
+        show(res.data.message ?? "Record deleted", "success")
+        queryClient.invalidateQueries({ queryKey: ["recentLcn"] })
+        queryClient.invalidateQueries({ queryKey: ["allDocuments"] })
       } else {
-        show(res.data.message ?? "Failed to delete", "error");
+        show(res.data.message ?? "Failed to delete", "error")
       }
     } catch {
-      show("Failed to delete record", "error");
+      show("Failed to delete record", "error")
     } finally {
-      setDeleteModal({ open: false, id: null });
+      setDeleteModal({ open: false, id: null })
     }
-  };
+  }
 
   const buildColumns: ColumnDef<LcnRecord>[] = [
     {
@@ -46,11 +48,14 @@ export function LcnRecentTable() {
       className: "pl-6 pr-4",
       cell: (r) => (
         <div className="flex items-center gap-1.5 group">
-          <span className="font-mono text-[11px] text-(--color-ink) whitespace-nowrap">{r.hhId}</span>
+          <span className="font-mono text-[11px] text-(--color-ink) whitespace-nowrap">
+            {r.hhId}
+          </span>
           <button
             onClick={() => navigator.clipboard.writeText(r.hhId)}
             className="opacity-0 group-hover:opacity-100 transition-opacity text-(--color-placeholder) hover:text-(--color-muted) cursor-pointer bg-transparent border-none"
-            title="Copy HH ID" aria-label="Copy HH ID"
+            title="Copy HH ID"
+            aria-label="Copy HH ID"
           >
             <Copy size={11} aria-hidden="true" />
           </button>
@@ -104,7 +109,11 @@ export function LcnRecentTable() {
       headerClassName: "text-center",
       cell: (r) => (
         <span className="text-[11px] text-(--color-muted) whitespace-nowrap tabular-nums">
-          {new Date(r.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+          {new Date(r.date).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          })}
         </span>
       ),
     },
@@ -115,7 +124,7 @@ export function LcnRecentTable() {
       cell: (r) => (
         <div className="flex items-center gap-3">
           <button
-            onClick={() =>handleLoad(r)}
+            onClick={() => handleLoad(r)}
             className="inline-flex items-center gap-1 text-[11px] font-medium text-(--color-muted) hover:text-(--color-ink) transition-colors cursor-pointer bg-transparent border-none whitespace-nowrap"
           >
             Load <ArrowUpRight size={11} />
@@ -129,7 +138,7 @@ export function LcnRecentTable() {
         </div>
       ),
     },
-  ];
+  ]
 
   return (
     <>
@@ -147,7 +156,9 @@ export function LcnRecentTable() {
         }
         headerLeft={(records) => (
           <div className="flex items-center gap-3">
-            <p className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">Recent Updates</p>
+            <p className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">
+              Recent Updates
+            </p>
             {records.length > 0 && (
               <span className="text-[10px] font-mono bg-violet-50 text-violet-500 px-2 py-0.5 rounded-full">
                 {records.length} record{records.length !== 1 ? "s" : ""}
@@ -158,7 +169,11 @@ export function LcnRecentTable() {
         headerRight={(records) =>
           records.length > 0 ? (
             <span className="text-[11px] text-(--color-placeholder) font-mono">
-              {new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+              {new Date().toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              })}
             </span>
           ) : null
         }
@@ -171,5 +186,5 @@ export function LcnRecentTable() {
         )}
       />
     </>
-  );
+  )
 }

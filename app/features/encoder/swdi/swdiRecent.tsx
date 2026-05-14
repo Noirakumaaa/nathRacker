@@ -1,43 +1,44 @@
-import { useState } from "react";
-import { ArrowUpRight, Copy, Trash2 } from "lucide-react";
-import { useQueryClient } from "@tanstack/react-query";
-import RecentTable from "~/components/recentTables";
-import type { ColumnDef } from "~/components/recentTables";
-import type { SwdiRecord } from "~/types/swdiTypes";
-import { useNavigate } from "react-router";
-import { DeleteModal } from "~/features/records/deleteModal";
-import APIFETCH from "~/lib/axios/axiosConfig";
-import { useToastStore } from "~/lib/zustand/ToastStore";
-import { useSelectedID } from "~/lib/zustand/selectedId";
+import { useState } from "react"
+import { ArrowUpRight, Copy, Trash2 } from "lucide-react"
+import { useQueryClient } from "@tanstack/react-query"
+import RecentTable from "~/components/recentTables"
+import type { ColumnDef } from "~/components/recentTables"
+import type { SwdiRecord } from "~/types/swdiTypes"
+import { DeleteModal } from "~/features/records/deleteModal"
+import APIFETCH from "~/lib/axios/axiosConfig"
+import { useToastStore } from "~/lib/zustand/ToastStore"
+import { useSelectedID } from "~/lib/zustand/selectedId"
 
 export default function SwdiRecent() {
   const setId = useSelectedID((state) => state.setSelectedId)
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const { show } = useToastStore();
-  const [deleteModal, setDeleteModal] = useState<{ open: boolean; id: string | null }>({ open: false, id: null });
+  const queryClient = useQueryClient()
+  const { show } = useToastStore()
+  const [deleteModal, setDeleteModal] = useState<{ open: boolean; id: string | null }>({
+    open: false,
+    id: null,
+  })
 
   const handleLoad = (data: SwdiRecord) => {
-    setId('swdi', Number(data.id))
+    setId("swdi", Number(data.id))
   }
 
   const handleDelete = async () => {
-    if (!deleteModal.id) return;
+    if (!deleteModal.id) return
     try {
-      const res = await APIFETCH.delete(`/swdi/delete/${deleteModal.id}`);
+      const res = await APIFETCH.delete(`/swdi/delete/${deleteModal.id}`)
       if (res.data.deleted ?? res.status === 200) {
-        show(res.data.message ?? "Record deleted", "success");
-        queryClient.invalidateQueries({ queryKey: ["recentSwdi"] });
-        queryClient.invalidateQueries({ queryKey: ["allDocuments"] });
+        show(res.data.message ?? "Record deleted", "success")
+        queryClient.invalidateQueries({ queryKey: ["recentSwdi"] })
+        queryClient.invalidateQueries({ queryKey: ["allDocuments"] })
       } else {
-        show(res.data.message ?? "Failed to delete", "error");
+        show(res.data.message ?? "Failed to delete", "error")
       }
     } catch {
-      show("Failed to delete record", "error");
+      show("Failed to delete record", "error")
     } finally {
-      setDeleteModal({ open: false, id: null });
+      setDeleteModal({ open: false, id: null })
     }
-  };
+  }
 
   const columns: ColumnDef<SwdiRecord>[] = [
     {
@@ -46,12 +47,15 @@ export default function SwdiRecent() {
       className: "pl-6 pr-4 text-center",
       cell: (r) => (
         <div className="flex items-center justify-center gap-1.5 group">
-          <span className="font-mono text-[11px] text-(--color-ink) whitespace-nowrap">{r.hhId}</span>
+          <span className="font-mono text-[11px] text-(--color-ink) whitespace-nowrap">
+            {r.hhId}
+          </span>
           <button
             type="button"
             onClick={() => navigator.clipboard.writeText(r.hhId)}
             className="opacity-0 group-hover:opacity-100 transition-opacity text-(--color-placeholder) hover:text-(--color-muted) cursor-pointer bg-transparent border-none"
-            title="Copy HH ID" aria-label="Copy HH ID"
+            title="Copy HH ID"
+            aria-label="Copy HH ID"
           >
             <Copy size={11} aria-hidden="true" />
           </button>
@@ -62,14 +66,18 @@ export default function SwdiRecent() {
       header: "Grantee",
       headerClassName: "text-center",
       cell: (r) => (
-        <span className="text-[12px] font-medium text-(--color-ink) whitespace-nowrap">{r.grantee}</span>
+        <span className="text-[12px] font-medium text-(--color-ink) whitespace-nowrap">
+          {r.grantee}
+        </span>
       ),
     },
     {
       header: "SWDI Score",
       headerClassName: "text-center",
       cell: (r) => (
-        <span className="font-mono text-[13px] font-semibold text-(--color-ink)">{r.swdiScore}</span>
+        <span className="font-mono text-[13px] font-semibold text-(--color-ink)">
+          {r.swdiScore}
+        </span>
       ),
     },
     {
@@ -85,10 +93,15 @@ export default function SwdiRecent() {
       header: "Encoded",
       headerClassName: "text-center",
       cell: (r) => (
-        <span className={`inline-block px-2.5 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap ${r.remarks === "YES" ? "bg-emerald-50 text-emerald-600"
-          : r.remarks === "NO" ? "bg-red-50 text-red-500"
-            : "bg-blue-50 text-blue-600"
-          }`}>
+        <span
+          className={`inline-block px-2.5 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap ${
+            r.remarks === "YES"
+              ? "bg-emerald-50 text-emerald-600"
+              : r.remarks === "NO"
+                ? "bg-red-50 text-red-500"
+                : "bg-blue-50 text-blue-600"
+          }`}
+        >
           {r.remarks}
         </span>
       ),
@@ -108,7 +121,11 @@ export default function SwdiRecent() {
       headerClassName: "text-center",
       cell: (r) => (
         <span className="text-[11px] text-(--color-muted) whitespace-nowrap tabular-nums">
-          {new Date(r.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+          {new Date(r.date).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          })}
         </span>
       ),
     },
@@ -135,7 +152,7 @@ export default function SwdiRecent() {
         </div>
       ),
     },
-  ];
+  ]
 
   return (
     <>
@@ -153,7 +170,9 @@ export default function SwdiRecent() {
         }
         headerLeft={(records) => (
           <div className="flex items-center gap-3">
-            <p className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">Recent Updates</p>
+            <p className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">
+              Recent Updates
+            </p>
             {records.length > 0 && (
               <span className="text-[10px] font-mono bg-violet-50 text-violet-500 px-2 py-0.5 rounded-full">
                 {records.length} record{records.length !== 1 ? "s" : ""}
@@ -164,7 +183,11 @@ export default function SwdiRecent() {
         headerRight={(records) =>
           records.length > 0 ? (
             <span className="text-[11px] text-(--color-placeholder) font-mono">
-              {new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+              {new Date().toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              })}
             </span>
           ) : null
         }
@@ -177,5 +200,5 @@ export default function SwdiRecent() {
         )}
       />
     </>
-  );
+  )
 }

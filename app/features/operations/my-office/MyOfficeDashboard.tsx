@@ -1,6 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
-import { useState, useMemo } from "react";
-import { useNavigate } from "react-router";
+import { useQuery } from "@tanstack/react-query"
+import { useState } from "react"
+import { useNavigate } from "react-router"
 import {
   Building2,
   MapPin,
@@ -15,76 +15,60 @@ import {
   TriangleAlert,
   CalendarDays,
   FileStack,
-} from "lucide-react";
-import { MetricCardSkeleton, EmployeeRowSkeleton } from "~/components/Skeleton";
-import APIFETCH from "~/lib/axios/axiosConfig";
-import type {
-  OperationsOffice,
-  Lgu,
-  Barangay,
-  Employee,
-} from "~/features/admin/settings/types";
-import type { me } from "~/types/authTypes";
-import { useMonthlySummary } from "~/components/Usemonthlysummary";
-import { MONTHS } from "~/types/SummaryType";
+} from "lucide-react"
+import { MetricCardSkeleton, EmployeeRowSkeleton } from "~/components/Skeleton"
+import APIFETCH from "~/lib/axios/axiosConfig"
+import type { OperationsOffice, Lgu, Barangay, Employee } from "~/features/admin/settings/types"
+import type { me } from "~/types/authTypes"
+import { useMonthlySummary } from "~/components/Usemonthlysummary"
+import { MONTHS } from "~/types/SummaryType"
 
 type AreaData = {
-  operations: OperationsOffice[];
-  lgu: Lgu[];
-  barangay: Barangay[];
-};
-
-type GlobalRecord = {
-  id: number;
-  govUsername: string;
-  remarks: string;
-};
+  operations: OperationsOffice[]
+  lgu: Lgu[]
+  barangay: Barangay[]
+}
 
 type OperationCountItem = {
-  remarks: string;
-  count: number;
-};
+  remarks: string
+  count: number
+}
 
 type OperationCountResponse = {
-  result: OperationCountItem[];
-  total: number;
-};
+  result: OperationCountItem[]
+  total: number
+}
 
 const ROLE_LABEL: Record<string, string> = {
   ENCODER: "Encoder",
   ADMIN: "Admin",
   AREA_COORDINATOR: "Area Coordinator",
   SOCIAL_WORKER_III: "Social Worker III",
-};
+}
 
 // ── Month filter pills ────────────────────────────────────────────────────────
-function MonthFilter({
-  selected,
-  onChange,
-}: {
-  selected: number;
-  onChange: (m: number) => void;
-}) {
+function MonthFilter({ selected, onChange }: { selected: number; onChange: (m: number) => void }) {
   return (
     <div className="flex items-center gap-2 overflow-x-auto pb-0.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-      {[{ label: "Overall", value: 0 }, ...MONTHS.map((m, i) => ({ label: m.slice(0, 3), value: i + 1 }))].map(
-        ({ label, value }) => (
-          <button
-            key={value}
-            type="button"
-            onClick={() => onChange(value)}
-            className={`shrink-0 px-3.5 py-1.5 rounded-full text-[13px] font-medium transition-colors cursor-pointer border ${
-              selected === value
-                ? "bg-(--color-ink) text-(--color-bg) border-(--color-ink)"
-                : "bg-transparent text-(--color-muted) border-(--color-border) hover:border-(--color-ink) hover:text-(--color-ink)"
-            }`}
-          >
-            {label}
-          </button>
-        ),
-      )}
+      {[
+        { label: "Overall", value: 0 },
+        ...MONTHS.map((m, i) => ({ label: m.slice(0, 3), value: i + 1 })),
+      ].map(({ label, value }) => (
+        <button
+          key={value}
+          type="button"
+          onClick={() => onChange(value)}
+          className={`shrink-0 px-3.5 py-1.5 rounded-full text-[13px] font-medium transition-colors cursor-pointer border ${
+            selected === value
+              ? "bg-(--color-ink) text-(--color-bg) border-(--color-ink)"
+              : "bg-transparent text-(--color-muted) border-(--color-border) hover:border-(--color-ink) hover:text-(--color-ink)"
+          }`}
+        >
+          {label}
+        </button>
+      ))}
     </div>
-  );
+  )
 }
 
 // ── Big metric card ───────────────────────────────────────────────────────────
@@ -96,19 +80,23 @@ function MetricCard({
   icon: Icon,
   loading,
 }: {
-  label: string;
-  value: number | string;
-  sub?: string;
-  accent: "emerald" | "blue" | "amber" | "slate";
-  icon: React.ElementType;
-  loading?: boolean;
+  label: string
+  value: number | string
+  sub?: string
+  accent: "emerald" | "blue" | "amber" | "slate"
+  icon: React.ElementType
+  loading?: boolean
 }) {
   const styles = {
     emerald: { iconBg: "bg-emerald-50", iconColor: "text-emerald-600", num: "text-emerald-600" },
     blue: { iconBg: "bg-blue-50", iconColor: "text-blue-600", num: "text-blue-600" },
     amber: { iconBg: "bg-amber-50", iconColor: "text-amber-500", num: "text-amber-500" },
-    slate: { iconBg: "bg-(--color-subtle)", iconColor: "text-(--color-muted)", num: "text-(--color-ink)" },
-  }[accent];
+    slate: {
+      iconBg: "bg-(--color-subtle)",
+      iconColor: "text-(--color-muted)",
+      num: "text-(--color-ink)",
+    },
+  }[accent]
 
   return (
     <div className="bg-(--color-surface) border border-(--color-border) rounded-xl p-5 flex flex-col gap-3">
@@ -123,7 +111,7 @@ function MetricCard({
         {sub && <p className="text-[12px] text-(--color-muted) mt-0.5">{sub}</p>}
       </div>
     </div>
-  );
+  )
 }
 
 // ── Small area stat ───────────────────────────────────────────────────────────
@@ -134,11 +122,11 @@ function AreaStat({
   iconBg,
   iconColor,
 }: {
-  label: string;
-  value: number;
-  icon: React.ElementType;
-  iconBg: string;
-  iconColor: string;
+  label: string
+  value: number
+  icon: React.ElementType
+  iconBg: string
+  iconColor: string
 }) {
   return (
     <div className="bg-(--color-surface) border border-(--color-border) rounded-xl px-4 py-3.5 flex items-center gap-3">
@@ -150,7 +138,7 @@ function AreaStat({
         <p className="text-[12px] text-(--color-muted) mt-0.5">{label}</p>
       </div>
     </div>
-  );
+  )
 }
 
 // ── LGU card ──────────────────────────────────────────────────────────────────
@@ -159,11 +147,11 @@ function LguCard({
   barangays,
   members,
 }: {
-  lgu: Lgu;
-  barangays: Barangay[];
-  members: Employee[];
+  lgu: Lgu
+  barangays: Barangay[]
+  members: Employee[]
 }) {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(false)
 
   return (
     <div className="bg-(--color-surface) border border-(--color-border) rounded-xl overflow-hidden">
@@ -238,107 +226,80 @@ function LguCard({
         </div>
       )}
     </div>
-  );
+  )
 }
 
 // ── Main dashboard ────────────────────────────────────────────────────────────
 export default function MyOfficeDashboard({ userData }: { userData: me }) {
-  const navigate = useNavigate();
-  const now = new Date();
+  const navigate = useNavigate()
+  const now = new Date()
 
-  const [selectedMonth, setSelectedMonth] = useState(0); // 0 = overall
+  const [selectedMonth, setSelectedMonth] = useState(0) // 0 = overall
 
   const { data: areaData, isLoading: areaLoading } = useQuery<AreaData>({
     queryKey: ["assignedArea"],
     queryFn: async () => {
-      const res = await APIFETCH.get("/admin/get/assignedArea");
-      return res.data;
+      const res = await APIFETCH.get("/admin/get/assignedArea")
+      return res.data
     },
-  });
+  })
 
   const { data: employees = [], isLoading: empLoading } = useQuery<Employee[]>({
     queryKey: ["employees"],
     queryFn: async () => {
-      const res = await APIFETCH.get("/admin/employees");
-      return res.data;
+      const res = await APIFETCH.get("/admin/employees")
+      return res.data
     },
-  });
-
-  const { data: allRecords = [] } = useQuery<GlobalRecord[]>({
-    queryKey: ["allDocuments"],
-    queryFn: async () => {
-      const res = await APIFETCH.get("/alldocuments/globalRecords");
-      return res.data;
-    },
-  });
+  })
 
   const { data: OperationsDocumentCount } = useQuery({
     queryKey: ["OPERATIONDOCUMENT"],
     queryFn: async () => {
       const res = await APIFETCH.get<OperationCountResponse>(
-        "/alldocuments/count/OperationDashboard",
-      );
-      return res.data;
+        "/alldocuments/count/OperationDashboard"
+      )
+      return res.data
     },
-  });
+  })
 
-  const monthForQuery = selectedMonth > 0 ? selectedMonth : now.getMonth() + 1;
+  const monthForQuery = selectedMonth > 0 ? selectedMonth : now.getMonth() + 1
   const { data: monthlyData, isLoading: monthlyLoading } = useMonthlySummary(
     monthForQuery,
-    now.getFullYear(),
-  );
+    now.getFullYear()
+  )
 
-  const isLoading = areaLoading || empLoading;
+  const isLoading = areaLoading || empLoading
 
-  const selfRecord = employees.find((e) => e.govUsername === userData.govUsername);
-  const myOfficeId = selfRecord?.userInfo?.assignedOperationId ?? null;
+  const selfRecord = employees.find((e) => e.govUsername === userData.govUsername)
+  const myOfficeId = selfRecord?.userInfo?.assignedOperationId ?? null
 
-  const offices = areaData?.operations ?? [];
-  const allLgus = areaData?.lgu ?? [];
-  const allBarangays = areaData?.barangay ?? [];
+  const offices = areaData?.operations ?? []
+  const allLgus = areaData?.lgu ?? []
+  const allBarangays = areaData?.barangay ?? []
 
-  const myOffice = offices.find((o) => o.id === myOfficeId) ?? null;
+  const myOffice = offices.find((o) => o.id === myOfficeId) ?? null
   const myLgus =
-    myOfficeId !== null
-      ? allLgus.filter((l) => l.operationsOfficeNumId === myOfficeId)
-      : [];
+    myOfficeId !== null ? allLgus.filter((l) => l.operationsOfficeNumId === myOfficeId) : []
   const myStaff =
     myOfficeId !== null
       ? employees.filter((e) => e.userInfo?.assignedOperationId === myOfficeId)
-      : [];
+      : []
 
-  const myStaffUsernames = useMemo(
-    () => new Set(myStaff.map((e) => e.govUsername)),
-    [myStaff],
-  );
-
-  const myRecords = useMemo(
-    () => allRecords.filter((r) => myStaffUsernames.has(r.govUsername)),
-    [allRecords, myStaffUsernames],
-  );
-
-  const getBarangaysForLgu = (lguId: number) =>
-    allBarangays.filter((b) => b.lguId === lguId);
+  const getBarangaysForLgu = (lguId: number) => allBarangays.filter((b) => b.lguId === lguId)
 
   const getMembersForLgu = (lguId: number) =>
-    myStaff.filter((e) => e.userInfo?.assignedLGUID === lguId);
+    myStaff.filter((e) => e.userInfo?.assignedLGUID === lguId)
 
-  const totalBarangays = myLgus.reduce(
-    (sum, l) => sum + getBarangaysForLgu(l.id).length,
-    0,
-  );
+  const totalBarangays = myLgus.reduce((sum, l) => sum + getBarangaysForLgu(l.id).length, 0)
 
   // Stats based on selected period
   const stats =
     selectedMonth === 0
       ? {
           total: OperationsDocumentCount?.total ?? 0,
-          encoded:
-            OperationsDocumentCount?.result.find((r) => r.remarks === "YES")?.count ?? 0,
-          updated:
-            OperationsDocumentCount?.result.find((r) => r.remarks === "UPDATED")?.count ?? 0,
-          issues:
-            OperationsDocumentCount?.result.find((r) => r.remarks === "NO")?.count ?? 0,
+          encoded: OperationsDocumentCount?.result.find((r) => r.remarks === "YES")?.count ?? 0,
+          updated: OperationsDocumentCount?.result.find((r) => r.remarks === "UPDATED")?.count ?? 0,
+          issues: OperationsDocumentCount?.result.find((r) => r.remarks === "NO")?.count ?? 0,
           loading: false,
         }
       : {
@@ -350,7 +311,7 @@ export default function MyOfficeDashboard({ userData }: { userData: me }) {
           updated: monthlyData?.totals.updated ?? 0,
           issues: monthlyData?.totals.issue ?? 0,
           loading: monthlyLoading,
-        };
+        }
 
   if (isLoading) {
     return (
@@ -365,7 +326,10 @@ export default function MyOfficeDashboard({ userData }: { userData: me }) {
           {/* Area stats */}
           <div className="grid grid-cols-3 gap-3">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="bg-(--color-surface) border border-(--color-border) rounded-xl px-4 py-3.5 flex items-center gap-3">
+              <div
+                key={i}
+                className="bg-(--color-surface) border border-(--color-border) rounded-xl px-4 py-3.5 flex items-center gap-3"
+              >
                 <div className="w-8 h-8 bg-gray-200 rounded-lg animate-pulse shrink-0" />
                 <div className="space-y-1.5">
                   <div className="h-5 w-10 bg-gray-200 rounded animate-pulse" />
@@ -383,7 +347,10 @@ export default function MyOfficeDashboard({ userData }: { userData: me }) {
           {/* LGU cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="bg-(--color-surface) border border-(--color-border) rounded-xl p-4 space-y-3">
+              <div
+                key={i}
+                className="bg-(--color-surface) border border-(--color-border) rounded-xl p-4 space-y-3"
+              >
                 <div className="flex items-center gap-2.5">
                   <div className="w-8 h-8 bg-gray-200 rounded-lg animate-pulse" />
                   <div className="space-y-1.5">
@@ -406,7 +373,7 @@ export default function MyOfficeDashboard({ userData }: { userData: me }) {
           </div>
         </div>
       </main>
-    );
+    )
   }
 
   if (myOfficeId === null) {
@@ -418,18 +385,17 @@ export default function MyOfficeDashboard({ userData }: { userData: me }) {
           </div>
           <p className="text-[15px] font-semibold text-(--color-ink)">No Office Assigned</p>
           <p className="text-[13px] text-(--color-muted)">
-            You have not been assigned to an operations office yet. Contact your
-            administrator to set up your area assignment.
+            You have not been assigned to an operations office yet. Contact your administrator to
+            set up your area assignment.
           </p>
         </div>
       </main>
-    );
+    )
   }
 
   return (
     <main className="p-6 bg-(--color-bg) min-h-screen font-sans antialiased">
       <div className="max-w-full mx-auto flex flex-col gap-6">
-
         {/* ── Header ─────────────────────────────────────────────────────────── */}
         <div className="flex flex-col gap-1.5">
           <span className="inline-flex items-center gap-1.5 self-start text-[12px] font-medium text-(--color-muted) bg-(--color-subtle) border border-(--color-border) px-2.5 py-1 rounded-full">
@@ -489,9 +455,7 @@ export default function MyOfficeDashboard({ userData }: { userData: me }) {
                   ? "All time"
                   : `${MONTHS[selectedMonth - 1]} ${now.getFullYear()}`}
               </span>
-              {stats.loading && (
-                <Loader2 size={12} className="animate-spin text-(--color-muted)" />
-              )}
+              {stats.loading && <Loader2 size={12} className="animate-spin text-(--color-muted)" />}
             </div>
             <MonthFilter selected={selectedMonth} onChange={setSelectedMonth} />
           </div>
@@ -637,5 +601,5 @@ export default function MyOfficeDashboard({ userData }: { userData: me }) {
         </div>
       </div>
     </main>
-  );
+  )
 }

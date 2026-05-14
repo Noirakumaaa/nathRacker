@@ -1,19 +1,23 @@
-import { Shield, ArrowLeft, Home, Mail } from 'lucide-react';
+import { Shield, ArrowLeft, Home, Mail } from "lucide-react"
 
-const UnauthorizedPage = () => {
+type Props = {
+  statusCode?: 401 | 403
+}
+
+const UnauthorizedPage = ({ statusCode = 401 }: Props) => {
   const handleGoBack = () => {
-    window.history.back();
-  };
+    window.history.back()
+  }
 
   const handleGoHome = () => {
     // Replace with your actual home route
-    window.location.href = '/dashboard';
-  };
+    window.location.href = "/dashboard"
+  }
 
   const handleContactSupport = () => {
     // Replace with your actual support contact method
-    window.location.href = 'mailto:support@yourcompany.com';
-  };
+    window.location.href = "mailto:support@nathdomain.com"
+  }
 
   return (
     <div className="min-h-screen bg-(--color-bg) flex items-center justify-center p-6">
@@ -30,14 +34,16 @@ const UnauthorizedPage = () => {
 
           {/* Description */}
           <p className="text-(--color-muted) mb-6 leading-relaxed">
-            You are not authorized to access this page. Please contact your administrator
-            if you believe this is an error.
+            You are not authorized to access this page. Please contact your administrator if you
+            believe this is an error.
           </p>
 
           {/* Error Code */}
           <div className="bg-(--color-subtle) rounded-lg p-4 mb-8">
             <p className="text-sm text-(--color-muted)">Error Code</p>
-            <p className="text-lg font-mono text-(--color-ink)">401 - Unauthorized</p>
+            <p className="text-lg font-mono text-(--color-ink)">
+              {statusCode} - {statusCode === 403 ? "Forbidden" : "Unauthorized"}
+            </p>
           </div>
 
           {/* Action Buttons */}
@@ -76,7 +82,7 @@ const UnauthorizedPage = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default UnauthorizedPage;
+export default UnauthorizedPage

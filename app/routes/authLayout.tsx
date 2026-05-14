@@ -1,17 +1,16 @@
-import { Outlet, useNavigate } from "react-router";
-import { useEffect } from "react";
-import { Loader2 } from "lucide-react";
-import LayoutWrapper from "~/layouts/navLayout";
-import { useAuth } from "~/components/authGuard";
+import { Outlet, useNavigate } from "react-router"
+import { useEffect } from "react"
+import { Loader2 } from "lucide-react"
+import LayoutWrapper from "~/layouts/navLayout"
+import { useAuth } from "~/components/authGuard"
 
 export default function AppLayout() {
-  const navigate = useNavigate();
-  const { user, isLoading, isAuthenticated } = useAuth();
+  const navigate = useNavigate()
+  const { isLoading, isAuthenticated } = useAuth()
 
   useEffect(() => {
-    if (!isAuthenticated && !isLoading) navigate("/login");
-  }, [isAuthenticated, isLoading]);
-
+    if (!isAuthenticated && !isLoading) navigate("/login", { replace: true })
+  }, [isAuthenticated, isLoading, navigate])
 
   return (
     <LayoutWrapper>
@@ -26,5 +25,5 @@ export default function AppLayout() {
         <Outlet />
       ) : null}
     </LayoutWrapper>
-  );
+  )
 }

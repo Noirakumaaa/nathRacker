@@ -1,22 +1,26 @@
-import { RecordsTable } from "~/features/records/records";
-import UnauthorizedPage from "~/features/not-authorized/not-authorized";
-import { AuthorizedUser } from "~/types/authorizedUser";
-import { useAuth } from "~/components/authGuard";
+import type { MetaFunction } from "react-router"
+import { RecordsTable } from "~/features/records/records"
+import UnauthorizedPage from "~/features/not-authorized/not-authorized"
+import { AUTHORIZED_ROLES } from "~/types/authorizedUser"
+import { useAuth } from "~/components/authGuard"
+import { LoadingScreen } from "~/components/LoadingScreen"
+import { ErrorBoundary } from "~/components/ErrorBoundary"
 
-export function meta() {
-  return [
-    { title: "Global Records | NathRacker" },
-    { name: "description", content: "View all encoded records across all modules" },
-  ];
-}
+export const meta: MetaFunction = () => [
+  { title: "Global Records | NathRacker" },
+  { name: "description", content: "View all encoded records across all modules" },
+]
 
 export default function RecordsRoute() {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading } = useAuth()
 
-  if (isLoading) return null;
-  if (!user) return <UnauthorizedPage />;
+  if (isLoading) return <LoadingScreen />
+  if (!user) return <UnauthorizedPage statusCode={401} />
+  if (!AUTHORIZED_ROLES.includes(user.role)) return <UnauthorizedPage statusCode={403} />
 
-  if (!AuthorizedUser.includes(user.role)) return <UnauthorizedPage />;
-
-  return <RecordsTable />;
+  return (
+    <ErrorBoundary>
+      <RecordsTable />
+    </ErrorBoundary>
+  )
 }

@@ -1,22 +1,22 @@
-import { Outlet, useNavigate } from "react-router";
-import { useEffect } from "react";
-import { Loader2 } from "lucide-react";
-import LayoutWrapper from "~/layouts/navLayout";
-import { useAuth } from "~/components/authGuard";
-import UnauthorizedPage from "~/features/not-authorized/not-authorized";
-import { OPERATIONS_ROLES } from "~/constants/roles";
+import { Outlet, useNavigate } from "react-router"
+import { useEffect } from "react"
+import { Loader2 } from "lucide-react"
+import LayoutWrapper from "~/layouts/navLayout"
+import { useAuth } from "~/components/authGuard"
+import UnauthorizedPage from "~/features/not-authorized/not-authorized"
+import { OPERATIONS_ROLES } from "~/constants/roles"
 
-const authorizedUser = OPERATIONS_ROLES;
+const authorizedUser = OPERATIONS_ROLES
 
-export default function operationLayout() {
-  const navigate = useNavigate();
-  const { user, isLoading, isAuthenticated } = useAuth();
+export default function OperationLayout() {
+  const navigate = useNavigate()
+  const { user, isLoading, isAuthenticated } = useAuth()
 
   useEffect(() => {
-    if (!isAuthenticated && !isLoading) navigate("/login");
-  }, [isAuthenticated, isLoading]);
+    if (!isAuthenticated && !isLoading) navigate("/login", { replace: true })
+  }, [isAuthenticated, isLoading, navigate])
 
-  const showLoader = isLoading || (isAuthenticated && !user?.role);
+  const showLoader = isLoading || (isAuthenticated && !user?.role)
 
   return (
     <LayoutWrapper>
@@ -33,5 +33,5 @@ export default function operationLayout() {
         <Outlet />
       ) : null}
     </LayoutWrapper>
-  );
+  )
 }

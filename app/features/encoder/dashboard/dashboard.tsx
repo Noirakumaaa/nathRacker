@@ -1,51 +1,49 @@
-import { useQuery } from "@tanstack/react-query";
-import { FileText, FileInput, IdCard, Layers, TrendingUp } from "lucide-react";
-import { DashboardHeader } from "./DashboardHeader";
-import { StatCards } from "./StatCards";
-import { TotalBreakdown } from "./TotalBreakdown";
-import { RecentActivity } from "./RecentActivity";
-import { QuickActions } from "./QuickActions";
-import type { CountItem, RecentEntry, StatCard } from "~/types/dashboardTypes";
-import type { me } from "~/types/authTypes";
-import { moduleStyle } from "~/components/styleConfig";
-import APIFETCH from "~/lib/axios/axiosConfig";
+import { useQuery } from "@tanstack/react-query"
+import { FileText, FileInput, IdCard, Layers, TrendingUp } from "lucide-react"
+import { DashboardHeader } from "./DashboardHeader"
+import { StatCards } from "./StatCards"
+import { TotalBreakdown } from "./TotalBreakdown"
+import { RecentActivity } from "./RecentActivity"
+import { QuickActions } from "./QuickActions"
+import type { CountItem, RecentEntry, StatCard } from "~/types/dashboardTypes"
+import type { me } from "~/types/authTypes"
+import { moduleStyle } from "~/components/styleConfig"
+import APIFETCH from "~/lib/axios/axiosConfig"
 
 export default function Dashboard({ userData }: { userData: me }) {
   const { data: counts = [], isLoading: countsLoading } = useQuery<CountItem[]>({
     queryKey: ["documentCounts"],
     queryFn: async () => {
-      const res = await APIFETCH.get("/alldocuments/count/documents");
-      const data = res.data;
-      return Array.isArray(data) ? data : (data.data ?? []);
+      const res = await APIFETCH.get("/alldocuments/count/documents")
+      const data = res.data
+      return Array.isArray(data) ? data : (data.data ?? [])
     },
-  });
+  })
 
   const { data: sparklines = {} } = useQuery<Record<string, number[]>>({
     queryKey: ["weeklyDocumentCounts"],
     queryFn: async (): Promise<Record<string, number[]>> => {
-      const res = await APIFETCH.get("/alldocuments/weekly-count");
-      const data = res.data;
+      const res = await APIFETCH.get("/alldocuments/weekly-count")
+      const data = res.data
       if (typeof data === "object" && !Array.isArray(data) && "data" in data)
-        return data.data as Record<string, number[]>;
-      return typeof data === "object" && !Array.isArray(data) ? data : {};
+        return data.data as Record<string, number[]>
+      return typeof data === "object" && !Array.isArray(data) ? data : {}
     },
-  });
+  })
 
-  const { data: recentBus = [], isLoading } = useQuery({
+  const { data: recentBus = [], isLoading } = useQuery<RecentEntry[]>({
     queryKey: ["UserRecent"],
-    queryFn: async () => {
-      const res = await APIFETCH.get("/alldocuments/UserRecent");
-      const data = res.data;
-      return (
-        (data as any[])
-          ?.slice(0, 8)
-          .map((r: any) => ({ ...r, module: "BUS" })) ?? []
-      );
+    queryFn: async (): Promise<RecentEntry[]> => {
+      const res = await APIFETCH.get("/alldocuments/UserRecent")
+      const data: unknown = res.data
+      if (!Array.isArray(data)) {
+        return []
+      }
+      return data?.slice(0, 8).map((r) => ({ ...(r as RecentEntry), module: "BUS" })) ?? []
     },
-  });
+  })
 
-  const getCount = (type: string) =>
-    counts.find((c: any) => c.documentType === type)?.count ?? 0;
+  const getCount = (type: string) => counts.find((c) => c.documentType === type)?.count ?? 0
 
   const stats: StatCard[] = [
     {
@@ -102,13 +100,12 @@ export default function Dashboard({ userData }: { userData: me }) {
       icon: Layers,
       iconBg: "bg-amber-50",
     },
-  ];
+  ]
 
-  const total =
-    getCount("BUS") + getCount("PCN") + getCount("SWDI") + getCount("MISC");
+  const total = getCount("BUS") + getCount("PCN") + getCount("SWDI") + getCount("MISC")
   const recentAll: RecentEntry[] = [...recentBus]
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    .slice(0, 10);
+    .slice(0, 10)
 
   return (
     <main className="p-6 bg-(--color-bg) min-h-screen font-sans antialiased">
@@ -122,5 +119,5 @@ export default function Dashboard({ userData }: { userData: me }) {
         <QuickActions />
       </div>
     </main>
-  );
+  )
 }

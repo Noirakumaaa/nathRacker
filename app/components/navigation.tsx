@@ -1,23 +1,13 @@
-import { useQuery } from "@tanstack/react-query";
-import APIFETCH from "~/lib/axios/axiosConfig";
-import { Menu, X, Search } from "lucide-react";
-import type { me } from "~/types/authTypes";
+import { Menu, X, Search } from "lucide-react"
+import { useAuth } from "~/components/authGuard"
 
 type TopNavbarProps = {
-  onMenuToggle: () => void;
-  isSidebarOpen: boolean;
-};
+  onMenuToggle: () => void
+  isSidebarOpen: boolean
+}
 
 const TopNavbar = ({ onMenuToggle, isSidebarOpen }: TopNavbarProps) => {
-
-  const { data : user } = useQuery({
-    queryKey : ["me"],
-    queryFn : async () => {
-      const res = await APIFETCH.get<me>("/auth/check-auth")
-      return res.data
-    },
-    retry : false
-  })
+  const { user } = useAuth()
 
   if (!user) {
     return (
@@ -25,18 +15,19 @@ const TopNavbar = ({ onMenuToggle, isSidebarOpen }: TopNavbarProps) => {
         <div className="flex items-center justify-between h-full px-5">
           <div className="flex items-center gap-2.5">
             <img src="/nathracker_icon_v9.svg" alt="NathRacker" className="w-10 h-10" />
-            <span className="text-[16px] font-semibold tracking-tight text-(--color-ink)">NathRacker</span>
+            <span className="text-[16px] font-semibold tracking-tight text-(--color-ink)">
+              NathRacker
+            </span>
           </div>
           <div className="w-24 h-5 bg-(--color-subtle) rounded animate-pulse" />
         </div>
       </nav>
-    );
+    )
   }
 
   return (
     <nav className="bg-(--color-bg) border-b border-(--color-border) fixed top-0 left-0 right-0 z-50 h-15 font-sans antialiased">
       <div className="flex items-center justify-between h-full px-5">
-
         {/* Left — hamburger (mobile) + logo */}
         <div className="flex items-center gap-3">
           <button
@@ -47,10 +38,7 @@ const TopNavbar = ({ onMenuToggle, isSidebarOpen }: TopNavbarProps) => {
           </button>
 
           {/* Logo */}
-          <a
-            href="/"
-            className="flex items-center gap-2.5 no-underline"
-          >
+          <a href="/" className="flex items-center gap-2.5 no-underline">
             <img src="/nathracker_icon_v9.svg" alt="NathRacker" className="w-10 h-10" />
             <span className="text-[16px] font-semibold tracking-tight text-(--color-ink)">
               NathRacker
@@ -86,10 +74,9 @@ const TopNavbar = ({ onMenuToggle, isSidebarOpen }: TopNavbarProps) => {
             </span>
           </div>
         </div>
-
       </div>
     </nav>
-  );
-};
+  )
+}
 
-export default TopNavbar;
+export default TopNavbar

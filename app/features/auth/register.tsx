@@ -1,22 +1,42 @@
-import React, { useState } from "react";
-import { useToastStore } from "~/lib/zustand/ToastStore";
-import APIFETCH from "~/lib/axios/axiosConfig";
-import { useNavigate } from "react-router";
-import { labelCls, inputCls } from "~/components/styleConfig";
-import { Opt, Req } from "~/components/LabelStyle";
+import React, { useState } from "react"
+import { useToastStore } from "~/lib/zustand/ToastStore"
+import APIFETCH from "~/lib/axios/axiosConfig"
+import { useNavigate } from "react-router"
+import { labelCls, inputCls } from "~/components/styleConfig"
+import { Opt, Req } from "~/components/LabelStyle"
+import { z } from "zod"
+
+const registerSchema = z.object({
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  middleName: z.string().optional(),
+  govUsername: z.string().min(1, "Government username is required"),
+  email: z.string().min(1, "Email is required").email("Enter a valid email"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+  phone: z
+    .string()
+    .min(1, "Phone number is required")
+    .regex(/^09\d{9}$/, "Phone must be in format 09XXXXXXXXX"),
+  role: z.enum(["ENCODER", "ADMIN"], { error: "Role is required" }),
+  assignedOperationId: z.union([z.number().positive(), z.literal("")]).optional(),
+  assignedLGUID: z.union([z.number().positive(), z.literal("")]).optional(),
+  assignedBarangayId: z.union([z.number().positive(), z.literal("")]).optional(),
+})
+
+type RegisterErrors = Partial<Record<keyof CreateRegisterAccount, string>>
 
 interface CreateRegisterAccount {
-  firstName: string;
-  lastName: string;
-  middleName: string;
-  govUsername: string;
-  email: string;
-  password: string;
-  phone: string;
-  role: "ENCODER" | "ADMIN" | "";
-  assignedOperationId: number | "";
-  assignedLGUID: number | "";
-  assignedBarangayId: number | "";
+  firstName: string
+  lastName: string
+  middleName: string
+  govUsername: string
+  email: string
+  password: string
+  phone: string
+  role: "ENCODER" | "ADMIN" | ""
+  assignedOperationId: number | ""
+  assignedLGUID: number | ""
+  assignedBarangayId: number | ""
 }
 
 const EMPTY_FORM: CreateRegisterAccount = {
@@ -31,54 +51,65 @@ const EMPTY_FORM: CreateRegisterAccount = {
   assignedOperationId: "",
   assignedLGUID: "",
   assignedBarangayId: "",
-};
+}
 
 export default function RegisterForm() {
-  const navigate = useNavigate();
-  const { show } = useToastStore();
-  const [buttonLoading, setButtonLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate()
+  const { show } = useToastStore()
+  const [buttonLoading, setButtonLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [fieldErrors, setFieldErrors] = useState<RegisterErrors>({})
 
-  const [formData, setFormData] = useState<CreateRegisterAccount>(EMPTY_FORM);
+  const [formData, setFormData] = useState<CreateRegisterAccount>(EMPTY_FORM)
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target
 
     // Don't uppercase email or password
-    const noUppercase = ["email", "password", "govUsername"];
-    const formatted = noUppercase.includes(name) ? value : value.toUpperCase();
+    const noUppercase = ["email", "password", "govUsername"]
+    const formatted = noUppercase.includes(name) ? value : value.toUpperCase()
 
-    const numberFields = ["assignedOperationId", "assignedLGUID", "assignedBarangayId"];
+    const numberFields = ["assignedOperationId", "assignedLGUID", "assignedBarangayId"]
     setFormData((prev) => ({
       ...prev,
       [name]: numberFields.includes(name) ? (value === "" ? "" : Number(value)) : formatted,
-    }));
-  };
+    }))
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setButtonLoading(true);
+    e.preventDefault()
+
+    const result = registerSchema.safeParse(formData)
+    if (!result.success) {
+      const errs = result.error.flatten().fieldErrors
+      setFieldErrors(
+        Object.fromEntries(
+          Object.entries(errs).map(([k, v]) => [k, (v as string[])[0]])
+        ) as RegisterErrors
+      )
+      return
+    }
+    setFieldErrors({})
+    setButtonLoading(true)
     try {
-      const res = await APIFETCH.post("/auth/register", formData);
+      const res = await APIFETCH.post("/auth/register", formData)
       if (res.data?.success) {
-        show(res.data.message ?? "Account created successfully.", "success");
-        handleReset();
+        show(res.data.message ?? "Account created successfully.", "success")
+        handleReset()
       } else {
-        show(res.data?.message ?? "Registration failed.", "error");
+        show(res.data?.message ?? "Registration failed.", "error")
       }
     } catch {
-      show("An error occurred during registration.", "error");
+      show("An error occurred during registration.", "error")
     } finally {
-      setButtonLoading(false);
+      setButtonLoading(false)
     }
-  };
+  }
 
   const handleReset = () => {
-    setFormData(EMPTY_FORM);
-    navigate(-1);
-  };
+    setFormData(EMPTY_FORM)
+    navigate(-1)
+  }
 
   return (
     <form
@@ -104,7 +135,6 @@ export default function RegisterForm() {
 
       <div className="p-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
           {/* Column 1 — Personal Info */}
           <div className="space-y-4">
             <div className="pb-2 border-b border-(--color-border)">
@@ -123,10 +153,12 @@ export default function RegisterForm() {
                   name="firstName"
                   value={formData.firstName}
                   onChange={handleInputChange}
-                  required
                   className={inputCls}
                   placeholder="Enter First Name"
                 />
+                {fieldErrors.firstName && (
+                  <p className="text-[11px] text-red-500 mt-1">{fieldErrors.firstName}</p>
+                )}
               </div>
               <div>
                 <label htmlFor="middleName" className={labelCls}>
@@ -152,10 +184,12 @@ export default function RegisterForm() {
                   name="lastName"
                   value={formData.lastName}
                   onChange={handleInputChange}
-                  required
                   className={inputCls}
                   placeholder="Enter Last Name"
                 />
+                {fieldErrors.lastName && (
+                  <p className="text-[11px] text-red-500 mt-1">{fieldErrors.lastName}</p>
+                )}
               </div>
               <div>
                 <label htmlFor="phone" className={labelCls}>
@@ -167,10 +201,12 @@ export default function RegisterForm() {
                   name="phone"
                   value={formData.phone}
                   onChange={handleInputChange}
-                  required
                   className={inputCls}
                   placeholder="e.g. 09XXXXXXXXX"
                 />
+                {fieldErrors.phone && (
+                  <p className="text-[11px] text-red-500 mt-1">{fieldErrors.phone}</p>
+                )}
               </div>
             </div>
           </div>
@@ -193,10 +229,12 @@ export default function RegisterForm() {
                   name="govUsername"
                   value={formData.govUsername}
                   onChange={handleInputChange}
-                  required
                   className={inputCls}
                   placeholder="Enter Gov Username"
                 />
+                {fieldErrors.govUsername && (
+                  <p className="text-[11px] text-red-500 mt-1">{fieldErrors.govUsername}</p>
+                )}
               </div>
               <div>
                 <label htmlFor="email" className={labelCls}>
@@ -208,10 +246,12 @@ export default function RegisterForm() {
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  required
                   className={inputCls}
                   placeholder="Enter Email"
                 />
+                {fieldErrors.email && (
+                  <p className="text-[11px] text-red-500 mt-1">{fieldErrors.email}</p>
+                )}
               </div>
               <div>
                 <label htmlFor="password" className={labelCls}>
@@ -224,7 +264,6 @@ export default function RegisterForm() {
                     name="password"
                     value={formData.password}
                     onChange={handleInputChange}
-                    required
                     className={inputCls + " pr-10"}
                     placeholder="Enter Password"
                   />
@@ -236,6 +275,9 @@ export default function RegisterForm() {
                     {showPassword ? "Hide" : "Show"}
                   </button>
                 </div>
+                {fieldErrors.password && (
+                  <p className="text-[11px] text-red-500 mt-1">{fieldErrors.password}</p>
+                )}
               </div>
             </div>
           </div>
@@ -257,13 +299,15 @@ export default function RegisterForm() {
                   name="role"
                   value={formData.role}
                   onChange={handleInputChange}
-                  required
                   className={inputCls}
                 >
                   <option value="">Select Role</option>
                   <option value="ENCODER">ENCODER</option>
                   <option value="ADMIN">ADMIN</option>
                 </select>
+                {fieldErrors.role && (
+                  <p className="text-[11px] text-red-500 mt-1">{fieldErrors.role}</p>
+                )}
               </div>
               <div>
                 <label htmlFor="assignedOperationId" className={labelCls}>
@@ -351,9 +395,8 @@ export default function RegisterForm() {
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </form>
-  );
+  )
 }

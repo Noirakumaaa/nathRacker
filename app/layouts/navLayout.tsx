@@ -1,43 +1,43 @@
-import { useState, useEffect, useRef } from "react";
-import { useNavigation } from "react-router";
-import type { ReactNode } from "react";
-import Sidebar from "~/components/sideMenu";
-import TopNavbar from "~/components/navigation";
-import { ErrorBoundary } from "~/components/ErrorBoundary";
+import { useState, useEffect, useRef } from "react"
+import { useNavigation } from "react-router"
+import type { ReactNode } from "react"
+import Sidebar from "~/components/sideMenu"
+import TopNavbar from "~/components/navigation"
+import { ErrorBoundary } from "~/components/ErrorBoundary"
 
 type LayoutWrapperProps = {
-  children: ReactNode;
-};
+  children: ReactNode
+}
 
 function TopProgressBar() {
-  const navigation = useNavigation();
-  const isNavigating = navigation.state === "loading";
-  const [width, setWidth] = useState(0);
-  const [visible, setVisible] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const navigation = useNavigation()
+  const isNavigating = navigation.state === "loading"
+  const [width, setWidth] = useState(0)
+  const [visible, setVisible] = useState(false)
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   useEffect(() => {
     if (isNavigating) {
-      setVisible(true);
-      setWidth(20);
+      setVisible(true)
+      setWidth(20)
       timerRef.current = setInterval(() => {
-        setWidth((w) => (w < 85 ? w + Math.random() * 8 : w));
-      }, 200);
+        setWidth((w) => (w < 85 ? w + Math.random() * 8 : w))
+      }, 200)
     } else {
-      if (timerRef.current) clearInterval(timerRef.current);
-      setWidth(100);
+      if (timerRef.current) clearInterval(timerRef.current)
+      setWidth(100)
       const hide = setTimeout(() => {
-        setVisible(false);
-        setWidth(0);
-      }, 300);
-      return () => clearTimeout(hide);
+        setVisible(false)
+        setWidth(0)
+      }, 300)
+      return () => clearTimeout(hide)
     }
     return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [isNavigating]);
+      if (timerRef.current) clearInterval(timerRef.current)
+    }
+  }, [isNavigating])
 
-  if (!visible) return null;
+  if (!visible) return null
 
   return (
     <div className="fixed top-0 left-0 right-0 z-[9999] h-[2px] bg-(--color-border)">
@@ -46,20 +46,16 @@ function TopProgressBar() {
         style={{ width: `${width}%` }}
       />
     </div>
-  );
+  )
 }
 
 const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState("dashboard");
-
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
+    setIsSidebarOpen(!isSidebarOpen)
+  }
 
-  const updateSidebarOption = (option: string) => {
-    setActiveSection(option);
-  };
+  const updateSidebarOption = (_option: string) => {}
 
   return (
     <div className="h-screen flex flex-col overflow-hidden bg-(--color-bg)">
@@ -82,7 +78,7 @@ const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
         </main>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default LayoutWrapper;
+export default LayoutWrapper

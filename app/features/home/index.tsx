@@ -1,10 +1,15 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react"
 
 const capabilities = [
   {
     icon: (
       <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.75}
+          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+        />
       </svg>
     ),
     iconBg: "bg-blue-50",
@@ -14,7 +19,12 @@ const capabilities = [
   {
     icon: (
       <svg className="w-5 h-5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.75}
+          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+        />
       </svg>
     ),
     iconBg: "bg-rose-50",
@@ -23,8 +33,18 @@ const capabilities = [
   },
   {
     icon: (
-      <svg className="w-5 h-5 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+      <svg
+        className="w-5 h-5 text-violet-600"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.75}
+          d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"
+        />
       </svg>
     ),
     iconBg: "bg-violet-50",
@@ -33,8 +53,18 @@ const capabilities = [
   },
   {
     icon: (
-      <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+      <svg
+        className="w-5 h-5 text-emerald-600"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.75}
+          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+        />
       </svg>
     ),
     iconBg: "bg-emerald-50",
@@ -44,7 +74,12 @@ const capabilities = [
   {
     icon: (
       <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.75}
+          d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
+        />
       </svg>
     ),
     iconBg: "bg-amber-50",
@@ -54,21 +89,26 @@ const capabilities = [
   {
     icon: (
       <svg className="w-5 h-5 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.75}
+          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+        />
       </svg>
     ),
     iconBg: "bg-sky-50",
     title: "Reports & Summaries",
     desc: "Get a clear breakdown of your records by category, status, date, or team member at any time.",
   },
-];
+]
 
 const stats = [
   { num: "6", label: "Record modules" },
   { num: "4", label: "Role levels" },
   { num: "∞", label: "Records tracked" },
   { num: "100%", label: "Audit trail" },
-];
+]
 
 const features = [
   {
@@ -101,38 +141,37 @@ const features = [
     title: "Personalized user profiles",
     desc: "Session control, preferences, and alert settings for every account on the platform.",
   },
-];
+]
 
 export default function IndexPage() {
-  const revealRefs = useRef<HTMLElement[]>([]);
+  const revealRefs = useRef<HTMLElement[]>([])
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
           if (e.isIntersecting) {
-            e.target.classList.add("opacity-100", "translate-y-0");
-            e.target.classList.remove("opacity-0", "translate-y-5");
+            e.target.classList.add("opacity-100", "translate-y-0")
+            e.target.classList.remove("opacity-0", "translate-y-5")
           }
-        });
+        })
       },
-      { threshold: 0.08 },
-    );
-    revealRefs.current.forEach((el) => el && observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
+      { threshold: 0.08 }
+    )
+    revealRefs.current.forEach((el) => el && observer.observe(el))
+    return () => observer.disconnect()
+  }, [])
 
   const addReveal = (el: HTMLElement | null) => {
-    if (el && !revealRefs.current.includes(el)) revealRefs.current.push(el);
-  };
+    if (el && !revealRefs.current.includes(el)) revealRefs.current.push(el)
+  }
 
   return (
     <div className="min-h-screen bg-(--color-bg) text-(--color-ink) font-sans antialiased">
-
       {/* NAV */}
       <nav className="sticky top-0 z-50 bg-(--color-bg)/90 backdrop-blur-md border-b border-(--color-border) h-15 flex items-center justify-between px-6 sm:px-10">
         <a
-          href="#"
+          href="/"
           className="flex items-center gap-2.5 text-[17px] font-semibold tracking-tight no-underline text-(--color-ink)"
         >
           <img src="/nathracker_icon_v9.svg" alt="NathRacker" className="w-10 h-10" />
@@ -164,13 +203,11 @@ export default function IndexPage() {
           Track and manage
           <br />
           your records,{" "}
-          <em className="not-italic font-light text-(--color-muted)">
-            all in one place.
-          </em>
+          <em className="not-italic font-light text-(--color-muted)">all in one place.</em>
         </h1>
         <p className="text-[18px] text-(--color-muted) leading-[1.65] max-w-120 mx-auto mb-10 font-normal">
-          NathRacker gives your team a single platform to log, search, verify,
-          and manage records — organized, auditable, and always up to date.
+          NathRacker gives your team a single platform to log, search, verify, and manage records —
+          organized, auditable, and always up to date.
         </p>
         <div className="flex gap-2.5 justify-center flex-wrap">
           <button
@@ -199,15 +236,15 @@ export default function IndexPage() {
               key={c.title}
               className="bg-(--color-surface) border border-(--color-border) rounded-xl p-6 hover:-translate-y-0.5 hover:shadow-[0_8px_30px_rgba(0,0,0,0.07)] transition-all duration-200"
             >
-              <div className={`w-9 h-9 ${c.iconBg} rounded-xl flex items-center justify-center mb-4`}>
+              <div
+                className={`w-9 h-9 ${c.iconBg} rounded-xl flex items-center justify-center mb-4`}
+              >
                 {c.icon}
               </div>
               <h3 className="text-[15px] font-semibold tracking-tight text-(--color-ink) mb-1.5">
                 {c.title}
               </h3>
-              <p className="text-[13px] text-(--color-muted) leading-relaxed">
-                {c.desc}
-              </p>
+              <p className="text-[13px] text-(--color-muted) leading-relaxed">{c.desc}</p>
             </div>
           ))}
         </div>
@@ -244,9 +281,7 @@ export default function IndexPage() {
             <h2 className="text-[32px] font-semibold tracking-[-0.03em] leading-[1.2] text-(--color-ink) mb-4">
               Import your existing
               <br />
-              <em className="not-italic font-light text-(--color-muted)">
-                records instantly.
-              </em>
+              <em className="not-italic font-light text-(--color-muted)">records instantly.</em>
             </h2>
             <p className="text-[15px] text-(--color-muted) leading-[1.7] mb-6">
               Already have data in a spreadsheet? Upload a{" "}
@@ -257,8 +292,7 @@ export default function IndexPage() {
               <span className="font-mono text-[13px] bg-[#f0f0ec] text-(--color-ink) px-1.5 py-0.5 rounded">
                 .xlsx
               </span>{" "}
-              file and bring your records straight into NathRacker — no
-              manual re-entry needed.
+              file and bring your records straight into NathRacker — no manual re-entry needed.
             </p>
             <div className="flex flex-col gap-3">
               {[
@@ -294,12 +328,8 @@ export default function IndexPage() {
                   />
                 </svg>
               </div>
-              <p className="text-[13px] font-medium text-(--color-ink) mb-1">
-                Drop your file here
-              </p>
-              <p className="text-[12px] text-(--color-muted) mb-3">
-                .csv or .xlsx — max 10MB
-              </p>
+              <p className="text-[13px] font-medium text-(--color-ink) mb-1">Drop your file here</p>
+              <p className="text-[12px] text-(--color-muted) mb-3">.csv or .xlsx — max 10MB</p>
               <button className="px-4 py-2 rounded-lg text-[12px] font-medium bg-(--color-subtle) text-(--color-ink) hover:bg-(--color-border) transition-colors cursor-pointer border border-(--color-border)">
                 Browse file
               </button>
@@ -326,9 +356,7 @@ export default function IndexPage() {
                   key={id}
                   className="grid grid-cols-3 gap-2 px-4 py-2.5 border-b border-(--color-border) last:border-none"
                 >
-                  <span className="text-[12px] font-mono text-(--color-ink)">
-                    {id}
-                  </span>
+                  <span className="text-[12px] font-mono text-(--color-ink)">{id}</span>
                   <span className="text-[12px] text-(--color-ink)">{name}</span>
                   <span
                     className={`text-[11px] font-medium ${status === "Ready" ? "text-emerald-600" : "text-amber-600"}`}
@@ -357,8 +385,8 @@ export default function IndexPage() {
             Everything you need to stay on top of your records.
           </h2>
           <p className="text-[15px] text-(--color-muted) leading-[1.7]">
-            Designed around how teams actually work — fast entry, clear
-            filters, and full visibility for everyone who needs it.
+            Designed around how teams actually work — fast entry, clear filters, and full visibility
+            for everyone who needs it.
           </p>
         </div>
         <div className="flex flex-col">
@@ -374,9 +402,7 @@ export default function IndexPage() {
                 <h4 className="text-[15px] font-semibold text-(--color-ink) mb-1 tracking-tight">
                   {f.title}
                 </h4>
-                <p className="text-[13.5px] text-(--color-muted) leading-relaxed">
-                  {f.desc}
-                </p>
+                <p className="text-[13.5px] text-(--color-muted) leading-relaxed">{f.desc}</p>
               </div>
             </div>
           ))}
@@ -393,14 +419,10 @@ export default function IndexPage() {
       >
         <h2 className="text-[clamp(28px,4vw,42px)] font-semibold tracking-[-0.03em] leading-[1.15] text-(--color-ink) max-w-100">
           Ready to take control of{" "}
-          <em className="not-italic font-light text-(--color-muted)">
-            your records?
-          </em>
+          <em className="not-italic font-light text-(--color-muted)">your records?</em>
         </h2>
         <div className="flex flex-col gap-2.5 items-start shrink-0">
-          <p className="text-[14px] text-(--color-muted)">
-            No setup required.
-          </p>
+          <p className="text-[14px] text-(--color-muted)">No setup required.</p>
           <button
             onClick={() => (window.location.href = "/register")}
             className="px-7 py-3 rounded-lg text-[15px] font-medium bg-(--color-ink) text-(--color-bg) hover:opacity-85 transition-colors cursor-pointer"
@@ -422,7 +444,6 @@ export default function IndexPage() {
           <img src="/nathracker_icon_v9.svg" alt="NathRacker" className="w-7 h-7" />
           <p className="text-[13px] text-(--color-muted)">© 2026 NathRacker</p>
         </div>
-  
       </footer>
 
       <style>{`
@@ -432,5 +453,5 @@ export default function IndexPage() {
         }
       `}</style>
     </div>
-  );
+  )
 }

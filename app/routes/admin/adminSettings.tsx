@@ -1,41 +1,43 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router";
-import AdminSettingsPage from "~/features/admin/settings/AdminSettingsPage";
-import LayoutWrapper from "~/layouts/navLayout";
-import UnauthorizedPage from "~/features/not-authorized/not-authorized";
-import { AuthorizedUser } from "~/types/authorizedUser";
-import { LoadingScreen } from "~/components/LoadingScreen";
-import { useAuth } from "~/components/authGuard";
+import type { MetaFunction } from "react-router"
+import { useEffect } from "react"
+import { useNavigate } from "react-router"
+import AdminSettingsPage from "~/features/admin/settings/AdminSettingsPage"
+import LayoutWrapper from "~/layouts/navLayout"
+import UnauthorizedPage from "~/features/not-authorized/not-authorized"
+import { AUTHORIZED_ROLES } from "~/types/authorizedUser"
+import { LoadingScreen } from "~/components/LoadingScreen"
+import { useAuth } from "~/components/authGuard"
+import { ErrorBoundary } from "~/components/ErrorBoundary"
 
-export function meta() {
-  return [
-    { title: "BUS" },
-    { name: "description", content: "Encoding Bus Forms" },
-  ];
-}
+export const meta: MetaFunction = () => [
+  { title: "Admin Settings | NathRacker" },
+  { name: "description", content: "Manage admin settings and configuration" },
+]
 
-export default function RegisterRoute() {
-  const navigate = useNavigate();
-  const { user, isLoading, isAuthenticated } = useAuth();
+export default function AdminSettingsRoute() {
+  const navigate = useNavigate()
+  const { user, isLoading, isAuthenticated } = useAuth()
 
   useEffect(() => {
-    if (!isAuthenticated && !isLoading) navigate("/login");
-  }, [isAuthenticated, isLoading]);
+    if (!isAuthenticated && !isLoading) navigate("/login", { replace: true })
+  }, [isAuthenticated, isLoading, navigate])
 
-  if (isLoading) return <LoadingScreen />;
-  if (!isAuthenticated) return null;
+  if (isLoading) return <LoadingScreen />
+  if (!isAuthenticated || !user) return null
 
-  if (!AuthorizedUser.includes(user.role)) {
+  if (!AUTHORIZED_ROLES.includes(user.role)) {
     return (
       <LayoutWrapper>
-        <UnauthorizedPage />
+        <UnauthorizedPage statusCode={403} />
       </LayoutWrapper>
-    );
+    )
   }
 
   return (
     <LayoutWrapper>
-      <AdminSettingsPage />
+      <ErrorBoundary>
+        <AdminSettingsPage />
+      </ErrorBoundary>
     </LayoutWrapper>
-  );
+  )
 }

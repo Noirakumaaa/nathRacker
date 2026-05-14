@@ -1,22 +1,26 @@
-import Dashboard from "~/features/encoder/dashboard/dashboard";
-import UnauthorizedPage from "~/features/not-authorized/not-authorized";
-import { AuthorizedUser } from "~/types/authorizedUser";
-import { useAuth } from "~/components/authGuard";
+import type { MetaFunction } from "react-router"
+import Dashboard from "~/features/encoder/dashboard/dashboard"
+import UnauthorizedPage from "~/features/not-authorized/not-authorized"
+import { AUTHORIZED_ROLES } from "~/types/authorizedUser"
+import { useAuth } from "~/components/authGuard"
+import { LoadingScreen } from "~/components/LoadingScreen"
+import { ErrorBoundary } from "~/components/ErrorBoundary"
 
-export function meta() {
-  return [
-    { title: "Dashboard | NathRacker" },
-    { name: "description", content: "Encoder overview and activity summary" },
-  ];
-}
+export const meta: MetaFunction = () => [
+  { title: "Dashboard | NathRacker" },
+  { name: "description", content: "Encoder overview and activity summary" },
+]
 
 export default function DashboardRoute() {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading } = useAuth()
 
-  if (isLoading) return null;
-  if (!user) return <UnauthorizedPage />;
+  if (isLoading) return <LoadingScreen />
+  if (!user) return <UnauthorizedPage statusCode={401} />
+  if (!AUTHORIZED_ROLES.includes(user.role)) return <UnauthorizedPage statusCode={403} />
 
-  if (!AuthorizedUser.includes(user.role)) return <UnauthorizedPage />;
-
-  return <Dashboard userData={user} />;
+  return (
+    <ErrorBoundary>
+      <Dashboard userData={user} />
+    </ErrorBoundary>
+  )
 }

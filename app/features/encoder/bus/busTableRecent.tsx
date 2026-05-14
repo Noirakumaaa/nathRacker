@@ -1,44 +1,47 @@
-import { useState, useEffect } from "react";
-import { ArrowUpRight, Copy, Trash2 } from "lucide-react";
-import { useQueryClient } from "@tanstack/react-query";
-import type { BusRecord } from "~/types/busTypes";
-import RecentTable from "~/components/recentTables";
-import type { ColumnDef } from "~/components/recentTables";
-import { useNavigate } from "react-router";
-import { DeleteModal } from "~/features/records/deleteModal";
-import APIFETCH from "~/lib/axios/axiosConfig";
-import { useToastStore } from "~/lib/zustand/ToastStore";
-import { useSelectedID } from "~/lib/zustand/selectedId";
+import { useState } from "react"
+import { ArrowUpRight, Copy, Trash2 } from "lucide-react"
+import { useQueryClient } from "@tanstack/react-query"
+import type { BusRecord } from "~/types/busTypes"
+import RecentTable from "~/components/recentTables"
+import type { ColumnDef } from "~/components/recentTables"
+import { useNavigate } from "react-router"
+import { DeleteModal } from "~/features/records/deleteModal"
+import APIFETCH from "~/lib/axios/axiosConfig"
+import { useToastStore } from "~/lib/zustand/ToastStore"
+import { useSelectedID } from "~/lib/zustand/selectedId"
 
 export default function BusRecentTable() {
   const selectBusID = useSelectedID((s) => s.setSelectedId)
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const { show } = useToastStore();
-  const [deleteModal, setDeleteModal] = useState<{ open: boolean; id: string | null }>({ open: false, id: null });
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
+  const { show } = useToastStore()
+  const [deleteModal, setDeleteModal] = useState<{ open: boolean; id: string | null }>({
+    open: false,
+    id: null,
+  })
 
-  const handleload = (r : BusRecord) =>{
-    selectBusID('bus', Number(r.id))
+  const handleload = (r: BusRecord) => {
+    selectBusID("bus", Number(r.id))
   }
 
   const handleDelete = async () => {
-    if (!deleteModal.id) return;
+    if (!deleteModal.id) return
     try {
-      const res = await APIFETCH.delete(`/bus/delete/${deleteModal.id}`);
+      const res = await APIFETCH.delete(`/bus/delete/${deleteModal.id}`)
       if (res.data.deleted ?? res.status === 200) {
-        show(res.data.message ?? "Record deleted", "success");
-        queryClient.invalidateQueries({ queryKey: ["recentBus"] });
-        queryClient.invalidateQueries({ queryKey: ["allDocuments"] });
+        show(res.data.message ?? "Record deleted", "success")
+        queryClient.invalidateQueries({ queryKey: ["recentBus"] })
+        queryClient.invalidateQueries({ queryKey: ["allDocuments"] })
         navigate("/bus")
       } else {
-        show(res.data.message ?? "Failed to delete", "error");
+        show(res.data.message ?? "Failed to delete", "error")
       }
     } catch {
-      show("Failed to delete record", "error");
+      show("Failed to delete record", "error")
     } finally {
-      setDeleteModal({ open: false, id: null });
+      setDeleteModal({ open: false, id: null })
     }
-  };
+  }
 
   const columns: ColumnDef<BusRecord>[] = [
     {
@@ -56,11 +59,14 @@ export default function BusRecentTable() {
       headerClassName: "text-center",
       cell: (r) => (
         <div className="flex items-center gap-1.5 group">
-          <span className="font-mono text-[11px] text-(--color-ink) whitespace-nowrap">{r.hhId}</span>
+          <span className="font-mono text-[11px] text-(--color-ink) whitespace-nowrap">
+            {r.hhId}
+          </span>
           <button
             onClick={() => navigator.clipboard.writeText(r.hhId)}
             className="opacity-0 group-hover:opacity-100 transition-opacity text-(--color-placeholder) hover:text-(--color-muted) cursor-pointer bg-transparent border-none"
-            title="Copy HH ID" aria-label="Copy HH ID"
+            title="Copy HH ID"
+            aria-label="Copy HH ID"
           >
             <Copy size={11} aria-hidden="true" />
           </button>
@@ -71,7 +77,9 @@ export default function BusRecentTable() {
       header: "Grantee Name",
       headerClassName: "text-center",
       cell: (r) => (
-        <span className="text-[12px] font-medium text-(--color-ink) whitespace-nowrap">{r.granteeName}</span>
+        <span className="text-[12px] font-medium text-(--color-ink) whitespace-nowrap">
+          {r.granteeName}
+        </span>
       ),
     },
     {
@@ -96,11 +104,15 @@ export default function BusRecentTable() {
       header: "Remarks",
       headerClassName: "text-center",
       cell: (r) => (
-        <span className={`inline-block px-2.5 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap ${
-          r.remarks === "YES" ? "bg-emerald-50 text-emerald-600"
-          : r.remarks === "UPDATED" ? "bg-blue-50 text-blue-600"
-          : "bg-red-50 text-red-500"
-        }`}>
+        <span
+          className={`inline-block px-2.5 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap ${
+            r.remarks === "YES"
+              ? "bg-emerald-50 text-emerald-600"
+              : r.remarks === "UPDATED"
+                ? "bg-blue-50 text-blue-600"
+                : "bg-red-50 text-red-500"
+          }`}
+        >
           {r.remarks || "—"}
         </span>
       ),
@@ -110,7 +122,11 @@ export default function BusRecentTable() {
       headerClassName: "text-center",
       cell: (r) => (
         <span className="text-[11px] text-(--color-muted) whitespace-nowrap tabular-nums">
-          {new Date(r.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+          {new Date(r.date).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          })}
         </span>
       ),
     },
@@ -135,7 +151,7 @@ export default function BusRecentTable() {
         </div>
       ),
     },
-  ];
+  ]
 
   return (
     <>
@@ -153,7 +169,9 @@ export default function BusRecentTable() {
         }
         headerLeft={(records) => (
           <div className="flex items-center gap-3">
-            <p className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">Recent Updates</p>
+            <p className="text-[11px] font-semibold text-(--color-ink) uppercase tracking-wider">
+              Recent Updates
+            </p>
             {records.length > 0 && (
               <span className="text-[10px] font-mono bg-violet-50 text-violet-500 px-2 py-0.5 rounded-full">
                 {records.length} record{records.length !== 1 ? "s" : ""}
@@ -170,5 +188,5 @@ export default function BusRecentTable() {
         )}
       />
     </>
-  );
+  )
 }

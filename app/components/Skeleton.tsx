@@ -1,15 +1,50 @@
 // ── Base pulse block ──────────────────────────────────────────────────────────
 
+export default function Skeleton({ className = "" }: { className?: string }) {
+  return <div className={`animate-pulse bg-gray-200 rounded ${className}`} />
+}
+
 function Pulse({ className = "" }: { className?: string }) {
+  return <div className={`animate-pulse bg-gray-200 rounded ${className}`} />
+}
+
+// ── Full-page skeleton (used as Suspense fallback during route chunk loading) ──
+
+export function PageSkeleton() {
   return (
-    <div className={`animate-pulse bg-gray-200 rounded ${className}`} />
-  );
+    <div className="flex h-screen bg-(--color-bg)">
+      <div className="w-56 border-r border-(--color-border) p-4 space-y-3 shrink-0">
+        <Pulse className="h-6 w-32 mb-6 bg-(--color-subtle)" />
+        {Array.from({ length: 6 }).map((_, i) => (
+          <Pulse key={i} className="h-8 w-full rounded-lg bg-(--color-subtle)" />
+        ))}
+      </div>
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="h-14 border-b border-(--color-border) px-6 flex items-center gap-4">
+          <Pulse className="h-4 w-40 bg-(--color-subtle)" />
+          <div className="ml-auto flex gap-3">
+            <Pulse className="h-8 w-24 rounded-lg bg-(--color-subtle)" />
+            <Pulse className="h-8 w-8 rounded-full bg-(--color-subtle)" />
+          </div>
+        </div>
+        <div className="flex-1 p-6 space-y-3 overflow-auto">
+          <div className="flex items-center justify-between mb-4">
+            <Pulse className="h-5 w-48 bg-(--color-subtle)" />
+            <Pulse className="h-8 w-28 rounded-lg bg-(--color-subtle)" />
+          </div>
+          {Array.from({ length: 8 }).map((_, i) => (
+            <Pulse key={i} className="h-10 w-full rounded-lg bg-(--color-subtle)" />
+          ))}
+        </div>
+      </div>
+    </div>
+  )
 }
 
 // ── Table row skeleton (for records / my-records tables) ──────────────────────
 
 export function TableRowSkeleton({ cols = 9 }: { cols?: number }) {
-  const widths = ["w-24", "w-32", "w-16", "w-28", "w-16", "w-20", "w-20", "w-20", "w-24"];
+  const widths = ["w-24", "w-32", "w-16", "w-28", "w-16", "w-20", "w-20", "w-20", "w-24"]
   return (
     <tr className="border-b border-gray-100">
       {Array.from({ length: cols }).map((_, i) => (
@@ -18,7 +53,7 @@ export function TableRowSkeleton({ cols = 9 }: { cols?: number }) {
         </td>
       ))}
     </tr>
-  );
+  )
 }
 
 export function TableSkeleton({ rows = 8, cols = 9 }: { rows?: number; cols?: number }) {
@@ -28,7 +63,7 @@ export function TableSkeleton({ rows = 8, cols = 9 }: { rows?: number; cols?: nu
         <TableRowSkeleton key={i} cols={cols} />
       ))}
     </>
-  );
+  )
 }
 
 // ── Stat card skeleton (for verification / dashboard stat cards) ──────────────
@@ -40,7 +75,7 @@ export function StatCardSkeleton() {
       <Pulse className="h-8 w-14" />
       <Pulse className="h-3 w-28" />
     </div>
-  );
+  )
 }
 
 // ── BDM list row skeleton (for verification list) ─────────────────────────────
@@ -62,7 +97,7 @@ export function BdmRowSkeleton() {
       </div>
       <Pulse className="w-4 h-4 rounded" />
     </div>
-  );
+  )
 }
 
 export function BdmListSkeleton({ rows = 6 }: { rows?: number }) {
@@ -72,7 +107,7 @@ export function BdmListSkeleton({ rows = 6 }: { rows?: number }) {
         <BdmRowSkeleton key={i} />
       ))}
     </div>
-  );
+  )
 }
 
 // ── Record card skeleton (for verification detail) ────────────────────────────
@@ -100,7 +135,7 @@ export function RecordCardSkeleton() {
         <Pulse className="h-11 rounded-xl" />
       </div>
     </div>
-  );
+  )
 }
 
 // ── Metric card skeleton (for dashboard/office metric cards) ─────────────────
@@ -115,7 +150,7 @@ export function MetricCardSkeleton() {
         <Pulse className="h-3 w-20" />
       </div>
     </div>
-  );
+  )
 }
 
 // ── Employee row skeleton (for employees list) ────────────────────────────────
@@ -132,7 +167,7 @@ export function EmployeeRowSkeleton() {
       </div>
       <Pulse className="h-5 w-20 rounded-full" />
     </div>
-  );
+  )
 }
 
 // ── List item skeleton (for admin tabs: LGU / Barangay / Office lists) ───────
@@ -146,7 +181,7 @@ export function ListItemSkeleton() {
       </div>
       <Pulse className="h-6 w-6 rounded-md shrink-0" />
     </div>
-  );
+  )
 }
 
 // ── Staff card skeleton (for staff grid in StaffPage) ────────────────────────
@@ -170,7 +205,7 @@ export function StaffCardSkeleton() {
         <Pulse className="h-3.5 w-24" />
       </div>
     </div>
-  );
+  )
 }
 
 // ── Progress card skeleton ────────────────────────────────────────────────────
@@ -192,5 +227,5 @@ export function ProgressCardSkeleton() {
         ))}
       </div>
     </div>
-  );
+  )
 }

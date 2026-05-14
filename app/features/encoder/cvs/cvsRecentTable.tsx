@@ -1,45 +1,45 @@
-import { useState } from "react";
-import { ArrowUpRight, Copy, Trash2 } from "lucide-react";
-import { useQueryClient } from "@tanstack/react-query";
-import RecentTable from "~/components/recentTables";
-import type { ColumnDef } from "~/components/recentTables";
-import type { CvsRecord } from "~/types/cvsTypes";
-import { FormTypeChip, RemarksBadge } from "~/types/BadgeStyle";
-import { useNavigate } from "react-router";
-import { DeleteModal } from "~/features/records/deleteModal";
-import APIFETCH from "~/lib/axios/axiosConfig";
-import { useToastStore } from "~/lib/zustand/ToastStore";
-import { useSelectedID } from "~/lib/zustand/selectedId";
+import { useState } from "react"
+import { ArrowUpRight, Copy, Trash2 } from "lucide-react"
+import { useQueryClient } from "@tanstack/react-query"
+import RecentTable from "~/components/recentTables"
+import type { ColumnDef } from "~/components/recentTables"
+import type { CvsRecord } from "~/types/cvsTypes"
+import { FormTypeChip, RemarksBadge } from "~/types/BadgeStyle"
+import { DeleteModal } from "~/features/records/deleteModal"
+import APIFETCH from "~/lib/axios/axiosConfig"
+import { useToastStore } from "~/lib/zustand/ToastStore"
+import { useSelectedID } from "~/lib/zustand/selectedId"
 
 export default function CvsRecentTable() {
+  const setID = useSelectedID((state) => state.setSelectedId)
+  const queryClient = useQueryClient()
+  const { show } = useToastStore()
+  const [deleteModal, setDeleteModal] = useState<{ open: boolean; id: number | null }>({
+    open: false,
+    id: null,
+  })
 
-  const setID = useSelectedID((state)=>state.setSelectedId)
-  const queryClient = useQueryClient();
-  const { show } = useToastStore();
-  const [deleteModal, setDeleteModal] = useState<{ open: boolean; id: Number | null }>({ open: false, id: null });
-
-  const handleLoad = (r : CvsRecord) => {
+  const handleLoad = (r: CvsRecord) => {
     setID("cvs", r.id)
   }
 
-
   const handleDelete = async () => {
-    if (!deleteModal.id) return;
+    if (!deleteModal.id) return
     try {
-      const res = await APIFETCH.delete(`/cvs/delete/${deleteModal.id}`);
+      const res = await APIFETCH.delete(`/cvs/delete/${deleteModal.id}`)
       if (res.data.deleted ?? res.status === 200) {
-        show(res.data.message ?? "Record deleted", "success");
-        queryClient.invalidateQueries({ queryKey: ["recentCvs"] });
-        queryClient.invalidateQueries({ queryKey: ["allDocuments"] });
+        show(res.data.message ?? "Record deleted", "success")
+        queryClient.invalidateQueries({ queryKey: ["recentCvs"] })
+        queryClient.invalidateQueries({ queryKey: ["allDocuments"] })
       } else {
-        show(res.data.message ?? "Failed to delete", "error");
+        show(res.data.message ?? "Failed to delete", "error")
       }
     } catch {
-      show("Failed to delete record", "error");
+      show("Failed to delete record", "error")
     } finally {
-      setDeleteModal({ open: false, id: null });
+      setDeleteModal({ open: false, id: null })
     }
-  };
+  }
 
   const buildColumns: ColumnDef<CvsRecord>[] = [
     {
@@ -54,7 +54,8 @@ export default function CvsRecentTable() {
           <button
             onClick={() => navigator.clipboard.writeText(r.idNumber)}
             className="opacity-0 group-hover:opacity-100 transition-opacity text-(--color-placeholder) hover:text-(--color-muted) cursor-pointer bg-transparent border-none p-0"
-            title="Copy ID Number" aria-label="Copy ID number"
+            title="Copy ID Number"
+            aria-label="Copy ID number"
           >
             <Copy size={10} aria-hidden="true" />
           </button>
@@ -133,7 +134,7 @@ export default function CvsRecentTable() {
         </div>
       ),
     },
-  ];
+  ]
 
   return (
     <>
@@ -161,7 +162,11 @@ export default function CvsRecentTable() {
             )}
             {records.length > 0 && (
               <span className="text-[11px] text-(--color-placeholder) font-mono">
-                {new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                {new Date().toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                })}
               </span>
             )}
           </div>
@@ -175,5 +180,5 @@ export default function CvsRecentTable() {
         )}
       />
     </>
-  );
+  )
 }

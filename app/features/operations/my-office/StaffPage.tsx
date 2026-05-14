@@ -1,39 +1,31 @@
-import { useQuery } from "@tanstack/react-query";
-import { useState, useMemo } from "react";
-import { useNavigate } from "react-router";
-import {
-  Users,
-  ArrowUpRight,
-  AlertCircle,
-  MapPin,
-  Landmark,
-  Search,
-  X,
-} from "lucide-react";
-import APIFETCH from "~/lib/axios/axiosConfig";
-import type { Lgu, Barangay, Employee, OperationsOffice } from "~/features/admin/settings/types";
-import type { me } from "~/types/authTypes";
-import { StaffCardSkeleton } from "~/components/Skeleton";
+import { useQuery } from "@tanstack/react-query"
+import { useState, useMemo } from "react"
+import { useNavigate } from "react-router"
+import { Users, ArrowUpRight, AlertCircle, MapPin, Landmark, Search, X } from "lucide-react"
+import APIFETCH from "~/lib/axios/axiosConfig"
+import type { Lgu, Barangay, Employee, OperationsOffice } from "~/features/admin/settings/types"
+import type { me } from "~/types/authTypes"
+import { StaffCardSkeleton } from "~/components/Skeleton"
 
 type AreaData = {
-  operations: OperationsOffice[];
-  lgu: Lgu[];
-  barangay: Barangay[];
-};
+  operations: OperationsOffice[]
+  lgu: Lgu[]
+  barangay: Barangay[]
+}
 
 const ROLE_LABEL: Record<string, string> = {
   ENCODER: "Encoder",
   ADMIN: "Admin",
   AREA_COORDINATOR: "Area Coordinator",
   SOCIAL_WORKER_III: "Social Worker III",
-};
+}
 
 const ROLE_COLOR: Record<string, string> = {
   ENCODER: "bg-indigo-50 text-indigo-600",
   ADMIN: "bg-purple-50 text-purple-600",
   AREA_COORDINATOR: "bg-emerald-50 text-emerald-600",
   SOCIAL_WORKER_III: "bg-sky-50 text-sky-600",
-};
+}
 
 // ── Staff card ────────────────────────────────────────────────────────────────
 function StaffCard({
@@ -42,14 +34,12 @@ function StaffCard({
   barangay,
   onClick,
 }: {
-  emp: Employee;
-  lgu: Lgu | undefined;
-  barangay: Barangay | undefined;
-  onClick: () => void;
+  emp: Employee
+  lgu: Lgu | undefined
+  barangay: Barangay | undefined
+  onClick: () => void
 }) {
-  const fullName = emp.userInfo
-    ? `${emp.userInfo.firstName} ${emp.userInfo.lastName}`.trim()
-    : "";
+  const fullName = emp.userInfo ? `${emp.userInfo.firstName} ${emp.userInfo.lastName}`.trim() : ""
 
   return (
     <button
@@ -120,64 +110,68 @@ function StaffCard({
         <p className="mt-2 text-[10px] text-[#b8b8b0] font-mono">{emp.userInfo.phone}</p>
       )}
     </button>
-  );
+  )
 }
 
 // ── Main page ─────────────────────────────────────────────────────────────────
 export default function StaffPage({ userData }: { userData: me }) {
-  const navigate = useNavigate();
-  const [search, setSearch] = useState("");
+  const navigate = useNavigate()
+  const [search, setSearch] = useState("")
 
   const { data: areaData, isLoading: areaLoading } = useQuery<AreaData>({
     queryKey: ["assignedArea"],
     queryFn: async () => {
-      const res = await APIFETCH.get("/admin/get/assignedArea");
-      return res.data;
+      const res = await APIFETCH.get("/admin/get/assignedArea")
+      return res.data
     },
-  });
+  })
 
   const { data: employees = [], isLoading: empLoading } = useQuery<Employee[]>({
     queryKey: ["employees"],
     queryFn: async () => {
-      const res = await APIFETCH.get("/admin/employees");
-      return res.data;
+      const res = await APIFETCH.get("/admin/employees")
+      return res.data
     },
-  });
+  })
 
-  const isLoading = areaLoading || empLoading;
+  const isLoading = areaLoading || empLoading
 
-  const selfRecord = employees.find((e) => e.govUsername === userData.govUsername);
-  const myOfficeId = selfRecord?.userInfo?.assignedOperationId ?? null;
+  const selfRecord = employees.find((e) => e.govUsername === userData.govUsername)
+  const myOfficeId = selfRecord?.userInfo?.assignedOperationId ?? null
 
-  const offices = areaData?.operations ?? [];
-  const allLgus = areaData?.lgu ?? [];
-  const allBarangays = areaData?.barangay ?? [];
+  const offices = areaData?.operations ?? []
+  const allLgus = areaData?.lgu ?? []
+  const allBarangays = areaData?.barangay ?? []
 
-  const myOffice = offices.find((o) => o.id === myOfficeId);
-  const myStaff = myOfficeId !== null
-    ? employees.filter((e) => e.userInfo?.assignedOperationId === myOfficeId)
-    : [];
+  const myOffice = offices.find((o) => o.id === myOfficeId)
+  const myStaff = useMemo(
+    () =>
+      myOfficeId !== null
+        ? employees.filter((e) => e.userInfo?.assignedOperationId === myOfficeId)
+        : [],
+    [employees, myOfficeId]
+  )
 
   const filteredStaff = useMemo(() => {
-    const q = search.toLowerCase().trim();
-    if (!q) return myStaff;
+    const q = search.toLowerCase().trim()
+    if (!q) return myStaff
     return myStaff.filter((e) => {
       const fullName = e.userInfo
         ? `${e.userInfo.firstName} ${e.userInfo.lastName}`.toLowerCase()
-        : "";
+        : ""
       return (
         e.govUsername.toLowerCase().includes(q) ||
         fullName.includes(q) ||
         (ROLE_LABEL[e.role] ?? e.role).toLowerCase().includes(q)
-      );
-    });
-  }, [myStaff, search]);
+      )
+    })
+  }, [myStaff, search])
 
   const getLgu = (lguId: number | null | undefined) =>
-    lguId != null ? allLgus.find((l) => l.id === lguId) : undefined;
+    lguId != null ? allLgus.find((l) => l.id === lguId) : undefined
 
   const getBarangay = (barangayId: number | null | undefined) =>
-    barangayId != null ? allBarangays.find((b) => b.id === barangayId) : undefined;
+    barangayId != null ? allBarangays.find((b) => b.id === barangayId) : undefined
 
   if (isLoading) {
     return (
@@ -199,7 +193,7 @@ export default function StaffPage({ userData }: { userData: me }) {
           </div>
         </div>
       </main>
-    );
+    )
   }
 
   if (myOfficeId === null) {
@@ -215,13 +209,12 @@ export default function StaffPage({ userData }: { userData: me }) {
           </p>
         </div>
       </main>
-    );
+    )
   }
 
   return (
     <main className="p-6 bg-(--color-bg) min-h-screen font-sans antialiased">
       <div className="max-w-full mx-auto flex flex-col gap-5">
-
         {/* ── Header ───────────────────────────────────────────────────────── */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
@@ -236,12 +229,8 @@ export default function StaffPage({ userData }: { userData: me }) {
               <span className="text-(--color-placeholder) text-[11px]">/</span>
               <span className="text-[11px] text-(--color-ink) font-medium">Staff</span>
             </div>
-            <h1 className="text-[22px] font-semibold text-(--color-ink) tracking-tight">
-              Staff
-            </h1>
-            {myOffice && (
-              <p className="text-[12px] text-(--color-muted) mt-0.5">{myOffice.name}</p>
-            )}
+            <h1 className="text-[22px] font-semibold text-(--color-ink) tracking-tight">Staff</h1>
+            {myOffice && <p className="text-[12px] text-(--color-muted) mt-0.5">{myOffice.name}</p>}
           </div>
           <div className="flex items-center gap-2 bg-(--color-surface) border border-(--color-border) rounded-xl px-4 py-2.5">
             <Users size={14} className="text-(--color-muted)" />
@@ -252,7 +241,10 @@ export default function StaffPage({ userData }: { userData: me }) {
 
         {/* ── Search bar ───────────────────────────────────────────────────── */}
         <div className="relative">
-          <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#b8b8b0] pointer-events-none" />
+          <Search
+            size={14}
+            className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#b8b8b0] pointer-events-none"
+          />
           <input
             type="text"
             value={search}
@@ -293,7 +285,8 @@ export default function StaffPage({ userData }: { userData: me }) {
           <>
             {search && (
               <p className="text-[12px] text-(--color-muted)">
-                {filteredStaff.length} result{filteredStaff.length !== 1 ? "s" : ""} for &ldquo;{search}&rdquo;
+                {filteredStaff.length} result{filteredStaff.length !== 1 ? "s" : ""} for &ldquo;
+                {search}&rdquo;
               </p>
             )}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
@@ -309,8 +302,7 @@ export default function StaffPage({ userData }: { userData: me }) {
             </div>
           </>
         )}
-
       </div>
     </main>
-  );
+  )
 }
