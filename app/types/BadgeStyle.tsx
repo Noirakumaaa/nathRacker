@@ -7,7 +7,7 @@ export function RemarksBadge({ value }: { value: string }) {
     RETURNED:     "bg-red-50 text-red-500 ring-1 ring-red-100",
   };
   return (
-    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase tracking-wide whitespace-nowrap ${map[value] ?? "bg-[#f5f5f2] text-[#8a8a80]"}`}>
+    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase tracking-wide whitespace-nowrap ${map[value] ?? "bg-(--color-subtle) text-(--color-muted)"}`}>
       <span className="w-1 h-1 rounded-full bg-current opacity-70" />
       {value || "—"}
     </span>

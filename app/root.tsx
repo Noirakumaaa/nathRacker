@@ -1,6 +1,7 @@
 // src/root.tsx
-import { useToastStore } from "lib/zustand/ToastStore";
-import { Toast, toastConfig } from "component/toastConfig";
+import { Suspense, useState } from "react"
+import { useToastStore } from "~/lib/zustand/ToastStore"
+import { Toast, toastConfig } from "~/components/toastConfig"
 import {
   isRouteErrorResponse,
   Links,
@@ -8,37 +9,64 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-} from "react-router";
-import type { Route } from "./+types/root";
-import "./app.css";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+  useRouteLoaderData,
+} from "react-router"
+import type { Route } from "./+types/root"
+import "./app.css"
+import { QueryClientProvider } from "@tanstack/react-query"
+import type { me } from "~/types/authTypes"
+import { PageSkeleton } from "~/components/Skeleton"
+import "~/lib/env"
+import { getQueryClient } from "~/lib/queryClient"
 
-export const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 0,
-      refetchOnMount: true,
-      refetchOnWindowFocus: true,
-      refetchOnReconnect: true,
-    },
-  },
-});
+const ROOT_AUTH_TIMEOUT_MS = 2000
+
+export async function loader({ request }: Route.LoaderArgs) {
+  const cookie = request.headers.get("Cookie") ?? ""
+  const match = cookie.match(/(?:^|;\s*)resolved-theme=([^;]*)/)
+  const theme = match?.[1] === "dark" ? "dark" : "light"
+  const hasAccessTokenCookie = /(?:^|;\s*)accessToken=/.test(cookie)
+
+  let user: me | null = null
+  if (hasAccessTokenCookie) {
+    try {
+      // VITE_API_URL already includes /api (e.g. https://nathrackerapi.nathdomain.com/api)
+      const apiBase = import.meta.env.VITE_API_URL ?? "http://localhost:3001/api"
+      const res = await fetch(`${apiBase}/auth/check-auth`, {
+        headers: { cookie },
+        signal: AbortSignal.timeout(ROOT_AUTH_TIMEOUT_MS),
+      })
+      if (res.ok) user = await res.json()
+    } catch {
+      // API unreachable or timed out — the client auth hook will recover
+    }
+  }
+
+  return { theme, user, hasAccessTokenCookie }
+}
+
+// Only run the root loader on the initial SSR page load, not on client-side navigations.
+// Without this, every navigate() call re-triggers the loader and blocks on the auth API call.
+export function shouldRevalidate() {
+  return false
+}
 
 export const links: Route.LinksFunction = () => [
+  { rel: "icon", href: "/nathracker_icon_v9.svg", type: "image/svg+xml" },
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
   {
     rel: "stylesheet",
     href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
   },
-];
+]
 
 // root.tsx
 
 export function Layout({ children }: { children: React.ReactNode }) {
-  // ❌ removed useToastStore from here — causes SSR hydration mismatch
+  const data = useRouteLoaderData<typeof loader>("root")
   return (
-    <html lang="en">
+    <html lang="en" data-theme={data?.theme ?? "light"}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -51,40 +79,70 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Scripts />
       </body>
     </html>
-  );
+  )
 }
 
 export default function Root() {
-  const { open, statusMessage, toastStatus } = useToastStore(); // ✅ client only
-  
+  const [queryClient] = useState(() => getQueryClient())
+
+  const { open, statusMessage, toastStatus } = useToastStore()
+  // const { theme, setTheme } = useThemeStore();
+
+  // useEffect(() => {
+  //   APIFETCH.get("/settings/UserInfo")
+  //     .then((res) => {
+  //       const t = res.data?.theme;
+  //       if (t === "LIGHT") setTheme("light");
+  //       else if (t === "DARK") setTheme("dark");
+  //     })
+  //     .catch(() => {
+  //       // Not authenticated — use system preference
+  //       setTheme("system");
+  //     });
+  // }, []);
+
+  // useEffect(() => {
+  //   const mq = window.matchMedia("(prefers-color-scheme: dark)");
+
+  //   const apply = () => {
+  //     const resolved = theme === "system" ? (mq.matches ? "dark" : "light") : theme;
+  //     document.documentElement.setAttribute("data-theme", resolved);
+  //     document.cookie = `resolved-theme=${resolved}; path=/; max-age=31536000; SameSite=Lax`;
+  //   };
+
+  //   apply();
+
+  //   // Keep in sync if system preference changes while on a public page
+  //   if (theme === "system") {
+  //     mq.addEventListener("change", apply);
+  //     return () => mq.removeEventListener("change", apply);
+  //   }
+  // }, [theme]);
+
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <Suspense fallback={<PageSkeleton />}>
+        <Outlet />
+      </Suspense>
       {open && ( // ✅ renders after hydration, no mismatch
-        <Toast
-          statusMessage={statusMessage}
-          toastStatus={toastStatus}
-          toastConfig={toastConfig}
-        />
+        <Toast statusMessage={statusMessage} toastStatus={toastStatus} toastConfig={toastConfig} />
       )}
     </QueryClientProvider>
-  );
+  )
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  let message = "Oops!";
-  let details = "An unexpected error occurred.";
-  let stack: string | undefined;
+  let message = "Oops!"
+  let details = "An unexpected error occurred."
+  let stack: string | undefined
 
   if (isRouteErrorResponse(error)) {
-    message = error.status === 404 ? "404" : "Error";
+    message = error.status === 404 ? "404" : "Error"
     details =
-      error.status === 404
-        ? "The requested page could not be found."
-        : error.statusText || details;
+      error.status === 404 ? "The requested page could not be found." : error.statusText || details
   } else if (import.meta.env.DEV && error instanceof Error) {
-    details = error.message;
-    stack = error.stack;
+    details = error.message
+    stack = error.stack
   }
 
   return (
@@ -97,5 +155,5 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
         </pre>
       )}
     </main>
-  );
+  )
 }

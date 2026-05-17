@@ -1,5 +1,5 @@
 
-import UnauthorizedPage from "~/notAuthorized/notAuthorized";
+import UnauthorizedPage from "~/features/not-authorized/not-authorized";
 
 export function meta() {
   return [

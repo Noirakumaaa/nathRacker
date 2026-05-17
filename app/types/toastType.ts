@@ -1,4 +1,4 @@
-import { toastConfig } from "component/toastConfig";
+import { toastConfig } from "~/components/toastConfig";
 
 export type ToastStatus = "success" | "error" | "loading";
 

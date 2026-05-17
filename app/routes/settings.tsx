@@ -1,19 +1,26 @@
-import SettingsPage from "../settings/settings";
-import UnauthorizedPage from "~/notAuthorized/notAuthorized";
-import { AuthorizedUser } from "~/types/authorizedUser";
-import { useAuth } from "component/authGuard";
+import type { MetaFunction } from "react-router"
+import SettingsPage from "~/features/settings/settings"
+import UnauthorizedPage from "~/features/not-authorized/not-authorized"
+import { AUTHORIZED_ROLES } from "~/types/authorizedUser"
+import { useAuth } from "~/components/authGuard"
+import { LoadingScreen } from "~/components/LoadingScreen"
+import { ErrorBoundary } from "~/components/ErrorBoundary"
 
-export function meta() {
-  return [
-    { title: "Settings" },
-    { name: "description", content: "User settings page" },
-  ];
-}
+export const meta: MetaFunction = () => [
+  { title: "Settings | NathRacker" },
+  { name: "description", content: "Manage your account and preferences" },
+]
 
 export default function SettingsRoute() {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth()
 
-  if (!AuthorizedUser.includes(user.role)) return <UnauthorizedPage />;
+  if (isLoading) return <LoadingScreen />
+  if (!user) return <UnauthorizedPage statusCode={401} />
+  if (!AUTHORIZED_ROLES.includes(user.role)) return <UnauthorizedPage statusCode={403} />
 
-  return <SettingsPage />;
+  return (
+    <ErrorBoundary>
+      <SettingsPage />
+    </ErrorBoundary>
+  )
 }

@@ -1,18 +1,22 @@
-import OperationsDashboard from "~/operations/dashboard/OperationsDashboard";
-import UnauthorizedPage from "~/notAuthorized/notAuthorized";
-import { useAuth } from "component/authGuard";
+import OperationsDashboard from "~/features/operations/dashboard/OperationsDashboard"
+import UnauthorizedPage from "~/features/not-authorized/not-authorized"
+import { useAuth } from "~/components/authGuard"
+import { LoadingScreen } from "~/components/LoadingScreen"
 
 export function meta() {
   return [
     { title: "Operations Dashboard" },
     { name: "description", content: "Operations head overview dashboard" },
-  ];
+  ]
 }
 
 export default function OperationsDashboardRoute() {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth()
 
-  if (user.role !== "ADMIN") return <UnauthorizedPage />;
+  if (isLoading) return <LoadingScreen />
+  if (!user) return <UnauthorizedPage />
 
-  return <OperationsDashboard userData={user} />;
+  if (user.role !== "ADMIN") return <UnauthorizedPage />
+
+  return <OperationsDashboard userData={user} />
 }

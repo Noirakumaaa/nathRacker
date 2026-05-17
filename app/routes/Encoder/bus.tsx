@@ -1,19 +1,26 @@
-import BusMain from "~/bus/busMain";
-import UnauthorizedPage from "~/notAuthorized/notAuthorized";
-import { AuthorizedUser } from "~/types/authorizedUser";
-import { useAuth } from "component/authGuard";
+import type { MetaFunction } from "react-router"
+import BusMain from "~/features/encoder/bus/busMain"
+import UnauthorizedPage from "~/features/not-authorized/not-authorized"
+import { AUTHORIZED_ROLES } from "~/types/authorizedUser"
+import { useAuth } from "~/components/authGuard"
+import { LoadingScreen } from "~/components/LoadingScreen"
+import { ErrorBoundary } from "~/components/ErrorBoundary"
 
-export function meta() {
-  return [
-    { title: "BUS" },
-    { name: "description", content: "Encoding Bus Forms" },
-  ];
-}
+export const meta: MetaFunction = () => [
+  { title: "BUS Encoder | NathRacker" },
+  { name: "description", content: "Encode BUS household update forms" },
+]
 
 export default function BusRoute() {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth()
 
-  if (!AuthorizedUser.includes(user.role)) return <UnauthorizedPage />;
+  if (isLoading) return <LoadingScreen />
+  if (!user) return <UnauthorizedPage statusCode={401} />
+  if (!AUTHORIZED_ROLES.includes(user.role)) return <UnauthorizedPage statusCode={403} />
 
-  return <BusMain />;
+  return (
+    <ErrorBoundary>
+      <BusMain />
+    </ErrorBoundary>
+  )
 }
