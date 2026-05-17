@@ -4,7 +4,10 @@
   "type": "module",
   "scripts": {
     "build": "react-router build",
+    "build:staging": "react-router build --mode staging",
+    "build:production": "react-router build --mode production",
     "dev": "react-router dev",
+    "dev:staging": "react-router dev --mode staging",
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc"
   },
