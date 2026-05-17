@@ -1,5 +1,5 @@
-import { useState } from "react"
-import { useNavigate } from "react-router"
+import { useEffect, useState } from "react"
+import { useNavigate, useSearchParams } from "react-router"
 import { useQuery } from "@tanstack/react-query"
 import { Plus, Download, Upload, FileText, Loader2, ChevronLeft, ChevronRight } from "lucide-react"
 import APIFETCH from "~/lib/axios/axiosConfig"
@@ -30,15 +30,48 @@ export default function AaModuleTable({ moduleCode }: Props) {
   const [showModal, setShowModal] = useState(false)
   const [showImport, setShowImport] = useState(false)
   const [isExporting, setIsExporting] = useState(false)
+  const [searchParams, setSearchParams] = useSearchParams()
   const currentYear = new Date().getFullYear()
-  const [selectedYear, setSelectedYear] = useState<number>(currentYear)
-  const YEAR_OPTIONS = [currentYear - 2, currentYear - 1, currentYear, currentYear + 1]
+  const YEAR_OPTIONS = [
+    currentYear - 5,
+    currentYear - 4,
+    currentYear - 3,
+    currentYear - 2,
+    currentYear - 1,
+    currentYear,
+  ]
+  const defaultYear = currentYear
+  const parsedYear = Number(searchParams.get("year"))
+  const initialYear = Number.isInteger(parsedYear) && parsedYear > 0 ? parsedYear : defaultYear
+  const [yearInput, setYearInput] = useState<number>(initialYear)
 
   const [queryParams, setQueryParams] = useState<DocumentQueryParams>({
     page: 1,
     pageSize: 25,
-    year: currentYear,
+    year: initialYear,
   })
+
+  useEffect(() => {
+    const yearParam = Number(searchParams.get("year"))
+    if (Number.isInteger(yearParam) && yearParam > 0 && yearParam !== yearInput) {
+      setYearInput(yearParam)
+      setQueryParams((prev) => ({ ...prev, year: yearParam, page: 1 }))
+    }
+  }, [searchParams, yearInput])
+
+  const applyYear = (year: number) => {
+    if (!Number.isInteger(year) || year < 2000 || year > 2100) return
+    setYearInput(year)
+    setQueryParams((prev) => ({ ...prev, year, page: 1 }))
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev)
+        next.set("year", String(year))
+        return next
+      },
+      { replace: true }
+    )
+  }
 
   const { data, isLoading, isError } = useQuery<AaDocumentListResponse>({
     queryKey: ["aa-documents", moduleCode, queryParams],
@@ -61,11 +94,6 @@ export default function AaModuleTable({ moduleCode }: Props) {
 
   const handleSearchChange = (params: Partial<DocumentQueryParams>) => {
     setQueryParams((prev) => ({ ...prev, ...params, page: 1 }))
-  }
-
-  const handleYearChange = (year: number) => {
-    setSelectedYear(year)
-    setQueryParams((prev) => ({ ...prev, year, page: 1 }))
   }
 
   const handleExport = async () => {
@@ -109,20 +137,24 @@ export default function AaModuleTable({ moduleCode }: Props) {
 
         <div className="flex items-center gap-3 flex-wrap">
           {/* Year selector */}
-          <div className="flex items-center gap-1 rounded-lg border border-(--color-border) bg-(--color-surface) p-1">
-            {YEAR_OPTIONS.map((yr) => (
-              <button
-                key={yr}
-                onClick={() => handleYearChange(yr)}
-                className={`px-3 py-1 text-[12px] font-medium rounded-md transition-colors ${
-                  selectedYear === yr
-                    ? "bg-(--color-ink) text-(--color-bg)"
-                    : "text-(--color-muted) hover:text-(--color-ink)"
-                }`}
-              >
-                {yr}
-              </button>
-            ))}
+          <div className="flex items-center gap-3 rounded-lg border border-(--color-border) bg-(--color-surface) p-2">
+            <span className="text-[12px] font-medium text-(--color-muted)">Year</span>
+            <div className="flex items-center gap-2 rounded-lg border border-(--color-border) bg-(--color-bg) p-1 overflow-x-auto max-w-xs sm:max-w-none">
+              {YEAR_OPTIONS.map((yr) => (
+                <button
+                  key={yr}
+                  type="button"
+                  onClick={() => applyYear(yr)}
+                  className={`px-3 py-2 text-[13px] font-medium rounded-lg transition-colors ${
+                    yearInput === yr
+                      ? "bg-(--color-ink) text-(--color-bg)"
+                      : "text-(--color-ink) hover:bg-(--color-subtle)"
+                  }`}
+                >
+                  {yr}
+                </button>
+              ))}
+            </div>
           </div>
 
           <button

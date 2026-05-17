@@ -7,6 +7,7 @@ export interface AaDocumentModule {
   prefix: string
   description: string | null
   isActive: boolean
+  isMonthly: boolean
   colStaff?: string | null
   colSubject?: string | null
   colActivity?: string | null
@@ -33,6 +34,8 @@ export interface AaDocument {
   operationNum: string | null
   year: number
   dateCreated: string
+  dateSubmittedJnt: string | null
+  oo8Level: string | null
   moduleId: string
   module?: AaDocumentModule
   remarks: AaRemark[]

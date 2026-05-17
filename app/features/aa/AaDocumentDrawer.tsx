@@ -31,7 +31,6 @@ export default function AaDocumentDrawer({ moduleCode, documentId }: Props) {
   const { show } = useToastStore()
 
   const currentYear = new Date().getFullYear()
-  const YEAR_OPTIONS = [currentYear - 2, currentYear - 1, currentYear, currentYear + 1]
 
   const [isEditing, setIsEditing] = useState(false)
   const [editValues, setEditValues] = useState({
@@ -40,6 +39,8 @@ export default function AaDocumentDrawer({ moduleCode, documentId }: Props) {
     operationNum: "",
     year: currentYear,
     dateCreated: "",
+    dateSubmittedJnt: "",
+    oo8Level: "",
   })
   const [isSaving, setIsSaving] = useState(false)
   // Optimistic remarks (real + temp)
@@ -60,6 +61,10 @@ export default function AaDocumentDrawer({ moduleCode, documentId }: Props) {
         operationNum: data.operationNum ?? "",
         year: data.year,
         dateCreated: new Date(data.dateCreated).toISOString().slice(0, 10),
+        dateSubmittedJnt: data.dateSubmittedJnt
+          ? new Date(data.dateSubmittedJnt).toISOString().slice(0, 10)
+          : "",
+        oo8Level: data.oo8Level ?? "",
       })
       setOptimisticRemarks(null) // reset optimistic state on fresh data
     }
@@ -221,22 +226,16 @@ export default function AaDocumentDrawer({ moduleCode, documentId }: Props) {
                     </div>
                     <div>
                       <p className={labelCls}>Year</p>
-                      <div className="flex items-center gap-1.5 mt-1">
-                        {YEAR_OPTIONS.map((yr) => (
-                          <button
-                            key={yr}
-                            type="button"
-                            onClick={() => setEditValues((v) => ({ ...v, year: yr }))}
-                            className={`px-3 py-1 text-[12px] font-medium rounded-lg border transition-colors ${
-                              editValues.year === yr
-                                ? "bg-(--color-ink) text-(--color-bg) border-(--color-ink)"
-                                : "bg-(--color-surface) text-(--color-muted) border-(--color-border) hover:text-(--color-ink) hover:border-(--color-ink)"
-                            }`}
-                          >
-                            {yr}
-                          </button>
-                        ))}
-                      </div>
+                      <input
+                        type="number"
+                        min={2000}
+                        max={2100}
+                        className={inputCls}
+                        value={editValues.year}
+                        onChange={(e) =>
+                          setEditValues((v) => ({ ...v, year: Number(e.target.value) }))
+                        }
+                      />
                     </div>
                     <div className="flex gap-3">
                       <div className="flex-1">
@@ -266,6 +265,37 @@ export default function AaDocumentDrawer({ moduleCode, documentId }: Props) {
                         />
                       </div>
                     </div>
+                    <div>
+                      <label htmlFor="drawer-date-submitted-jnt" className={labelCls}>
+                        Date Submitted to JNT
+                      </label>
+                      <input
+                        id="drawer-date-submitted-jnt"
+                        type="date"
+                        className={inputCls}
+                        value={editValues.dateSubmittedJnt}
+                        onChange={(e) =>
+                          setEditValues((v) => ({ ...v, dateSubmittedJnt: e.target.value }))
+                        }
+                      />
+                    </div>
+                    {moduleCode === "GRS" && (
+                      <div>
+                        <label htmlFor="drawer-oo8-level" className={labelCls}>
+                          OO8 Level
+                        </label>
+                        <input
+                          id="drawer-oo8-level"
+                          type="text"
+                          className={inputCls}
+                          placeholder="e.g. Level 1"
+                          value={editValues.oo8Level}
+                          onChange={(e) =>
+                            setEditValues((v) => ({ ...v, oo8Level: e.target.value }))
+                          }
+                        />
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <dl className="space-y-2 text-[13px]">
@@ -291,6 +321,20 @@ export default function AaDocumentDrawer({ moduleCode, documentId }: Props) {
                       <dt className="text-(--color-muted) shrink-0 w-24">{labels.date}</dt>
                       <dd className="text-(--color-ink)">{formatDate(data.dateCreated)}</dd>
                     </div>
+                    {data.dateSubmittedJnt && (
+                      <div className="flex gap-2">
+                        <dt className="text-(--color-muted) shrink-0 w-24">Subm. to JNT</dt>
+                        <dd className="text-(--color-ink)">{formatDate(data.dateSubmittedJnt)}</dd>
+                      </div>
+                    )}
+                    {moduleCode === "GRS" && (
+                      <div className="flex gap-2">
+                        <dt className="text-(--color-muted) shrink-0 w-24">OO8 Level</dt>
+                        <dd className="text-(--color-ink) font-medium">
+                          {data.oo8Level ?? <span className="text-(--color-muted) italic">—</span>}
+                        </dd>
+                      </div>
+                    )}
                     <div>
                       <dt className="text-(--color-muted) mb-1">{labels.subject}</dt>
                       <dd className="text-(--color-ink) leading-relaxed">{data.subject}</dd>

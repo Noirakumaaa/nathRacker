@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router"
 import { useQuery } from "@tanstack/react-query"
-import { FileText, Loader2, AlertCircle } from "lucide-react"
+import { FileText, Loader2, AlertCircle, CalendarDays } from "lucide-react"
 import APIFETCH from "~/lib/axios/axiosConfig"
 import type { AaDocumentModule } from "~/types/aaTypes"
 
@@ -56,52 +56,112 @@ export default function AaDashboard() {
         </div>
       )}
 
-      {data && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {data.map((mod) => (
-            <div
-              key={mod.id}
-              className="bg-(--color-surface) border border-(--color-border) rounded-xl hover:border-(--color-border-hover) hover:shadow-sm transition-all group flex flex-col"
-            >
-              {/* Clickable body */}
-              <button
-                onClick={() => navigate(`/aa/${mod.code}`)}
-                className="flex-1 text-left p-5 pb-4"
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <span
-                    className={`inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-md border uppercase tracking-wider ${moduleColor(mod.code)}`}
+      {data &&
+        (() => {
+          const regular = data.filter((m) => !m.isMonthly)
+          const monthly = data.filter((m) => m.isMonthly)
+          return (
+            <div className="space-y-8">
+              {/* Monthly Tracking — combined card */}
+              {monthly.length > 0 && (
+                <div>
+                  <h2 className="text-[12px] font-semibold text-(--color-muted) uppercase tracking-widest mb-3">
+                    Monthly Tracking
+                  </h2>
+                  <div
+                    className="bg-(--color-surface) border border-(--color-border) rounded-xl hover:border-(--color-border-hover) hover:shadow-sm transition-all group flex flex-col cursor-pointer"
+                    onClick={() => navigate("/aa/monthly")}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") navigate("/aa/monthly")
+                    }}
+                    role="button"
+                    tabIndex={0}
                   >
-                    <FileText size={12} />
-                    {mod.code}
-                  </span>
-                  <span className="text-[12px] font-semibold text-(--color-muted) tabular-nums">
-                    {mod._count?.documents ?? 0} docs
-                  </span>
+                    <div className="p-5 pb-4 flex-1">
+                      <div className="flex items-start justify-between mb-3">
+                        <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-md border uppercase tracking-wider bg-blue-50 text-blue-600 border-blue-200">
+                          <CalendarDays size={12} />
+                          Monthly
+                        </span>
+                        <span className="text-[12px] font-semibold text-(--color-muted) tabular-nums">
+                          {monthly.length} modules
+                        </span>
+                      </div>
+                      <p className="text-[14px] font-semibold text-(--color-ink) group-hover:text-blue-600 transition-colors mb-2">
+                        Monthly Tracking
+                      </p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {monthly.map((m) => (
+                          <span
+                            key={m.code}
+                            className="text-[11px] px-2 py-0.5 rounded-md bg-(--color-subtle) text-(--color-muted) border border-(--color-border)"
+                          >
+                            {m.name}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="flex items-center px-5 py-2.5 border-t border-(--color-border) bg-(--color-subtle) rounded-b-xl">
+                      <span className="text-[11px] text-blue-600 font-medium group-hover:underline">
+                        Open combined view →
+                      </span>
+                    </div>
+                  </div>
                 </div>
+              )}
 
-                <p className="text-[14px] font-semibold text-(--color-ink) group-hover:text-blue-600 transition-colors mb-1">
-                  {mod.name}
-                </p>
-
-                {mod.description && (
-                  <p className="text-[12px] text-(--color-muted) line-clamp-2">{mod.description}</p>
-                )}
-              </button>
-
-              {/* Footer — open link + admin actions */}
-              <div className="flex items-center justify-between px-5 py-2.5 border-t border-(--color-border) bg-(--color-subtle) rounded-b-xl">
-                <button
-                  onClick={() => navigate(`/aa/${mod.code}`)}
-                  className="text-[11px] text-blue-600 font-medium hover:underline"
-                >
-                  Open module →
-                </button>
-              </div>
+              {/* Regular modules */}
+              {regular.length > 0 && (
+                <div>
+                  <h2 className="text-[12px] font-semibold text-(--color-muted) uppercase tracking-widest mb-3">
+                    Document Modules
+                  </h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {regular.map((mod) => (
+                      <div
+                        key={mod.id}
+                        className="bg-(--color-surface) border border-(--color-border) rounded-xl hover:border-(--color-border-hover) hover:shadow-sm transition-all group flex flex-col"
+                      >
+                        <button
+                          onClick={() => navigate(`/aa/${mod.code}`)}
+                          className="flex-1 text-left p-5 pb-4"
+                        >
+                          <div className="flex items-start justify-between mb-3">
+                            <span
+                              className={`inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-md border uppercase tracking-wider ${moduleColor(mod.code)}`}
+                            >
+                              <FileText size={12} />
+                              {mod.code}
+                            </span>
+                            <span className="text-[12px] font-semibold text-(--color-muted) tabular-nums">
+                              {mod._count?.documents ?? 0} docs
+                            </span>
+                          </div>
+                          <p className="text-[14px] font-semibold text-(--color-ink) group-hover:text-blue-600 transition-colors mb-1">
+                            {mod.name}
+                          </p>
+                          {mod.description && (
+                            <p className="text-[12px] text-(--color-muted) line-clamp-2">
+                              {mod.description}
+                            </p>
+                          )}
+                        </button>
+                        <div className="flex items-center justify-between px-5 py-2.5 border-t border-(--color-border) bg-(--color-subtle) rounded-b-xl">
+                          <button
+                            onClick={() => navigate(`/aa/${mod.code}`)}
+                            className="text-[11px] text-blue-600 font-medium hover:underline"
+                          >
+                            Open module →
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
-          ))}
-        </div>
-      )}
+          )
+        })()}
 
       {data?.length === 0 && (
         <div className="text-center py-16 text-(--color-muted)">

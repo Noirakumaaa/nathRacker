@@ -28,8 +28,6 @@ interface Props {
 }
 
 export default function AaNewDocumentModal({ moduleCode, defaultYear, onClose }: Props) {
-  const currentYear = new Date().getFullYear()
-  const YEAR_OPTIONS = [currentYear - 2, currentYear - 1, currentYear, currentYear + 1]
   const overlayRef = useRef<HTMLDivElement>(null)
   const queryClient = useQueryClient()
   const { show } = useToastStore()
@@ -46,8 +44,6 @@ export default function AaNewDocumentModal({ moduleCode, defaultYear, onClose }:
   const {
     register,
     handleSubmit,
-    watch,
-    setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -144,25 +140,18 @@ export default function AaNewDocumentModal({ moduleCode, defaultYear, onClose }:
           </div>
 
           <div>
-            <p className={labelCls}>
+            <label htmlFor="new-doc-year" className={labelCls}>
               Year <span className="text-red-500">*</span>
-            </p>
-            <div className="flex items-center gap-1.5 mt-1">
-              {YEAR_OPTIONS.map((yr) => (
-                <button
-                  key={yr}
-                  type="button"
-                  onClick={() => setValue("year", yr)}
-                  className={`px-4 py-1.5 text-[13px] font-medium rounded-lg border transition-colors ${
-                    watch("year") === yr
-                      ? "bg-(--color-ink) text-(--color-bg) border-(--color-ink)"
-                      : "bg-(--color-surface) text-(--color-muted) border-(--color-border) hover:text-(--color-ink) hover:border-(--color-ink)"
-                  }`}
-                >
-                  {yr}
-                </button>
-              ))}
-            </div>
+            </label>
+            <input
+              id="new-doc-year"
+              type="number"
+              min={2000}
+              max={2100}
+              className={inputCls}
+              {...register("year", { valueAsNumber: true })}
+            />
+            {errors.year && <p className="mt-1 text-[11px] text-red-500">{errors.year.message}</p>}
           </div>
 
           <div className="flex gap-3">

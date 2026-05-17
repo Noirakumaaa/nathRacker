@@ -10,7 +10,7 @@ export const getAaModuleLabels = (
   moduleCode: string,
   module?: Pick<AaDocumentModule, "name" | "colStaff" | "colSubject" | "colActivity"> | null
 ) => ({
-  moduleName: module?.name?.trim() || moduleCode,
+  moduleName: (module?.name?.trim() || moduleCode).replace(/\s*\b(19|20)\d{2}\b/g, "").trim(),
   staff: module?.colStaff?.trim() || "Name of Staff",
   subject: module?.colSubject?.trim() || "Subject",
   activity: module?.colActivity?.trim() || null,

@@ -134,11 +134,36 @@ const LOAD26_MONTHS: MonthDef[] = [
   },
 ]
 
+// ─── DTR ─────────────────────────────────────────────────────────────────────
+const DTR_MONTHS: MonthDef[] = [
+  { label: "Dec (prev)", valueKey: "december2025", remarkKeys: ["decRemarks1", "decRemarks2"] },
+  { label: "January", valueKey: "january", remarkKeys: ["janRemarks1", "janRemarks2"] },
+  { label: "February", valueKey: "february", remarkKeys: ["febRemarks"] },
+  { label: "March", valueKey: "march", remarkKeys: ["marRemarks"] },
+  { label: "April", valueKey: "april", remarkKeys: ["aprRemarks"] },
+  { label: "May", valueKey: "may", remarkKeys: ["mayRemarks1", "mayRemarks2"] },
+  { label: "June", valueKey: "june", remarkKeys: ["junRemarks1", "junRemarks2"] },
+  { label: "July", valueKey: "july", remarkKeys: ["julRemarks1", "julRemarks2", "julRemarks3"] },
+  { label: "August", valueKey: "august", remarkKeys: ["augRemarks"] },
+  {
+    label: "September",
+    valueKey: "september",
+    remarkKeys: ["sepRemarks1", "sepRemarks2", "sepRemarks3"],
+  },
+  {
+    label: "October",
+    valueKey: "october",
+    remarkKeys: ["octRemarks1", "octRemarks2", "octRemarks3"],
+  },
+  { label: "November", valueKey: "november", remarkKeys: ["novRemarks1", "novRemarks2"] },
+]
+
 // ─── Registry ─────────────────────────────────────────────────────────────────
 export const AA_MONTHLY_CONFIGS: Record<string, ModuleMonthlyConfig> = {
-  COAWTR26: { endpoint: "monthly", months: COAWTR26_MONTHS },
-  HAZARD26: { endpoint: "monthly", months: HAZARD26_MONTHS },
-  TEV26: { endpoint: "monthly", months: TEV26_MONTHS },
-  MAGNA26: { endpoint: "monthly", months: MAGNA26_MONTHS },
-  LOAD26: { endpoint: "load26-monthly", months: LOAD26_MONTHS },
+  COAWTR: { endpoint: "monthly", months: COAWTR26_MONTHS },
+  DTR: { endpoint: "monthly", months: DTR_MONTHS },
+  HAZARD: { endpoint: "monthly", months: HAZARD26_MONTHS },
+  TEV: { endpoint: "monthly", months: TEV26_MONTHS },
+  MAGNA: { endpoint: "monthly", months: MAGNA26_MONTHS },
+  LOAD: { endpoint: "monthly", months: LOAD26_MONTHS },
 }

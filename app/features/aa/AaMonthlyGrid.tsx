@@ -1,23 +1,56 @@
 import { useState } from "react"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
-import { Loader2, Save } from "lucide-react"
+import { Loader2, Save, Plus, Minus } from "lucide-react"
 import APIFETCH from "~/lib/axios/axiosConfig"
 import { useToastStore } from "~/lib/zustand/ToastStore"
 import { labelCls, inputCls } from "~/components/styleConfig"
-import { AA_MONTHLY_CONFIGS, type MonthDef } from "./aaMonthlyConfig"
 
-type MonthlyData = Record<string, string | null | undefined>
-type FormState = Record<string, string>
+const MIN_REMARKS = 3
 
-function buildInitialForm(months: MonthDef[], data: MonthlyData | null | undefined): FormState {
+const MONTHS = [
+  { label: "January", key: "january" },
+  { label: "February", key: "february" },
+  { label: "March", key: "march" },
+  { label: "April", key: "april" },
+  { label: "May", key: "may" },
+  { label: "June", key: "june" },
+  { label: "July", key: "july" },
+  { label: "August", key: "august" },
+  { label: "September", key: "september" },
+  { label: "October", key: "october" },
+  { label: "November", key: "november" },
+  { label: "December", key: "december" },
+]
+
+type MonthState = { value: string; remarks: string[] }
+type FormState = Record<string, MonthState>
+
+function ensureMin(arr: string[]): string[] {
+  const out = [...arr]
+  while (out.length < MIN_REMARKS) out.push("")
+  return out
+}
+
+function buildForm(raw: Record<string, unknown> | null | undefined): FormState {
   const state: FormState = {}
-  for (const m of months) {
-    state[m.valueKey] = data?.[m.valueKey] ?? ""
-    for (const rk of m.remarkKeys) {
-      state[rk] = data?.[rk] ?? ""
-    }
+  for (const { key } of MONTHS) {
+    const value = typeof raw?.[key] === "string" ? (raw[key] as string) : ""
+    const remarksRaw = raw?.[`${key}_remarks`]
+    const remarks = Array.isArray(remarksRaw)
+      ? ensureMin(remarksRaw.map((r) => (typeof r === "string" ? r : "")))
+      : ensureMin([])
+    state[key] = { value, remarks }
   }
   return state
+}
+
+function buildPayload(form: FormState): Record<string, unknown> {
+  const payload: Record<string, unknown> = {}
+  for (const { key } of MONTHS) {
+    payload[key] = form[key].value
+    payload[`${key}_remarks`] = form[key].remarks
+  }
+  return payload
 }
 
 interface Props {
@@ -26,40 +59,65 @@ interface Props {
 }
 
 export default function AaMonthlyGrid({ documentId, moduleCode }: Props) {
-  const config = AA_MONTHLY_CONFIGS[moduleCode]
   const queryClient = useQueryClient()
   const { show } = useToastStore()
   const [isSaving, setIsSaving] = useState(false)
   const [dirty, setDirty] = useState(false)
 
   const queryKey = ["aa-monthly", moduleCode, documentId]
-  const endpoint = `/aa-documents/${documentId}/${config.endpoint}`
+  const endpoint = `/aa-documents/${documentId}/monthly`
 
-  const { data, isLoading } = useQuery<MonthlyData | null>({
+  const { data: rawData, isLoading } = useQuery<Record<string, unknown> | null>({
     queryKey,
-    queryFn: () => APIFETCH.get<MonthlyData | null>(endpoint).then((r) => r.data),
+    queryFn: () =>
+      APIFETCH.get<{ data: Record<string, unknown> } | null>(endpoint).then(
+        (r) => (r.data as { data?: Record<string, unknown> })?.data ?? r.data
+      ),
     enabled: !!documentId,
   })
 
-  const [form, setForm] = useState<FormState>(() => buildInitialForm(config.months, null))
+  const [form, setForm] = useState<FormState>(() => buildForm(null))
   const [synced, setSynced] = useState(false)
   if (!synced && !isLoading) {
-    setForm(buildInitialForm(config.months, data))
+    setForm(buildForm(rawData as Record<string, unknown> | null))
     setSynced(true)
   }
 
-  const set = (key: string, value: string) => {
-    setForm((prev) => ({ ...prev, [key]: value }))
+  const setVal = (monthKey: string, value: string) => {
+    setForm((prev) => ({ ...prev, [monthKey]: { ...prev[monthKey], value } }))
+    setDirty(true)
+  }
+
+  const setRemark = (monthKey: string, idx: number, value: string) => {
+    setForm((prev) => {
+      const remarks = [...prev[monthKey].remarks]
+      remarks[idx] = value
+      return { ...prev, [monthKey]: { ...prev[monthKey], remarks } }
+    })
+    setDirty(true)
+  }
+
+  const addRemark = (monthKey: string) => {
+    setForm((prev) => ({
+      ...prev,
+      [monthKey]: { ...prev[monthKey], remarks: [...prev[monthKey].remarks, ""] },
+    }))
+    setDirty(true)
+  }
+
+  const removeRemark = (monthKey: string) => {
+    setForm((prev) => {
+      const remarks = prev[monthKey].remarks
+      if (remarks.length <= MIN_REMARKS) return prev
+      return { ...prev, [monthKey]: { ...prev[monthKey], remarks: remarks.slice(0, -1) } }
+    })
     setDirty(true)
   }
 
   const handleSave = async () => {
     setIsSaving(true)
     try {
-      const payload = Object.fromEntries(
-        Object.entries(form).map(([k, v]) => [k, v === "" ? undefined : v])
-      )
-      await APIFETCH.put(endpoint, payload)
+      await APIFETCH.put(endpoint, buildPayload(form))
       queryClient.invalidateQueries({ queryKey })
       queryClient.invalidateQueries({ queryKey: ["aa-document", documentId] })
       setDirty(false)
@@ -82,7 +140,6 @@ export default function AaMonthlyGrid({ documentId, moduleCode }: Props) {
 
   return (
     <div className="space-y-4">
-      {/* Save bar */}
       <div className="flex items-center justify-between">
         <h3 className="text-[11px] font-semibold text-(--color-muted) uppercase tracking-wider">
           Monthly Remarks
@@ -97,26 +154,44 @@ export default function AaMonthlyGrid({ documentId, moduleCode }: Props) {
         </button>
       </div>
 
-      {/* Month grid — 2 columns */}
       <div className="grid grid-cols-2 gap-3">
-        {config.months.map((month) => (
-          <MonthCard key={month.valueKey} month={month} form={form} onChange={set} />
+        {MONTHS.map(({ label, key }) => (
+          <MonthCard
+            key={key}
+            label={label}
+            monthKey={key}
+            state={form[key]}
+            onValueChange={(v) => setVal(key, v)}
+            onRemarkChange={(i, v) => setRemark(key, i, v)}
+            onAddRemark={() => addRemark(key)}
+            onRemoveRemark={() => removeRemark(key)}
+          />
         ))}
       </div>
     </div>
   )
 }
 
-// ─── Month card ───────────────────────────────────────────────────────────────
-
 interface CardProps {
-  month: MonthDef
-  form: FormState
-  onChange: (key: string, value: string) => void
+  label: string
+  monthKey: string
+  state: MonthState
+  onValueChange: (v: string) => void
+  onRemarkChange: (idx: number, v: string) => void
+  onAddRemark: () => void
+  onRemoveRemark: () => void
 }
 
-function MonthCard({ month, form, onChange }: CardProps) {
-  const hasContent = form[month.valueKey] || month.remarkKeys.some((rk) => form[rk])
+function MonthCard({
+  label,
+  monthKey,
+  state,
+  onValueChange,
+  onRemarkChange,
+  onAddRemark,
+  onRemoveRemark,
+}: CardProps) {
+  const hasContent = state.value || state.remarks.some((r) => r)
 
   return (
     <div
@@ -127,39 +202,60 @@ function MonthCard({ month, form, onChange }: CardProps) {
       }`}
     >
       <p className="text-[11px] font-semibold text-(--color-muted) uppercase tracking-wider">
-        {month.label}
+        {label}
       </p>
 
       <div>
-        <label htmlFor={`${month.valueKey}-value`} className={labelCls}>
+        <label htmlFor={`${monthKey}-value`} className={labelCls}>
           Value
         </label>
         <input
-          id={`${month.valueKey}-value`}
+          id={`${monthKey}-value`}
           type="text"
           className={inputCls}
           placeholder="—"
-          value={form[month.valueKey] ?? ""}
-          onChange={(e) => onChange(month.valueKey, e.target.value)}
+          value={state.value}
+          onChange={(e) => onValueChange(e.target.value)}
         />
       </div>
 
       <div className="space-y-1.5">
-        {month.remarkKeys.map((rk, idx) => (
-          <div key={rk}>
-            <label htmlFor={`${rk}-input`} className={labelCls}>
+        {state.remarks.map((remark, idx) => (
+          <div key={idx}>
+            <label htmlFor={`${monthKey}-remark-${idx}`} className={labelCls}>
               Remark {idx + 1}
             </label>
             <input
-              id={`${rk}-input`}
+              id={`${monthKey}-remark-${idx}`}
               type="text"
               className={inputCls}
               placeholder="—"
-              value={form[rk] ?? ""}
-              onChange={(e) => onChange(rk, e.target.value)}
+              value={remark}
+              onChange={(e) => onRemarkChange(idx, e.target.value)}
             />
           </div>
         ))}
+      </div>
+
+      <div className="flex items-center gap-2 pt-0.5">
+        <button
+          type="button"
+          onClick={onAddRemark}
+          className="flex items-center gap-1 text-[11px] text-blue-600 hover:text-blue-700 font-medium"
+        >
+          <Plus size={11} />
+          Add remark
+        </button>
+        {state.remarks.length > MIN_REMARKS && (
+          <button
+            type="button"
+            onClick={onRemoveRemark}
+            className="flex items-center gap-1 text-[11px] text-(--color-muted) hover:text-red-500 font-medium"
+          >
+            <Minus size={11} />
+            Remove
+          </button>
+        )}
       </div>
     </div>
   )

@@ -33,6 +33,7 @@ export default [
 
   layout("routes/aaLayout.tsx", [
     route("aa", "routes/aa/index.tsx"),
+    route("aa/monthly", "routes/aa/monthly.tsx"),
     route("aa/:moduleCode", "routes/aa/moduleView.tsx", [
       route(":id", "routes/aa/documentDrawer.tsx"),
     ]),
